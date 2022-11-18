@@ -37,7 +37,7 @@ In the speaking rate research, the faster subjects spoke, the shorter their vowe
 
 ![](images/VOT_vdur.png){width=50% height=50%}
 
-So, pre-vocalic VOT is positively correlated with the duration of the following vowel. The question we are asking in the current research, is:
+So, pre-vocalic VOT is positively correlated with the duration of the following vowel. The question I am asking in the current research, is:
 
 1. Is VOT likewise positively correlated with phonologically conditioned vowel duration? (Pt.1)
   In (most all) languages, the voicing of coda consonants is accompanied by longer vowel duration. So, the "a" in "pad" is longer than the "a" in "pat". Does this sort of vowel duration variation have a comparable effect on onset VOT and if so, does it conform to the pattern found with speaking rate conditioned vowel duration effects? My prediction here is that the effect will be real, but the *size* of the effect will be quite small (on the order of tens of ms).
