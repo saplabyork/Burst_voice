@@ -44,6 +44,8 @@ So, pre-vocalic VOT is positively correlated with the duration of the following 
   
 2. If the question in (1) is positive, that is, speakers have longer VOT for "p" in "pad" than they do for the "p" in "pat", do listeners know/use this knowledge to inform their perception of the coda C voicing? This will be a perception test where listeners hear just the burst and first few cycles of the vowel of a CVC and guess what the final C is. For example, they will hear "pa-" and have to guess whether they heard "pat" or "pad".
 
+---
+
 ### Gameplan
 
 Part 1 of the project is acoustics. We will record 20 speakers of Canadian English (10 female, 10 male) in the Phonetics Studio (Ross S114). They will read this [word list](Burst_voice_reading_list.docx) twice. The list represent real word pairs like "pat"/"pad" for three places of articulation (p,t,k) and five lax vowels (I, E, U, c, ae), and three places of articulation in coda position (p,t,k). Not all combinations are represented, only real words.
@@ -54,3 +56,9 @@ Student members of the SAP Lab will assist in measuring:
 2. **Vowel duration**--On another tier of the text grid, identify the onset and offset of the vowel in the target word
 3. Run a Praat script (twice) on every recording file which will extract the durations of VOT and the Vowel.
 4. Organize the output from the script into an Excel spreadsheet
+
+Lab volunteers should go to the Acoustics methods tab to learn how to measure VOT, run the praat script, and create a spreadsheet with your values.
+
+---
+
+Part 2 of the project is perception, and really depends on the results of Part 1. If part 1 pans out, and speakers actually have longer VOTs when coda C is voiced, then we can test whether listeners *use* this knowledge. 
