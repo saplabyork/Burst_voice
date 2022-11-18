@@ -29,7 +29,7 @@ output:
 
 ### Background
 
-This project follows from an earlier research project examining burst properties of oral voiceless consonants in prevocalic position (CV) as a function of speaking rate. In that project, we found that as people speak faster and faster, the bursts of their plosives decrease in amplitude. 
+This project follows from an earlier research project examining burst properties of oral voiceless consonants in prevocalic position (CV) as a function of speaking rate. In that project, I found that as people speak faster and faster, the bursts of their plosives decrease in amplitude. 
 
 The reasoning is that as you speak faster there is less and less time for intraoral pressure to build up behind the constriction, so when the stop is released, the burst is more quiet than if there were more time (as in slower speech). I found this happening in both English (a language which contrasts voicing using short- and long-lag VOT) and Tamil (a language without phonological voicing in onset position and which only utilizes short lag VOT).
 
