@@ -2,6 +2,6 @@ name: "BurstVoice"
 navbar:
   title: "BurstVoice"
   left:
-    - text: "Home"
+    - text: "Background"
       href: index.html
 output_dir: "docs"
