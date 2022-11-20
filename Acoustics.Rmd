@@ -160,7 +160,9 @@ Tip: Learn the keyboard shortcuts for adding boundaries on the interval tiers. F
 
 Once you've added your VOT and Vdur tier intervals, you will be running a Praat "script." We will be using a script (a little program that will automatically do some operation on files) that goes through the TextGrid that you've saved and measure the duration of each interval (once for the VOT tier and once for the Vdur tier).
 
-The duration extraction script is located [here](https://drive.google.com/drive/folders/12Ohw5w_Noeo4sKyS5ostS6ra8_rHl02b?usp=share_link)
+The duration extraction script is located [here](https://drive.google.com/drive/folders/12Ohw5w_Noeo4sKyS5ostS6ra8_rHl02b?usp=share_link). Download it to the folder where your audio file and TextGrid file is located. 
+
+Once you are done demarcating the intervals of all the target words in the audiofile in both the VOT and Vdur tiers, it will be time to run the script. 
 
 
 
