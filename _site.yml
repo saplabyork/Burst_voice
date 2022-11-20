@@ -5,5 +5,5 @@ navbar:
     - text: "Background"
       href: index.html
     - text: "Acoustics methods"
-      href: acoustics.html
+      href: measurements.html
 output_dir: "docs"
