@@ -114,7 +114,7 @@ You will work directly with this `.wav` + TextGrid combo view.
 
 5. Notice the two tiers (VOT and vdur). You will insert boundaries and annotate *both* of these tiers for every target word.
 
-### Finding boundaries
+### Adding interval boundaries
 
 Now you will locate the onset of the release burst. In the example below (and most all of the tokens you'll be dealing with) it's very obvious where the stop is released. You'll see a loud transient (unstructured energy or noise that is brief)
 
@@ -141,7 +141,7 @@ The **offset** is harder, and **VERY** important to get right for the purposes o
 7. Finally add your interval boundary to the vowel offset on Tier 2 (Vdur).
 
 ```
-Tip: Learn the keyboard shortcuts for adding boundaries on the interval tiers. For a Mac (if you're in the SAP Lab), it is Command-1 for Tier 1 (VOT) and Command-2 for Tier 2 (Vdur)
+Tip: Learn the keyboard shortcuts for adding boundaries on the interval tiers. For a Mac (if you're in the SAP Lab), it is Command-1 for Tier 1 (VOT) and Command-2 for Tier 2 (Vdur).
 ```
  
 8. You will end up with two "chunks", one for VOT and one for Vdur. Watch this gif:
@@ -156,7 +156,11 @@ Tip: Learn the keyboard shortcuts for adding boundaries on the interval tiers. F
 11. It is **VERY** important that you **SAVE** your TextGrid periodically. I would recommend you save the TextGrid in the same folder where the audio is. It will have the same name as the audio, but with the extension `.TextGrid`. The way you do this is by going to File > Save TextGrid as text file... in the audio/TextGrid combo window you've been working in. Every time you save it, it will ask you whether you want to override the already saved one. Say "yes."
 
 
+## Running the duration script
 
+Once you've added your VOT and Vdur tier intervals, you will be running a Praat "script." We will be using a script (a little program that will automatically do some operation on files) that goes through the TextGrid that you've saved and measure the duration of each interval (once for the VOT tier and once for the Vdur tier).
+
+The duration extraction script is located [here](https://drive.google.com/drive/folders/12Ohw5w_Noeo4sKyS5ostS6ra8_rHl02b?usp=share_link)
 
 
 
