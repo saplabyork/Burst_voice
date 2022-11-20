@@ -140,6 +140,10 @@ The **offset** is harder, and **VERY** important to get right for the purposes o
 
 7. Finally add your interval boundary to the vowel offset on Tier 2 (Vdur).
 
+```
+Tip: Learn the keyboard shortcuts for adding boundaries on the interval tiers. For a Mac (if you're in the SAP Lab), it is Command-1 for Tier 1 (VOT) and Command-2 for Tier 2 (Vdur)
+```
+ 
 8. You will end up with two "chunks", one for VOT and one for Vdur. Watch this gif:
 
 ![](images/insert_intervals.gif)
@@ -150,6 +154,8 @@ The **offset** is harder, and **VERY** important to get right for the purposes o
 10. I've walked you through the first example. You now need to do this for each target word in the file. There are about 120 of them. 
 
 11. It is **VERY** important that you **SAVE** your TextGrid periodically. I would recommend you save the TextGrid in the same folder where the audio is. It will have the same name as the audio, but with the extension `.TextGrid`. The way you do this is by going to File > Save TextGrid as text file... in the audio/TextGrid combo window you've been working in. Every time you save it, it will ask you whether you want to override the already saved one. Say "yes."
+
+
 
 
 
