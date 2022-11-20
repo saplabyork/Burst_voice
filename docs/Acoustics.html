@@ -9,11 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Chandan Narayan" />
 
-<meta name="date" content="2022-11-18" />
 
-<title>Acoustics</title>
+<title>Acoustics methods</title>
 
 <script src="site_libs/header-attrs-2.17/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -324,6 +322,9 @@ div.tocify {
         <li>
   <a href="index.html">Background</a>
 </li>
+<li>
+  <a href="acoustics.html">Acoustics methods</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -336,39 +337,228 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Acoustics</h1>
-<h4 class="author">Chandan Narayan</h4>
-<h4 class="date">2022-11-18</h4>
+<h1 class="title toc-ignore">Acoustics methods</h1>
 
 </div>
 
 
-<div id="r-markdown" class="section level2" number="0.1">
-<h2><span class="header-section-number">0.1</span> R Markdown</h2>
-<p>This is an R Markdown document. Markdown is a simple formatting
-syntax for authoring HTML, PDF, and MS Word documents. For more details
-on using R Markdown see <a href="http://rmarkdown.rstudio.com"
-class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>When you click the <strong>Knit</strong> button a document will be
-generated that includes both content as well as the output of any
-embedded R code chunks within the document. You can embed an R code
-chunk like this:</p>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
+<style type="text/css">
+  body{
+  font-size: 12pt;
+}
+</style>
+<style type="text/css">
+.title {
+  display: none;
+}
+
+#getting-started img {
+  margin-right: 10px;
+}
+
+</style>
+<div id="methods-for-acoustic-measurements" class="section level1">
+<h1>Methods for acoustic measurements</h1>
+<p>You will be working with <code>.wav</code> files which have
+recordings of speakers reading a word list (read twice), with each
+<strong>target</strong> sound embedded in the sentence frame “Say the
+word <code>CVC</code> quickly.” The lab volunteer will use their
+knowledge of articulation, aerodynamics, and acoustics to inform how
+they measure the VOT of the initial C and the duration of the vowel.</p>
+<div id="the-data" class="section level2">
+<h2>The data</h2>
+<p>Each recording will be organized according to speaker and can be
+found in the SAP Lab drive
+<code>(Studies/Burst_voice/Recordings/)</code> and will look something
+like this. A single volunteer will be responsible for at least two
+speakers (i.e., four <code>.wav</code> files):</p>
+<center>
+<img src="images/recordings_folders.png"
+style="width:50.0%;height:50.0%" />
+</center>
+<p>The individual folder has two files labeled
+<code>XX_list1.wav' and</code>XX_list2.wav’. These have the exact same
+reading list, but just the second take. So we will have two recordings
+of the same target words.</p>
+<center>
+<img src="images/indiv_folder.png" style="width:50.0%;height:50.0%" />
+</center>
 </div>
-<div id="including-plots" class="section level2" number="0.2">
-<h2><span class="header-section-number">0.2</span> Including Plots</h2>
-<p>You can also embed plots, for example:</p>
-<p><img src="Acoustics_files/figure-html/pressure-1.png" width="672" /></p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the
-code chunk to prevent printing of the R code that generated the
-plot.</p>
+<div id="opening-the-file" class="section level2">
+<h2>Opening the file</h2>
+<p><strong>Download</strong> the individual files to your local computer
+(see the video below if you don’t know how to do this). For the purposes
+of this example, we will work with <code>OC_list1.wav</code>. The first
+two letters of the file name are the participant code.</p>
+<p><strong>Open</strong> the <code>.wav</code> file in
+<code>Praat</code>. It will appear in the Object window pane. Click
+<code>View and Edit</code> to examine the audio. It will be a fairly
+long sound file (you’re not used to seeing files this long, but that’s
+OK).</p>
+<center>
+<img src="images/long_sound.png" />
+</center>
+<p><br />
+</p>
+</div>
+<div id="creating-the-textgrid" class="section level2">
+<h2>Creating the TextGrid</h2>
+<p>Now we want to create a <code>TextGrid</code> file to accompany this
+long sound file. A text grid is a text file that you open
+<strong>with</strong> the sound file that allows you to annotate and put
+boundaries or demarcations on the sound file. These demarcations happen
+on <strong>tiers</strong> of the TextGrid. Once you have boundaries and
+labels made in the TextGrid associated with a sound file you can
+<em>query</em> the TextGrid and ask things like “how long are all of the
+<strong>intervals</strong> on a particular tier”. Let’s take a look at
+how this is done.</p>
+<p>Select the Sound object, in this example, it would be
+<code>Sound OC_list1</code>. In the menu of buttons in the Objects
+window, click <code>Annotate</code> and from there
+<code>To TextGrid</code>.</p>
+<center>
+<img src="images/to_textgrid.png" style="width:50.0%;height:50.0%" />
+</center>
+<p><br />
+</p>
+<p>This will bring up a window form that asks for some variables. We
+want 2 tiers, one for <code>VOT</code> and one for <code>vdur</code>
+(vowel duration). Please label them <em>exactly</em> like this:</p>
+<center>
+<img src="images/tier_form.png" style="width:50.0%;height:50.0%" />
+</center>
+<p><br />
+</p>
+<p>Neither of these are called “point” tiers, so you leave the field for
+“Which of these are point tiers?” blank. This will put a TextGrid object
+into the Objects window. It will be named the same as the sound file, in
+this case <code>TextGrid OC_list1</code>.</p>
+<p>Next, you must open the sound file <em>and</em> the TextGrid files
+together! You can select them both together by holding down the
+<code>shift</code> key. When both files are selected, click
+<code>View and Edit</code> again.</p>
+<p>This will open up a window with the waveform and spectrogram from the
+<code>.wav</code> file along with the TextGrid. Notice that there are
+two tiers on the TexGrid: VOT and vdur. Also notice that in the right
+panel of the window is all the IPA symbols. We won’t worry about the IPA
+for this project, but it allows one to do broad transcription of the
+audio.</p>
+<center>
+<img src="images/wav_TextGrid.png" />
+</center>
+<p><br />
+</p>
+<p>Zoom out all the way (Command-A, it might be CTRL-A on Windows) to
+see the entire waveform. Notice that you can’t see the spectrogram if
+you’re zoomed out this far. Let’s zoom (select, then Command-N) in
+closer to see the first few sentences:</p>
+<center>
+<img src="images/wav_TextGrid_zoomed.png" />
+</center>
+<p><br />
+</p>
+<p>The zoomed in view allows you to see the which should look pretty
+nice. Make sure you’re using a wideband spectrogram view. If your image
+isn’t wideband, then go to Spectrum &gt; Spectrogram settings. Make sure
+the window length is large (0.01s will be fine). You will use the
+spectrogram just for further evidence for your decisions on where to
+place boundaries.</p>
+</div>
+<div id="measuring-vot-and-vdur" class="section level2">
+<h2>Measuring VOT and Vdur</h2>
+<div id="preliminaries" class="section level3">
+<h3>Preliminaries</h3>
+<p>You will work directly with this <code>.wav</code> + TextGrid combo
+view.</p>
+<ol style="list-style-type: decimal">
+<li><p>Have the word list open on your screen. You will be constantly
+consulting this list to make sure you’re listening to the correct
+word.</p></li>
+<li><p>Ignore all of the sentence word frames and focus only on the
+<strong>target</strong> CVC words.</p></li>
+<li><p>Zoom in to your sentence. Listen to the sentence, then zoom in on
+the target word. Watch this animated <code>gif</code>:</p></li>
+</ol>
+<p><img src="images/zooming_in_to_target.gif" /></p>
+<ol start="4" style="list-style-type: decimal">
+<li><p>Some of the sentence frames (the first few participants) are “Say
+the word __ again,” I then changed it to “Say the word __ quickly.” This
+avoids the problem of having the final C of the target word being the
+onset of “again.”</p></li>
+<li><p>Notice the two tiers (VOT and vdur). You will insert boundaries
+and annotate <em>both</em> of these tiers for every target
+word.</p></li>
+</ol>
+</div>
+<div id="finding-boundaries" class="section level3">
+<h3>Finding boundaries</h3>
+<p>Now you will locate the onset of the release burst. In the example
+below (and most all of the tokens you’ll be dealing with) it’s very
+obvious where the stop is released. You’ll see a loud transient
+(unstructured energy or noise that is brief)</p>
+<ol style="list-style-type: decimal">
+<li>The onset is easy to identify. Zoom into the onset, and on the VOT
+tier (which should be tier 1), add an interval:</li>
+</ol>
+<p><img src="images/onset_offset.png" /></p>
+<p>The <strong>offset</strong> is harder, and <strong>VERY</strong>
+important to get right for the purposes of this study. The effects I
+hope to find are going to be small so it’s important that you’re careful
+in identifying the end of the VOT, and that you stay consistent in your
+measuring techniques.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>In this case, the offset is located as the END of the VOT or
+aspiration noise at the zero crossing. You can confirm this by looking
+at the spectrogram too. The offset of the aspiration/VOT IS the onset of
+the vowel!</li>
+</ol>
+<center>
+<img src="images/offset_VOT_onset_vowel.png" />
+</center>
+<ol start="3" style="list-style-type: decimal">
+<li><p>Identify the offset of the vowel. This should be fairly clear.
+Notice the periodic voicing of the vowel. It is loud. As the vowel
+starts to end, it dramatically decreases in amplitude. The shape of the
+periodic voicing also changes to reflect the voicing (if it is voiced,
+like the “g” in “tug” in this example) of the final consonant.</p></li>
+<li><p>Once you have identified the boundary intervals (VOT onset, VOT
+offset/Vowel onset, Vowel offset), you can go back and insert your
+intervals on the TextGrids.</p></li>
+<li><p>There are two tiers (VOT and Vdur). You must put Interval
+boundaries on the appropriate tier! The way you insert an interval
+boundary is by placing your cursor at the point in the waveform where
+you want it. Then go to Interval &gt; Add interval on tier 1 (this will
+add it to the Tier 1 or the VOT tier).</p></li>
+<li><p>Add intervals to Tier 1 for VOT onset and VOT offset. Immediately
+after you add the Tier 1 interval for VOT offset you must add a Tier 2
+interval (vowel onset). The VOT offset and the Vowel onset ARE THE SAME,
+but with the interval added to different tiers.</p></li>
+<li><p>Finally add your interval boundary to the vowel offset on Tier 2
+(Vdur).</p></li>
+<li><p>You will end up with two “chunks”, one for VOT and one for Vdur.
+Watch this gif:</p></li>
+</ol>
+<p><img src="images/insert_intervals.gif" /></p>
+<ol start="9" style="list-style-type: decimal">
+<li>Now you need to label the intervals. Name each chunk with the name
+of the target word. In this example, it is the first word of the list,
+“tug.”</li>
+</ol>
+<p><img src="images/name_intervals.gif" /> 10. I’ve walked you through
+the first example. You now need to do this for each target word in the
+file. There are about 120 of them.</p>
+<ol start="11" style="list-style-type: decimal">
+<li>It is <strong>VERY</strong> important that you <strong>SAVE</strong>
+your TextGrid periodically. I would recommend you save the TextGrid in
+the same folder where the audio is. It will have the same name as the
+audio, but with the extension <code>.TextGrid</code>. The way you do
+this is by going to File &gt; Save TextGrid as text file… in the
+audio/TextGrid combo window you’ve been working in. Every time you save
+it, it will ask you whether you want to override the already saved one.
+Say “yes.”</li>
+</ol>
+</div>
+</div>
 </div>
 
 

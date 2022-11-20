@@ -4,4 +4,6 @@ navbar:
   left:
     - text: "Background"
       href: index.html
+    - text: "Acoustics methods"
+      href: acoustics.html
 output_dir: "docs"
