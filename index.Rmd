@@ -40,7 +40,7 @@ In the speaking rate research, the faster subjects spoke, the shorter their vowe
 So, pre-vocalic VOT is positively correlated with the duration of the following vowel. The question I am asking in the current research, is:
 
 1. Is VOT likewise positively correlated with phonologically conditioned vowel duration? (Pt.1)
-  In (most all) languages, the voicing of coda consonants is accompanied by longer vowel duration. So, the "a" in "pad" is longer than the "a" in "pat". Does this sort of vowel duration variation have a comparable effect on onset VOT and if so, does it conform to the pattern found with speaking rate conditioned vowel duration effects? My prediction here is that the effect will be real, but the *size* of the effect will be quite small (on the order of tens of ms).
+  In (most all) languages, the voicing of coda consonants is accompanied by longer preceding vowel duration. So, the "a" in "pad" is longer than the "a" in "pat". Does this sort of vowel duration variation have a comparable effect on onset VOT and if so, does it conform to the pattern found with speaking rate conditioned vowel duration effects? My prediction here is that the effect will be real, but the *size* of the effect will be quite small (on the order of tens of ms).
   
 2. If the question in (1) is positive, that is, speakers have longer VOT for "p" in "pad" than they do for the "p" in "pat", do listeners know/use this knowledge to inform their perception of the coda C voicing? This will be a perception test where listeners hear just the burst and first few cycles of the vowel of a CVC and guess what the final C is. For example, they will hear "pa-" and have to guess whether they heard "pat" or "pad".
 
