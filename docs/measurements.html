@@ -574,8 +574,43 @@ href="https://drive.google.com/drive/folders/12Ohw5w_Noeo4sKyS5ostS6ra8_rHl02b?u
 Download it to the folder where your audio file and TextGrid file is
 located.</p>
 <p>Once you are done demarcating the intervals of all the target words
-in the audiofile in both the VOT and Vdur tiers, it will be time to run
+in the audio file in both the VOT and Vdur tiers, it will be time to run
 the script.</p>
+<ol style="list-style-type: decimal">
+<li><p>To run the script you need to have your audio file
+(<code>.wav</code>) (in our example <code>OC_list1.wav</code>) and the
+associated TextGrid file (in our example OC_list1.TextGrid) in the same
+folder. If you’re working on lab computers it’s convenient to have this
+all on your desktop.</p></li>
+<li><p>With Praat open, open the duration extraction script. Do this by
+going to Praat &gt; Open Praat script… and finding the script in your
+folder. The open script will look like this:</p></li>
+</ol>
+<p><img src="images/script_image.png" /> 3. To “run” the script go to
+Run &gt; Run. You can also press Command-R on the lab macs.</p>
+<ol start="4" style="list-style-type: decimal">
+<li>Running the script will open a form. You need to enter some
+parameters. “Directory name” is where the audio and TextGrid are
+located. In the example below, the folder is OC, which is on the
+Desktop, which is under the root (~). If you’re working on the Lab
+computers I’d recommend keeping the same structure.</li>
+</ol>
+<p>The “Objects name” is the name of the audio and TextGrid files. In
+the example, they’re both “OC_list1”. “Log File” is the name that you
+want the output file to be called. Please call it exactly as the Objects
+name file, but with the extension of EITHER “_VOT” or “_Vdur”. “Labeled
+tier number” is the tier you want the script to “look” at. You will
+first run the script on the VOT tier, which is tier 1. So input “1” here
+and the Log file should be “OC_list1_VOT”. Ignore the last two
+parameters.</p>
+<p><img src="images/script1_form.png"
+style="width:50.0%;height:50.0%" /></p>
+<p>Click “OK”. This will put a text file in your folder called
+“OC_list1_VOT.txt”. Open it up and inspect it. It should</p>
+<ol start="4" style="list-style-type: decimal">
+<li>Once you run the script, and provided your TextGrid was labeled
+correctly and the intervals are correct, there will be</li>
+</ol>
 </div>
 </div>
 
