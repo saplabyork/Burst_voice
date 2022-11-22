@@ -180,8 +180,19 @@ The "Objects name" is the name of the audio and TextGrid files. In the example, 
 Click "OK". This will put a text file in your folder called "OC_list1_VOT.txt". Open it up and inspect it. It should 
 
 
-4. Once you run the script, and provided your TextGrid was labeled correctly and the intervals are correct, there will be 
+4. Once you run the script, and provided your TextGrid was labeled correctly and the intervals are correct, there will be a `.txt` file in the folder where you saved the data. It will also remove the objects from the Objects window. The data will look something like this:
 
+<center>
+![](images/sample_VOT_data.png)
+</center>
+
+Notice the data has three columns, the file name (OC_list1) and the target word and finally the duration of the VOT.
+
+5. Then do the **exact** same process as in (4) but with Tier 2, the Vdur tier. The resulting file, named OC_list2_vdur.txt will look like this:
+
+<center>
+![](images/sample_vdur_data.png)
+</center>
 
 
 
