@@ -188,11 +188,13 @@ Click "OK". This will put a text file in your folder called "OC_list1_VOT.txt". 
 
 Notice the data has three columns, the file name (OC_list1) and the target word and finally the duration of the VOT.
 
-5. Then do the **exact** same process as in (4) but with Tier 2, the Vdur tier. The resulting file, named OC_list2_vdur.txt will look like this:
+5. Then do the **exact** same process as in (4) but with Tier 2, the Vdur tier. The resulting file, named OC_list1_vdur.txt will look like this:
 
 <center>
 ![](images/sample_vdur_data.png)
 </center>
 
+6. Before you actually run the script, it might be a good idea to look at your text grid and make sure it "looks right", i.e., one Tier 1 interval and one Tier 2 interval.
 
+7. Save both the data files in the folder you're working in and also send a copy to me. 
 

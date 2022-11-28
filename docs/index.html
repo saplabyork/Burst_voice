@@ -286,11 +286,11 @@ $(document).ready(function () {
 <p><a href="https://saplabyork.github.io">SAP Lab</a></p>
 <div id="background" class="section level3">
 <h3>Background</h3>
-<p>This project follows from an earlier research project examining burst
-properties of oral voiceless consonants in prevocalic position (CV) as a
-function of speaking rate. In that project, I found that as people speak
-faster and faster, the bursts of their plosives decrease in
-amplitude.</p>
+<p>The current project is an <strong>exploratory study</strong> that
+follows from an earlier research project examining burst properties of
+oral voiceless consonants in prevocalic position (CV) as a function of
+speaking rate. In that project, I found that as people speak faster and
+faster, the bursts of their plosives decrease in amplitude.</p>
 <p>The reasoning is that as you speak faster there is less and less time
 for intraoral pressure to build up behind the constriction, so when the
 stop is released, the burst is more quiet than if there were more time
@@ -305,28 +305,64 @@ picture.</p>
 <p><img src="images/VOT_vdur.png"
 style="width:50.0%;height:50.0%" /></p>
 <p>So, pre-vocalic VOT is positively correlated with the duration of the
-following vowel. The question I am asking in the current research,
-is:</p>
+following vowel. The question I am asking in the current research is
+tangentially related to the vowel duration effect on the burst and VOT.
+It is well known that vowel duration varies with the voicing of the
+post-vocalic consonant in most (if not all) languages that contrast
+voice in coda position. So in English, the “a” in “pad” is longer than
+the “a” in “pat”.</p>
+</div>
+<div id="howwhy-does-the-vowel-duration-effect-happen"
+class="section level2">
+<h2>How/why does the vowel duration effect happen?</h2>
+<p>There are a number of theories as to why this happens (see <a
+href="papers/chen1970.pdf">this</a> if you’re interested), but the most
+promising is that the “b” articulation is <em>slower</em> than the “p”
+articulation and the force of the voiceless articulation is greater than
+with the voiced (remember <span class="math inline">\(F=ma\)</span>?).
+Anyway, the slower acceleration of the articulation in voiced results in
+a longer preceding vowel.</p>
+</div>
+<div id="another-effect-of-coda-voicing" class="section level2">
+<h2>Another effect of coda voicing</h2>
+<p>Voicing is generally accompanied by larynx lowering. Recall the
+“pitch pertubation” effect, where the F0 of the vowel after a voiced
+consonant is lower than after a voiceless consonant. There is some
+research suggesting that larynx lowering occurs before voiced
+<em>coda</em> consonants as well. Please have a look at this <a
+href="papers/bauer2011.pdf">paper</a> by Bauer. He shows, using a method
+he developed with a portable ultrasound machine, that the hyoid bone
+(which is coupled with the rest of the larynx) is lower before voiced
+consonants than before voiceless consonants, and that the lowering
+occurs very early in the vowel (within the first 20% of the vowel).
+There seems to be some speaker variation here but let’s assume that
+indeed the larynx is lower before voiced stops and that this lowering
+occurs <em>before</em> the stop closure.</p>
 <ol style="list-style-type: decimal">
-<li><p>Is VOT likewise positively correlated with phonologically
-conditioned vowel duration? (Pt.1) In (most all) languages, the voicing
-of coda consonants is accompanied by longer vowel duration. So, the “a”
-in “pad” is longer than the “a” in “pat”. Does this sort of vowel
-duration variation have a comparable effect on onset VOT and if so, does
-it conform to the pattern found with speaking rate conditioned vowel
-duration effects? My prediction here is that the effect will be real,
-but the <em>size</em> of the effect will be quite small (on the order of
-tens of ms).</p></li>
-<li><p>If the question in (1) is positive, that is, speakers have longer
-VOT for “p” in “pad” than they do for the “p” in “pat”, do listeners
-know/use this knowledge to inform their perception of the coda C
-voicing? This will be a perception test where listeners hear just the
-burst and first few cycles of the vowel of a CVC and guess what the
-final C is. For example, they will hear “pa-” and have to guess whether
-they heard “pat” or “pad”.</p></li>
+<li>If the larynx is lower before voiced stops that would mean that the
+volume of the oral cavity is larger before voiced stops. I am
+hypothesizing that as a result of the larger volume of pressurized air
+behind the closure there will be concomitant effects on the aerodynamic
+characteristics of the burst, namely <em>longer</em> aspiration before
+voiced stops. I predict that if we do find such an effect there will be
+lots of between speaker variation and the <em>size</em> of the effect
+will be small (as larynx lowering) increases the the volume by 2ml (by
+some estimates, see Rothenberg, 1968).</li>
+</ol>
+<p>In this exercise we will be measuring VOT in words like “pat”, “pad”,
+“pot”, “pod”, “tat”, “tad”, etc. It is imperative that these
+measurements are made precisely as I’m expecting the effect to be small
+(if it’s there at all!).</p>
+<ol start="2" style="list-style-type: decimal">
+<li>If we do find an effect, that is, speakers have longer VOT for “p”
+in “pad” than they do for the “p” in “pat”, do listeners know/use this
+knowledge to inform their perception of the coda C voicing? This will be
+a perception test where listeners hear just the burst and first few
+cycles of the vowel of a CVC and guess what the final C is. For example,
+they will hear “pa-” and have to guess whether they heard “pat” or
+“pad”. This will be the second experiment in the project.</li>
 </ol>
 <hr />
-</div>
 <div id="gameplan" class="section level3">
 <h3>Gameplan</h3>
 <p>Part 1 of the project is acoustics. We will record 20 speakers of
@@ -355,6 +391,7 @@ values.</p>
 results of Part 1. If part 1 pans out, and speakers actually have longer
 VOTs when coda C is voiced, then we can test whether listeners
 <em>use</em> this knowledge.</p>
+</div>
 </div>
 </div>
 
