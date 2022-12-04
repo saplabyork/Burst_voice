@@ -35,7 +35,7 @@ You will be working with `.wav` files which have recordings of speakers reading 
 
 ## The data
 
-Each recording will be organized according to speaker and can be found in the SAP Lab drive `(Studies/Burst_voice/Recordings/)` and will look something like this. A single volunteer will be responsible for at least two speakers (i.e., four `.wav` files):
+Each recording will be organized according to speaker and can be found in the SAP Lab drive `(Studies/Burst_voice/Recordings/NEW/)` and will look something like this. A single volunteer will be responsible for at least two speakers (i.e., four `.wav` files):
 
 <center>
 ![](images/recordings_folders.png){width=50% height=50%} 

@@ -1,0 +1,43 @@
+---
+title: "Practice"
+output: 
+  html_document:
+    includes:
+      in_header: "favicon.html"
+    theme: paper
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+---
+
+<style type="text/css">
+  body{
+  font-size: 12pt;
+}
+</style>
+
+<style type="text/css">
+.title {
+  display: none;
+}
+
+#getting-started img {
+  margin-right: 10px;
+}
+
+</style>
+
+# Practice
+
+I want you all to practice making measurements and running the script on a sound file. Please download the practice files here:
+[prac_list1.wav](sounds/prac_list1.wav), [prac_list2.wav](sounds/prac_list2.wav)
+
+1. Download the files to your desktop and put them into a folder.
+2. Download the reading list [here](docs/Burst_voice_wordlist_new.docx) and put it into the same folder just for convenience.
+3. Download the Praat script for measuring the intervals [here](docs/Extract_dur_from_tier) and put it into the same folder for convenience.
+4. When you're done running the script twice (once for VOT and once for Vdur), you'll have two `.txt` files in the folder. Send these files to me so I can examine them.
+5. If you have questions about problematic measurements, note down the time in the file for all of them. Book a time to chat with me over Zoom and we'll look at them together. 
+
+Good luck! I hope you enjoy this stuff!

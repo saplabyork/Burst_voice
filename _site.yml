@@ -6,4 +6,6 @@ navbar:
       href: index.html
     - text: "Acoustics methods"
       href: measurements.html
+    - text: "Practice"
+      href: Practice.html
 output_dir: "docs"
