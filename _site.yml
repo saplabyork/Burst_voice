@@ -8,4 +8,8 @@ navbar:
       href: measurements.html
     - text: "Practice"
       href: Practice.html
+    - text: "Data analysis"
+      href: data_anal.html
+    - text: "Notes"
+      href: notes.html
 output_dir: "docs"

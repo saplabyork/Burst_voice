@@ -1,0 +1,58 @@
+---
+title: "Data analysis"
+output: 
+  html_document:
+    includes:
+      in_header: "favicon.html"
+    theme: paper
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+---
+
+<style type="text/css">
+  body{
+  font-size: 12pt;
+}
+</style>
+
+<style type="text/css">
+.title {
+  display: none;
+}
+
+#getting-started img {
+  margin-right: 10px;
+}
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Preliminary plotting
+
+# By Onset POA
+
+This is just a first pass at looking at the data so far.
+
+```{r}
+data <- read.csv("/Users/chandannarayan/GitHub/Burst_voice/Data/data_1-26-24.csv", header=TRUE)
+data$coda_vc <- as.character(data$coda_vc) #change class of coda_vc
+data$ons_poa <- as.character(data$ons_poa) #change class of ons_poa
+library(ggplot2)
+plot <- ggplot(data, aes(x = ons_poa,y = vot, fill = coda_vc)) + geom_boxplot() + facet_wrap(~ons_poa, scale = "free")
+plot
+```
+
+# By Onset POA and Vowel
+
+```{r}
+plot_vowel <- ggplot(data, aes(x = vowel,y = vot, fill = coda_vc)) + geom_boxplot() + facet_wrap(~ons_poa, scale = "free")
+plot_vowel
+```
+
+It looks like there is a clear effect of coda voicing on voiceless onset VOT.

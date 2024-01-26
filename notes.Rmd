@@ -1,0 +1,16 @@
+---
+title: "Untitled"
+author: "Chandan Narayan"
+date: "2024-01-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Oro-laryngeal timing of English onsets is affected by coda voicing
+
+Hawkins, S., & Nguyen, N. (2004). Influence of syllable-coda voicing on the acoustic properties of syllable-onset/l/in English. Journal of Phonetics, 32(2), 199-231.
+
+Mielke, J., & Nielsen, K. (2018). Voice Onset Time in English voiceless stops is affected by following postvocalic liquids and voiceless onsets. The Journal of the Acoustical Society of America, 144(4), 2166-2177.
