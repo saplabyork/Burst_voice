@@ -7,7 +7,8 @@ install.packages("Matrix")
 install.packages("lme4")
 options(oo)
 library(lme4)
+library(lmerTest)
 
 
 m1 <- lmer(vot ~ coda_vc + vdur + (1 | sub) + (1 | word), data = data, REML=FALSE)
-print(m1, corr = FALSE)
+summary(m1)
