@@ -18,3 +18,5 @@ Mielke, J., & Nielsen, K. (2018). Voice Onset Time in English voiceless stops is
 Arzbecker, L. J., Jacewicz, E., Goebel, R., & Fox, R. A. (2022, May). Structured covariation of acoustic cues to coda voicing throughout the syllable. In Proceedings of Meetings on Acoustics (Vol. 46, No. 1). AIP Publishing.
 
 Choi, J., Kim, S., & Cho, T. (2016). Phonetic encoding of coda voicing contrast under different focus conditions in L1 vs. L2 English. Frontiers in psychology, 7, 624.
+
+It looks like Choi et al. show a simliar effect, though their study is limited to coronal codas. They also don't discuss the possible acoustic/aerodynamic sources of this effect.
