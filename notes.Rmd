@@ -14,3 +14,5 @@ knitr::opts_chunk$set(echo = TRUE)
 Hawkins, S., & Nguyen, N. (2004). Influence of syllable-coda voicing on the acoustic properties of syllable-onset/l/in English. Journal of Phonetics, 32(2), 199-231.
 
 Mielke, J., & Nielsen, K. (2018). Voice Onset Time in English voiceless stops is affected by following postvocalic liquids and voiceless onsets. The Journal of the Acoustical Society of America, 144(4), 2166-2177.
+
+Arzbecker, L. J., Jacewicz, E., Goebel, R., & Fox, R. A. (2022, May). Structured covariation of acoustic cues to coda voicing throughout the syllable. In Proceedings of Meetings on Acoustics (Vol. 46, No. 1). AIP Publishing.
