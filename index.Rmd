@@ -51,7 +51,7 @@ Voicing is generally accompanied by larynx lowering. Recall the "pitch perturbat
 
 In this exercise we will be measuring VOT in words like "pat", "pad", "pot", "pod", "tat", "tad", etc. It is imperative that these measurements are made precisely as I'm expecting the effect to be small (if it's there at all!).
 
-UPDATE: It looks like there IS an effect, see [here](data_anal.html). Also, it looks like the effect has been found before (see Choi et al.) but they haven't given aerodynamic sources, nor did they look at multiple places of coda articulation. It's clear that we can move to part 2. once we finish the recordings and the measurements. 
+**UPDATE**: It looks like there IS an effect, see [here](data_anal.html). Also, it looks like the effect has been found before (see Choi et al.) but they haven't given aerodynamic sources, nor did they look at multiple places of coda articulation. It's clear that we can move to part 2. once we finish the recordings and the measurements. 
   
 2. If we do find an effect, that is, speakers have longer VOT for "p" in "pad" than they do for the "p" in "pat", do listeners know/use this knowledge to inform their perception of the coda C voicing? This will be a perception test where listeners hear just the burst and first few cycles of the vowel of a CVC and guess what the final C is. For example, they will hear "pa-" and have to guess whether they heard "pat" or "pad". This will be the second experiment in the project.
 
@@ -72,4 +72,4 @@ Lab volunteers should go to the Acoustics methods tab to learn how to measure VO
 
 ---
 
-Part 2 of the project is perception, and really depends on the results of Part 1. If part 1 pans out, and speakers actually have longer VOTs when coda C is voiced, then we can test whether listeners *use* this knowledge. 
+Part 2 of the project is perception, and really depends on the results of Part 1. If part 1 pans out, and speakers actually have longer VOTs when coda C is voiced, then we can test whether listeners *use* this knowledge.
