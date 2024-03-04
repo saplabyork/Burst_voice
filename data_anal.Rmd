@@ -40,18 +40,18 @@ knitr::opts_chunk$set(echo = TRUE)
 This is just a first pass at looking at the data so far.
 
 ```{r}
-data <- read.csv("/Users/chandannarayan/GitHub/Burst_voice/Data/data_1-26-24.csv", header=TRUE)
+data <- read.csv("/Users/chandannarayan/GitHub/Burst_voice/Data/data_03-02-24.csv", header=TRUE)
 data$coda_vc <- as.character(data$coda_vc) #change class of coda_vc
 data$ons_poa <- as.character(data$ons_poa) #change class of ons_poa
 library(ggplot2)
-plot <- ggplot(data, aes(x = ons_poa,y = vot, fill = coda_vc)) + geom_boxplot() + facet_wrap(~ons_poa, scale = "free")
+plot <- ggplot(data, aes(x = ons_poa,y = vot, fill = coda_vc)) + geom_boxplot(outlier.shape = NA) + ylim(0, 0.15) + facet_wrap(~ons_poa, scale = "free")
 plot
 ```
 
 # By Onset POA and Vowel
 
 ```{r}
-plot_vowel <- ggplot(data, aes(x = vowel,y = vot, fill = coda_vc)) + geom_boxplot() + facet_wrap(~ons_poa, scale = "free")
+plot_vowel <- ggplot(data, aes(x = vowel,y = vot, fill = coda_vc)) + geom_boxplot(outlier.shape = NA) + facet_wrap(~ons_poa, scale = "free")
 plot_vowel
 ```
 
@@ -60,5 +60,17 @@ It looks like there is a clear effect of coda voicing on voiceless onset VOT.
 # Basic models
 
 ```{r}
+library(lme4)
+library(tidyverse)
+data_mod <- data %>%
+  #rename POA labels from 1,2,3 to p,t,k
+  mutate(ons_poa = recode(ons_poa, "1" = "p-", "2" = "t-", "3" = "k-"))
 
+model <- lmer(vot ~ ons_poa * vdur + (1 | sub) + (1 | vowel), data = data_mod)
+summary(model)
+
+p <- ggplot(data_mod, aes(x=vdur, y=vot, color=coda_vc)) +
+  geom_point(outlier.shape = NA) +
+  geom_smooth(method=lm) + xlab("Vowel dur (ms)") + ylab("VOT (ms)")
+p + facet_wrap(~ons_poa)
 ```

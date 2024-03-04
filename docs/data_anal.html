@@ -372,26 +372,90 @@ div.tocify {
 <div id="by-onset-poa" class="section level1">
 <h1>By Onset POA</h1>
 <p>This is just a first pass at looking at the data so far.</p>
-<pre class="r"><code>data &lt;- read.csv(&quot;/Users/chandannarayan/GitHub/Burst_voice/Data/data_1-26-24.csv&quot;, header=TRUE)
+<pre class="r"><code>data &lt;- read.csv(&quot;/Users/chandannarayan/GitHub/Burst_voice/Data/data_03-02-24.csv&quot;, header=TRUE)
 data$coda_vc &lt;- as.character(data$coda_vc) #change class of coda_vc
 data$ons_poa &lt;- as.character(data$ons_poa) #change class of ons_poa
 library(ggplot2)
-plot &lt;- ggplot(data, aes(x = ons_poa,y = vot, fill = coda_vc)) + geom_boxplot() + facet_wrap(~ons_poa, scale = &quot;free&quot;)
+plot &lt;- ggplot(data, aes(x = ons_poa,y = vot, fill = coda_vc)) + geom_boxplot(outlier.shape = NA) + ylim(0, 0.15) + facet_wrap(~ons_poa, scale = &quot;free&quot;)
 plot</code></pre>
-<pre><code>## Warning: Removed 5 rows containing non-finite values (`stat_boxplot()`).</code></pre>
+<pre><code>## Warning: Removed 23 rows containing non-finite values (`stat_boxplot()`).</code></pre>
 <p><img src="data_anal_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
 <div id="by-onset-poa-and-vowel" class="section level1">
 <h1>By Onset POA and Vowel</h1>
-<pre class="r"><code>plot_vowel &lt;- ggplot(data, aes(x = vowel,y = vot, fill = coda_vc)) + geom_boxplot() + facet_wrap(~ons_poa, scale = &quot;free&quot;)
+<pre class="r"><code>plot_vowel &lt;- ggplot(data, aes(x = vowel,y = vot, fill = coda_vc)) + geom_boxplot(outlier.shape = NA) + facet_wrap(~ons_poa, scale = &quot;free&quot;)
 plot_vowel</code></pre>
-<pre><code>## Warning: Removed 5 rows containing non-finite values (`stat_boxplot()`).</code></pre>
+<pre><code>## Warning: Removed 7 rows containing non-finite values (`stat_boxplot()`).</code></pre>
 <p><img src="data_anal_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <p>It looks like there is a clear effect of coda voicing on voiceless
 onset VOT.</p>
 </div>
 <div id="basic-models" class="section level1">
 <h1>Basic models</h1>
+<pre class="r"><code>library(lme4)</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ lubridate 1.9.3     ✔ tibble    3.2.1
+## ✔ purrr     1.0.2     ✔ tidyr     1.3.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ tidyr::expand() masks Matrix::expand()
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ✖ tidyr::pack()   masks Matrix::pack()
+## ✖ tidyr::unpack() masks Matrix::unpack()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>data_mod &lt;- data %&gt;%
+  #rename POA labels from 1,2,3 to p,t,k
+  mutate(ons_poa = recode(ons_poa, &quot;1&quot; = &quot;p-&quot;, &quot;2&quot; = &quot;t-&quot;, &quot;3&quot; = &quot;k-&quot;))
+
+model &lt;- lmer(vot ~ ons_poa * vdur + (1 | sub) + (1 | vowel), data = data_mod)
+summary(model)</code></pre>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: vot ~ ons_poa * vdur + (1 | sub) + (1 | vowel)
+##    Data: data_mod
+## 
+## REML criterion at convergence: -8164.3
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.6212 -0.6212 -0.0399  0.5290  5.3772 
+## 
+## Random effects:
+##  Groups   Name        Variance  Std.Dev.
+##  sub      (Intercept) 1.607e-04 0.012679
+##  vowel    (Intercept) 1.012e-05 0.003182
+##  Residual             3.083e-04 0.017560
+## Number of obs: 1577, groups:  sub, 13; vowel, 5
+## 
+## Fixed effects:
+##                 Estimate Std. Error t value
+## (Intercept)     0.079659   0.004629  17.210
+## ons_poap-      -0.024090   0.003335  -7.222
+## ons_poat-      -0.008183   0.003439  -2.379
+## vdur            0.065187   0.019204   3.394
+## ons_poap-:vdur  0.093164   0.024437   3.812
+## ons_poat-:vdur  0.038397   0.024101   1.593
+## 
+## Correlation of Fixed Effects:
+##             (Intr) ons_pp- ons_pt- vdur   ons_pp-:
+## ons_poap-   -0.391                                
+## ons_poat-   -0.377  0.521                         
+## vdur        -0.545  0.623   0.608                 
+## ons_pp-:vdr  0.352 -0.942  -0.470  -0.630         
+## ons_pt-:vdr  0.357 -0.493  -0.946  -0.644  0.499</code></pre>
+<pre class="r"><code>p &lt;- ggplot(data_mod, aes(x=vdur, y=vot, color=coda_vc)) +
+  geom_point(outlier.shape = NA) +
+  geom_smooth(method=lm) + xlab(&quot;Vowel dur (ms)&quot;) + ylab(&quot;VOT (ms)&quot;)</code></pre>
+<pre><code>## Warning in geom_point(outlier.shape = NA): Ignoring unknown parameters:
+## `outlier.shape`</code></pre>
+<pre class="r"><code>p + facet_wrap(~ons_poa)</code></pre>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<pre><code>## Warning: Removed 9 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<pre><code>## Warning: Removed 9 rows containing missing values (`geom_point()`).</code></pre>
+<p><img src="data_anal_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 
 
