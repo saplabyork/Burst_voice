@@ -59,7 +59,7 @@ In this exercise we will be measuring VOT in words like "pat", "pad", "pot", "po
 
 ### Gameplan
 
-Part 1 of the project is acoustics. We will record 20 speakers of Canadian English (10 female, 10 male) in the Phonetics Studio (Ross S114). They will read this [word ldocs/Burst_voice_wordlist_new.docx) twice. The list represent real word pairs like "pat"/"pad" for three voiceless onset places of articulation (p,t,k) and five lax vowels (I, E, uh, c, ae), and three voiced/voiceless places of articulation in coda position (p,t,k). Not all combinations are represented, only real words.
+Part 1 of the project is acoustics. We will record 20 speakers of Canadian English (10 female, 10 male) in the Phonetics Studio (Ross S114). They will read this [word list](docs/Burst_voice_wordlist_new.docx) twice. The list represent real word pairs like "pat"/"pad" for three voiceless onset places of articulation (p,t,k) and five lax vowels (I, E, uh, c, ae), and three voiced/voiceless places of articulation in coda position (p,t,k). Not all combinations are represented, only real words.
 
 Student members of the SAP Lab will assist in measuring:
 
