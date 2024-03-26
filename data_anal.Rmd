@@ -44,7 +44,14 @@ data <- read.csv("/Users/chandannarayan/GitHub/Burst_voice/Data/data_03-02-24.cs
 data$coda_vc <- as.character(data$coda_vc) #change class of coda_vc
 data$ons_poa <- as.character(data$ons_poa) #change class of ons_poa
 library(ggplot2)
-plot <- ggplot(data, aes(x = ons_poa,y = vot, fill = coda_vc)) + geom_boxplot(outlier.shape = NA) + ylim(0, 0.15) + facet_wrap(~ons_poa, scale = "free")
+
+plot <- ggplot(data, aes(x = ons_poa,y = vot, fill = coda_vc)) + geom_boxplot(outlier.shape = NA) + ylim(0, 0.15) + facet_wrap(~ons_poa, scale = "free") + 
+  stat_summary(fun = median,geom = "text",aes(label = paste("Median:", round(..y.., 3))),  # Label with median values
+    vjust = -0.5,  # Vertical position of the text (adjust as needed)
+    position = position_dodge(width = 0.75),  # Dodge the text for better visibility
+    show.legend = FALSE  # Do not show in legend
+  )
+
 plot
 ```
 

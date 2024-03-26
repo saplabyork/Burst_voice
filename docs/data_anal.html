@@ -376,9 +376,22 @@ div.tocify {
 data$coda_vc &lt;- as.character(data$coda_vc) #change class of coda_vc
 data$ons_poa &lt;- as.character(data$ons_poa) #change class of ons_poa
 library(ggplot2)
-plot &lt;- ggplot(data, aes(x = ons_poa,y = vot, fill = coda_vc)) + geom_boxplot(outlier.shape = NA) + ylim(0, 0.15) + facet_wrap(~ons_poa, scale = &quot;free&quot;)
+
+plot &lt;- ggplot(data, aes(x = ons_poa,y = vot, fill = coda_vc)) + geom_boxplot(outlier.shape = NA) + ylim(0, 0.15) + facet_wrap(~ons_poa, scale = &quot;free&quot;) + 
+  stat_summary(fun = median,geom = &quot;text&quot;,aes(label = paste(&quot;Median:&quot;, round(..y.., 3))),  # Label with median values
+    vjust = -0.5,  # Vertical position of the text (adjust as needed)
+    position = position_dodge(width = 0.75),  # Dodge the text for better visibility
+    show.legend = FALSE  # Do not show in legend
+  )
+
 plot</code></pre>
+<pre><code>## Warning: The dot-dot notation (`..y..`) was deprecated in ggplot2 3.4.0.
+## ℹ Please use `after_stat(y)` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
 <pre><code>## Warning: Removed 23 rows containing non-finite values (`stat_boxplot()`).</code></pre>
+<pre><code>## Warning: Removed 23 rows containing non-finite values (`stat_summary()`).</code></pre>
 <p><img src="data_anal_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
 <div id="by-onset-poa-and-vowel" class="section level1">
