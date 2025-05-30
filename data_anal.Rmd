@@ -40,26 +40,138 @@ knitr::opts_chunk$set(echo = TRUE)
 This is just a first pass at looking at the data so far.
 
 ```{r}
-data <- read.csv("/Users/chandannarayan/GitHub/Burst_voice/Data/data_03-02-24.csv", header=TRUE)
+data <- read.csv("/Users/chandannarayan/GitHub/Burst_voice/Data/data_12-11-24.csv", header=TRUE)
 data$coda_vc <- as.character(data$coda_vc) #change class of coda_vc
 data$ons_poa <- as.character(data$ons_poa) #change class of ons_poa
-library(ggplot2)
+data$vot_ratio <- (data$vot)/(data$vdur)
 
-plot <- ggplot(data, aes(x = ons_poa,y = vot, fill = coda_vc)) + geom_boxplot(outlier.shape = NA) + ylim(0, 0.15) + facet_wrap(~ons_poa, scale = "free") + 
-  stat_summary(fun = median,geom = "text",aes(label = paste("Median:", round(..y.., 3))),  # Label with median values
-    vjust = -0.5,  # Vertical position of the text (adjust as needed)
-    position = position_dodge(width = 0.75),  # Dodge the text for better visibility
-    show.legend = FALSE  # Do not show in legend
+number_of_subs <- length(unique(data$sub))
+number_of_subs
+
+library(ggplot2)
+library(tidyverse)
+
+# Create a summary table with the mean and range of 'vot' for each 'ons_poa'
+summary_table <- data %>%
+  group_by(ons_poa, coda_vc) %>%
+  summarize(
+    mean_vot = mean(vot, na.rm = TRUE),
+    vot_range = paste0(min(vot, na.rm = TRUE), " to ", max(vot, na.rm = TRUE))
+  ) %>%
+  ungroup()  # Ungroup after summarizing
+
+# Print the summary table
+print(summary_table)
+
+plot_overall <- ggplot(data, aes(x = ons_poa, y = vot, fill = coda_vc)) +
+  geom_boxplot(notch = TRUE, outlier.shape = NA) +
+  # Remove x-axis tick labels
+  theme(axis.text.x = element_blank()) +
+  # Remove x-axis label and update y-axis label
+  labs(x = NULL, y = "VOT(s)") +
+  # Change facet labels
+  facet_wrap(~ons_poa, scales = "free", labeller = labeller(ons_poa = c("1" = "p", "2" = "t", "3" = "k"))) +
+  # Set consistent y-axis range
+  scale_y_continuous(limits = c(0.015, 0.18)) +
+  # Update the legend
+  scale_fill_discrete(
+    name = "Coda voice",
+    labels = c("-vc", "+vc")
+  ) 
+# + stat_summary(fun = median,geom = "text",aes(label = paste("Median:", round(..y.., 3))),  # Label with median values
+#    vjust = -0.5,  # Vertical position of the text (adjust as needed)
+#    position = position_dodge(width = 0.75),  # Dodge the text for better visibility
+#    show.legend = FALSE ) # Do not show in legend
+  
+plot_overall
+
+# Plot by sub
+plot_vot_poa <- ggplot(data, aes(x = vot, y = as.factor(ons_poa), fill = as.factor(coda_vc))) +
+  geom_boxplot(notch = TRUE, outlier.shape = NA, width = 0.5) +  # Notched boxplots
+  theme_minimal() +  # Clean aesthetic
+  labs(x = "VOT(s)", y = "Onset POA", fill = "Coda voice") +
+  scale_y_discrete(labels = c("1" = "p", "2" = "t", "3" = "k")) +  # Custom y-axis labels
+  #scale_x_continuous(limits = c(0, 2), expand = c(0, 0)) +  # Adjust x-axis range
+  scale_fill_discrete(
+    labels = c("0" = "[-vc]", "1" = "[+vc]")  # Custom legend labels
   )
 
-plot
+print(plot_vot_poa + facet_wrap(~sub))
+
+plot_vdur_poa <- ggplot(data, aes(x = vdur, y = as.factor(ons_poa), fill = as.factor(coda_vc))) +
+  geom_boxplot(notch = TRUE, outlier.shape = NA, width = 0.5) +  # Notched boxplots
+  theme_minimal() +  # Clean aesthetic
+  labs(x = "Vdur(s)", y = "Onset POA", fill = "Coda voice") +
+  scale_y_discrete(labels = c("1" = "p", "2" = "t", "3" = "k")) +  # Custom y-axis labels
+  scale_x_continuous(limits = c(0, 0.3), expand = c(0, 0)) +  # Adjust x-axis range
+  scale_fill_discrete(
+    labels = c("0" = "[-vc]", "1" = "[+vc]")  # Custom legend labels
+  )
+plot_vdur_poa
+plot_vdur_poa + facet_wrap(~sub)
+
+plot_overall + facet_wrap(~sub)
+
+
 ```
 
 # By Onset POA and Vowel
 
 ```{r}
-plot_vowel <- ggplot(data, aes(x = vowel,y = vot, fill = coda_vc)) + geom_boxplot(outlier.shape = NA) + facet_wrap(~ons_poa, scale = "free")
+plot_vowel <- ggplot(data, aes(x = vowel,y = vot, fill = coda_vc)) + geom_boxplot(notch=TRUE) + 
+  labs(y="VOT(s)", x="Vowel", fill="Coda voicing")+
+  facet_wrap(~ons_poa, scale = "free")
 plot_vowel
+
+## Ridge plot with medians
+library(dplyr)
+library(ggridges)
+
+# New facet label names for POA variable
+poa.labs <- c("p", "t", "k")
+names(poa.labs) <- c("1", "2", "3")
+
+# Create custom labels
+poa_labels <- c("1" = "[pʰ]",
+                "2" = "[tʰ]",
+                "3" = "[kʰ]")
+
+vowel_labels <- c("ae" = "æ",
+                  "aw" = "ɑ",
+                  "eh" = "ɛ",
+                  "ih" = "ɪ",
+                  "uh" = "ʌ")
+
+plot_vowel_ridges <- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) + 
+  geom_density_ridges(alpha = 0.7) + 
+  geom_vline(data = medians_data, aes(xintercept = median_vot), 
+             linetype = "dotted", color = "black", linewidth = 0.5) +
+  scale_x_continuous(breaks = c(0, 0.1, 0.2), limits = c(0, NA)) +
+  scale_y_discrete(labels = c("0" = "Voiceless", "1" = "Voiced")) +
+  scale_fill_manual(
+    name = "Coda", 
+    values = c("0" = "#F8766D", "1" = "#00BFC4"),
+    labels = c("0" = "Voiceless", "1" = "Voiced")
+  ) +
+  labs(x = "VOT(s)", y = "") +
+  facet_grid(vowel ~ ons_poa, scales = "free_x",
+             labeller = labeller(ons_poa = poa_labels, vowel = vowel_labels)) +
+  theme_ridges() + 
+  theme(axis.text.y = element_blank(),
+        axis.title.x = element_text(hjust = 0.5),
+        strip.text = element_text(margin = margin(t = 4, b = 4)),
+        strip.text.x = element_text(margin = margin(t = 3, b = 4)),  
+        strip.text.y = element_text(margin = margin(l = 3, r = 3)),
+        panel.spacing = unit(0.3, "cm"))
+print(plot_vowel_ridges)
+
+## overlapping density plots
+
+plot_vowel_density <- ggplot(data, aes(x = vot, fill = coda_vc)) + 
+  geom_density(alpha = 0.6) + 
+  labs(x = "VOT(s)", y = "Density", fill = "Coda voicing") +
+  facet_wrap(~ons_poa + vowel, scales = "free")
+plot_vowel_density
 ```
 
 It looks like there is a clear effect of coda voicing on voiceless onset VOT.
@@ -73,11 +185,80 @@ data_mod <- data %>%
   #rename POA labels from 1,2,3 to p,t,k
   mutate(ons_poa = recode(ons_poa, "1" = "p-", "2" = "t-", "3" = "k-"))
 
-model <- lmer(vot ~ ons_poa * vdur + (1 | sub) + (1 | vowel), data = data_mod)
+model <- lmer(vot ~ ons_poa * coda_vc + (1 | sub) + (1 | vowel), data = data_mod)
 summary(model)
 
 p <- ggplot(data_mod, aes(x=vdur, y=vot, color=coda_vc)) +
   geom_point(outlier.shape = NA) +
   geom_smooth(method=lm) + xlab("Vowel dur (ms)") + ylab("VOT (ms)")
 p + facet_wrap(~ons_poa)
+```
+
+```{r}
+# Load required package
+library(lme4)
+
+# Convert coda_vc to a factor if it's not already
+data$coda_vc <- factor(data$coda_vc, levels = c(0,1))
+
+# Fit the GLMM
+model_coda <- glmer(
+  coda_vc ~ vot * ons_poa + (1 | sub), 
+  data = data, 
+  family = binomial(link = "logit")
+)
+
+# Summary of the model
+summary(model_coda)
+
+# Generate new data for predictions
+vot_range <- seq(from = 0, to = 0.25, by = 0.005)
+ons_poa_levels <- c("1", "2", "3")
+#vowel_levels <- c("ae","uh","aw","eh","ih")
+#sub_levels <- c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19)
+sub = unique(data$sub)[1]
+
+# Create a data frame for plotting
+plot_data <- expand.grid(
+  vot = vot_range,
+  ons_poa = ons_poa_levels,
+  #vowel = vowel_levels,
+  sub = sub
+)
+
+# Add a dummy coda_vc variable (not used in prediction but avoids the error)
+plot_data$coda_vc <- NA
+
+# Add predictions from the model
+plot_data$predicted_prob <- predict(model_coda, newdata = plot_data, type = "response", re.form = ~(1 | sub))
+
+
+
+vc_pred <- ggplot(plot_data, aes(x = vot, y = predicted_prob, color = ons_poa )) +
+  geom_line(size = 2) +
+  #geom_jitter(data = data, aes(x = vot, y = as.numeric(coda_vc), color = ons_poa), 
+   #           width = 0, height = 0.05, alpha = 0.5, shape = 16) +  # Jitter actual points
+scale_color_discrete(
+    labels = c("1" = "p", "2" = "t", "3" = "k")  # Custom legend labels
+  ) +
+  scale_fill_discrete(
+    labels = c("1" = "p", "2" = "t", "3" = "k")  # Custom legend labels for fill
+  ) +
+  labs(
+    title = "",
+    x = "VOT (s)",
+    y = "Predicted Probability of Voiced Coda",
+    color = "Onset POA"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16),
+    axis.title = element_text(size = 14),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  )
+
+vc_pred
+ggsave("vc_pred.png", plot = vc_pred, bg = 'white', width = 7, height =4, dpi=300)
+
 ```

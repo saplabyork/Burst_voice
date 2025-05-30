@@ -1,0 +1,481 @@
+sub,Response,response_vc,Correct,Spreadsheet: display,Spreadsheet: sent,Spreadsheet: sent_1,Spreadsheet: word_1,stim_length,Spreadsheet: card_1,Spreadsheet: card_2,Spreadsheet: corr_1,ons_con,vowel
+12033030,kag,1,0,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12033030,pab,1,0,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12033030,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12033030,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12033030,keb,1,1,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12033030,peb,1,0,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12033030,pep,0,0,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12033030,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12033030,kack,0,0,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12033030,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12033030,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12033030,pab,1,1,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12033030,kack,0,0,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12033030,keb,1,0,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12033030,pib,1,1,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12033030,pep,0,0,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12033030,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12033030,pep,0,1,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12033030,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12033030,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12033030,kib,1,1,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12033030,pap,0,0,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12033030,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12033030,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12033587,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12033587,pab,1,0,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12033587,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12033587,pib,1,0,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12033587,keb,1,1,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12033587,pep,0,1,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12033587,peb,1,1,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12033587,keb,1,0,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12033587,kag,1,1,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12033587,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12033587,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12033587,pab,1,1,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12033587,kack,0,0,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12033587,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12033587,pib,1,1,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12033587,pep,0,0,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12033587,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12033587,pep,0,1,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12033587,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12033587,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12033587,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12033587,pap,0,0,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12033587,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12033587,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12036008,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12036008,pab,1,0,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12036008,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12036008,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12036008,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12036008,pep,0,1,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12036008,peb,1,1,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12036008,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12036008,kag,1,1,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12036008,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12036008,kib,1,1,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12036008,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12036008,kag,1,1,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12036008,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12036008,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12036008,peb,1,1,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12036008,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12036008,peb,1,0,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12036008,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12036008,kep,0,0,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12036008,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12036008,pab,1,1,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12036008,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12036008,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12039884,kag,1,0,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12039884,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12039884,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12039884,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12039884,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12039884,peb,1,0,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12039884,pep,0,0,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12039884,keb,1,0,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12039884,kag,1,1,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12039884,pib,1,1,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12039884,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12039884,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12039884,kack,0,0,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12039884,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12039884,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12039884,peb,1,1,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12039884,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12039884,peb,1,0,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12039884,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12039884,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12039884,kib,1,1,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12039884,pab,1,1,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12039884,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12039884,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12048498,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12048498,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12048498,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12048498,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12048498,keb,1,1,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12048498,pep,0,1,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12048498,peb,1,1,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12048498,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12048498,kag,1,1,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12048498,pib,1,1,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12048498,kib,1,1,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12048498,pab,1,1,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12048498,kag,1,1,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12048498,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12048498,pib,1,1,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12048498,peb,1,1,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12048498,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12048498,pep,0,1,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12048498,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12048498,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12048498,kib,1,1,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12048498,pab,1,1,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12048498,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12048498,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12062095,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12062095,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12062095,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12062095,pib,1,0,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12062095,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12062095,peb,1,0,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12062095,peb,1,1,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12062095,keb,1,0,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12062095,kack,0,0,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12062095,pib,1,1,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12062095,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12062095,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12062095,kack,0,0,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12062095,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12062095,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12062095,pep,0,0,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12062095,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12062095,peb,1,0,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12062095,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12062095,kep,0,0,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12062095,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12062095,pab,1,1,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12062095,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12062095,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12048612,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12048612,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12048612,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12048612,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12048612,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12048612,pep,0,1,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12048612,peb,1,1,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12048612,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12048612,kag,1,1,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12048612,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12048612,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12048612,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12048612,kack,0,0,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12048612,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12048612,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12048612,peb,1,1,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12048612,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12048612,peb,1,0,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12048612,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12048612,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12048612,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12048612,pap,0,0,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12048612,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12048612,kag,1,0,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12036787,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12036787,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12036787,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12036787,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12036787,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12036787,pep,0,1,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12036787,peb,1,1,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12036787,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12036787,kag,1,1,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12036787,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12036787,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12036787,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12036787,kag,1,1,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12036787,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12036787,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12036787,pep,0,0,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12036787,pib,1,0,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12036787,peb,1,0,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12036787,kib,1,0,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12036787,kep,0,0,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12036787,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12036787,pab,1,1,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12036787,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12036787,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12036069,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12036069,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12036069,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12036069,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12036069,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12036069,peb,1,0,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12036069,pep,0,0,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12036069,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12036069,kag,1,1,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12036069,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12036069,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12036069,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12036069,kack,0,0,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12036069,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12036069,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12036069,pep,0,0,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12036069,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12036069,pep,0,1,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12036069,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12036069,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12036069,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12036069,pap,0,0,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12036069,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12036069,kag,1,0,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12033181,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12033181,pab,1,0,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12033181,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12033181,pib,1,0,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12033181,keb,1,1,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12033181,peb,1,0,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12033181,peb,1,1,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12033181,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12033181,kag,1,1,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12033181,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12033181,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12033181,pab,1,1,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12033181,kag,1,1,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12033181,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12033181,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12033181,peb,1,1,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12033181,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12033181,peb,1,0,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12033181,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12033181,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12033181,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12033181,pab,1,1,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12033181,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12033181,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12254388,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12254388,pab,1,0,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12254388,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,p,i
+12254388,pib,1,0,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12254388,keb,1,1,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12254388,peb,1,0,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12254388,peb,1,1,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12254388,keb,1,0,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,p,e
+12254388,kack,0,0,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12254388,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12254388,kib,1,1,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12254388,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12254388,kack,0,0,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12254388,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12254388,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12254388,peb,1,1,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12254388,pib,1,0,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12254388,peb,1,0,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12254388,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12254388,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12254388,kib,1,1,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12254388,pab,1,1,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12254388,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12254388,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12254681,kag,1,0,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12254681,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12254681,kib,1,0,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,p,i
+12254681,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12254681,keb,1,1,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12254681,peb,1,0,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12254681,pep,0,0,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12254681,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,p,e
+12254681,kag,1,1,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12254681,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12254681,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12254681,pab,1,1,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12254681,kag,1,1,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12254681,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12254681,pib,1,1,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12254681,peb,1,1,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12254681,pib,1,0,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12254681,peb,1,0,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12254681,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12254681,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12254681,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12254681,pap,0,0,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12254681,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12254681,kag,1,0,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12257318,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12257318,pab,1,0,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12257318,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,p,i
+12257318,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12257318,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12257318,peb,1,0,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12257318,pep,0,0,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12257318,keb,1,0,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,p,e
+12257318,kack,0,0,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12257318,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12257318,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12257318,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12257318,kag,1,1,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12257318,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12257318,pib,1,1,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12257318,pep,0,0,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12257318,pib,1,0,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12257318,pep,0,1,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12257318,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12257318,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12257318,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12257318,pap,0,0,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12257318,pab,1,0,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12257318,kag,1,0,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12268983,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12268983,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12268983,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,p,i
+12268983,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12268983,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12268983,pep,0,1,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12268983,pep,0,0,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12268983,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,p,e
+12268983,kack,0,0,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12268983,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12268983,kib,1,1,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12268983,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12268983,kack,0,0,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12268983,keb,1,0,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12268983,pib,1,1,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12268983,pep,0,0,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12268983,pib,1,0,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12268983,pep,0,1,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12268983,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12268983,kep,0,0,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12268983,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12268983,pab,1,1,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12268983,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12268983,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12271250,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12271250,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12271250,kib,1,0,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,p,i
+12271250,pib,1,0,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12271250,keb,1,1,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12271250,pep,0,1,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12271250,pep,0,0,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12271250,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,p,e
+12271250,kack,0,0,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12271250,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12271250,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12271250,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12271250,kack,0,0,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12271250,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12271250,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12271250,pep,0,0,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12271250,pib,1,0,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12271250,pep,0,1,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12271250,kib,1,0,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12271250,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12271250,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12271250,pap,0,0,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12271250,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12271250,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12271545,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12271545,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12271545,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,p,i
+12271545,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12271545,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12271545,peb,1,0,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12271545,pep,0,0,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12271545,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,p,e
+12271545,kag,1,1,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12271545,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12271545,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12271545,pab,1,1,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12271545,kack,0,0,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12271545,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12271545,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12271545,pep,0,0,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12271545,pib,1,0,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12271545,pep,0,1,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12271545,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12271545,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12271545,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12271545,pab,1,1,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12271545,pab,1,0,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12271545,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12275516,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12275516,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12275516,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,p,i
+12275516,pib,1,0,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12275516,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12275516,pep,0,1,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12275516,pep,0,0,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12275516,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,p,e
+12275516,kack,0,0,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12275516,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12275516,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12275516,pab,1,1,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12275516,kag,1,1,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12275516,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12275516,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12275516,peb,1,1,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12275516,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12275516,pep,0,1,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12275516,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12275516,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12275516,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12275516,pap,0,0,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12275516,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12275516,kag,1,0,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12278944,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12278944,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12278944,kib,1,0,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,p,i
+12278944,pib,1,0,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12278944,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12278944,pep,0,1,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12278944,peb,1,1,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12278944,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,p,e
+12278944,kack,0,0,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12278944,pip,0,0,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12278944,kib,1,1,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12278944,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12278944,kack,0,0,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12278944,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12278944,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12278944,peb,1,1,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12278944,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12278944,peb,1,0,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12278944,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12278944,kep,0,0,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12278944,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12278944,pap,0,0,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12278944,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12278944,kag,1,0,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12288528,kag,1,0,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12288528,pab,1,0,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12288528,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,p,i
+12288528,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12288528,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12288528,peb,1,0,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12288528,pep,0,0,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12288528,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,p,e
+12288528,kack,0,0,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12288528,pib,1,1,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12288528,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12288528,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12288528,kag,1,1,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12288528,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12288528,pib,1,1,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12288528,pep,0,0,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12288528,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12288528,peb,1,0,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12288528,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12288528,kep,0,0,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12288528,kib,1,1,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12288528,pap,0,0,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12288528,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12288528,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12291266,kack,0,1,Trials_blk1,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a
+12291266,pap,0,1,Trials_blk1,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12291266,kip,0,1,Trials_blk1,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,p,i
+12291266,pip,0,1,Trials_blk1,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12291266,kep,0,0,Trials_blk1,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12291266,pep,0,1,Trials_blk1,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12291266,peb,1,1,Trials_blk1,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12291266,kep,0,1,Trials_blk1,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,p,e
+12291266,kag,1,1,Trials_blk1,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12291266,pib,1,1,Trials_blk1,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12291266,kip,0,0,Trials_blk1,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12291266,pap,0,0,Trials_blk1,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12291266,kack,0,0,Trials_blk2,Ted has a pup named ___,ka_150_sent.mp3,ka_150_word.mp3,long,kag,kack,kag,k,a
+12291266,kep,0,1,Trials_blk2,Pat had a toad that said ___,ke_50_sent.mp3,ke_50_word.mp3,short,kep,keb,kep,k,e
+12291266,pip,0,0,Trials_blk2,Kat has a tag that read ___,pi_125_sent.mp3,pi_125_word.mp3,long,pip,pib,pib,p,i
+12291266,peb,1,1,Trials_blk2,Todd has a cat named ___,pe_125_sent.mp3,pe_125_word.mp3,long,pep,peb,peb,p,e
+12291266,pip,0,1,Trials_blk2,Kat has a tag that read ___,pi_25_sent.mp3,pi_25_word.mp3,short,pib,pip,pip,p,i
+12291266,pep,0,1,Trials_blk2,Todd has a cat named ___,pe_25_sent.mp3,pe_25_word.mp3,short,peb,pep,pep,p,e
+12291266,kip,0,1,Trials_blk2,Peg has a tot that said ___,ki_50_sent.mp3,ki_50_word.mp3,short,kip,kib,kip,k,i
+12291266,keb,1,1,Trials_blk2,Pat had a toad that said ___,ke_150_sent.mp3,ke_150_word.mp3,long,keb,kep,keb,k,e
+12291266,kip,0,0,Trials_blk2,Peg has a tot that said ___,ki_150_sent.mp3,ki_150_word.mp3,long,kib,kip,kib,k,i
+12291266,pap,0,0,Trials_blk2,Kip has a toad named ___,pa_125_sent.mp3,pa_125_word.mp3,long,pab,pap,pab,p,a
+12291266,pap,0,1,Trials_blk2,Kip has a toad named ___,pa_25_sent.mp3,pa_25_word.mp3,short,pap,pab,pap,p,a
+12291266,kack,0,1,Trials_blk2,Ted has a pup named ___,ka_50_sent.mp3,ka_50_word.mp3,short,kack,kag,kack,k,a

@@ -1,0 +1,175 @@
+---
+title: "Single stim perception analysis"
+output: 
+  html_document:
+    includes:
+      in_header: "favicon.html"
+    theme: paper
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+---
+
+<style type="text/css">
+  body{
+  font-size: 12pt;
+}
+</style>
+
+<style type="text/css">
+.title {
+  display: none;
+}
+
+#getting-started img {
+  margin-right: 10px;
+}
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+per_data <- read.csv("/Users/chandannarayan/GitHub/Burst_voice/Data/Master_Single_stim_long.csv", header=TRUE)
+
+number_of_subs <- length(unique(per_data$sub))
+number_of_subs
+
+library(lme4)
+library(ggplot2)
+
+per_data$ons_con <- as.factor(per_data$ons_con)
+
+#per_data_cor <- subset(per_data, Correct=="1")
+
+
+# Fit the mixed-effects logistic regression model with interaction term
+per_model <- glmer(response_vc ~ stim_length * ons_con + (1 | vowel) + (1 | sub), 
+                   data = per_data, 
+                   family = binomial)
+
+summary(per_model)
+
+# Fully crossed model with random slopes/intercepts
+per_model_full <- glmer(response_vc ~ stim_length * ons_con + (1 + stim_length + ons_con | sub), 
+                   data = per_data, 
+                   family = binomial, control=glmerControl(optimizer="bobyqa",
+                            optCtrl=list(maxfun=2e5)))
+
+summary(per_model_full)
+
+# Singularity problem with random effects structure, so random slopes/intercepts for just one variable
+
+per_model_full <- glmer(response_vc ~ stim_length * ons_con + (1 + stim_length | sub), 
+                   data = per_data, 
+                   family = binomial, control=glmerControl(optimizer="bobyqa",
+                            optCtrl=list(maxfun=2e5)))
+
+summary(per_model_full)
+
+
+# Generate predicted probabilities
+per_data$predicted <- predict(per_model_full, type = "response")  # Predicted probabilities
+
+# Summarize predicted probabilities by `stim_length` and `ons_con`
+summary_df <- aggregate(predicted ~ stim_length + ons_con, data = per_data, 
+                        FUN = function(x) c(mean = mean(x), se = sd(x)/sqrt(length(x))))
+
+# Unpack the summary into a new data frame
+summary_df <- do.call(data.frame, summary_df)
+colnames(summary_df) <- c("stim_length", "ons_con", "mean_prob", "se_prob")
+
+# Compute confidence intervals
+summary_df$lower_ci <- summary_df$mean_prob - 1.96 * summary_df$se_prob
+summary_df$upper_ci <- summary_df$mean_prob + 1.96 * summary_df$se_prob
+
+# Plot the results with facets for ons_con
+ggplot(summary_df, aes(x = stim_length, y = mean_prob)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), width = 0.2) +
+  facet_wrap(~ons_con) +  # Create separate facets for each level of ons_con
+  scale_y_continuous(limits = c(0.1, 0.5)) +  # Set y-axis limits from 0.1 to 0.5
+  labs(#title = "Predicted Probabilities by Stimulus Length and Onset Consonant",
+       x = "Onset VOT Length",
+       y = "Predicted Probability of Voiced Coda") +
+  theme_bw(base_size = 12)
+
+# Plot the results with color-coded ons_con
+ggplot(summary_df, aes(x = stim_length, y = mean_prob, color = ons_con)) +
+  geom_point(size = 4) +
+  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), width = 0.2) +
+  scale_y_continuous(limits = c(0.1, 0.6)) +  # Set y-axis limits from 0 to 1
+  labs(title = "Predicted Probabilities by Stimulus Length and Onset Consonant",
+       x = "VOT Length",
+       y = "Predicted Probability of Voiced Coda",
+       color = "Onset Consonant") +
+  theme_minimal()
+
+
+###
+
+# Install ggeffects if not already installed
+install.packages("ggeffects")
+
+# Load the package
+library(ggeffects)
+
+# Generate predicted probabilities for `stim_length`
+probabilities <- ggpredict(per_model, terms = "stim_length")
+
+# Print the probabilities
+print(probabilities)
+
+# Plot the probabilities
+plot(probabilities)
+
+
+```
+
+```{r}
+# Install if needed
+# install.packages("brms")
+
+# Trying out Bayes
+
+library(brms)
+
+per_model_bayes <- brm(response_vc ~ stim_length * ons_con + (1 + stim_length | sub), 
+                       data = per_data, 
+                       family = bernoulli(),
+                       chains = 4,
+                       iter = 2000,
+                       cores = 4)
+
+# Check the model
+summary(per_model_bayes)
+plot(per_model_bayes)
+
+
+## Get the actual probabilities from the model
+
+# Extract coefficients
+fixef(per_model_bayes)
+
+# For long stimuli, ons_con at reference level:
+intercept <- -0.34
+prob_long_ref <- plogis(intercept)  # plogis converts log-odds to probability
+prob_long_ref  # Should be around 0.42
+
+# For short stimuli, ons_con at reference level:
+prob_short_ref <- plogis(intercept + (-1.34))
+prob_short_ref  # Should be around 0.17
+
+# For long stimuli, ons_con = "p":
+prob_long_p <- plogis(intercept + (-0.08))
+prob_long_p
+
+# For short stimuli, ons_con = "p":
+prob_short_p <- plogis(intercept + (-1.34) + (-0.08) + 1.07)
+prob_short_p
+```
