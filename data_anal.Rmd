@@ -30,7 +30,7 @@ output:
 </style>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
 ## Preliminary plotting
@@ -39,7 +39,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This is just a first pass at looking at the data so far.
 
-```{r}
+```{r, warning=FALSE}
 data <- read.csv("/Users/chandannarayan/GitHub/Burst_voice/Data/data_12-11-24.csv", header=TRUE)
 data$coda_vc <- as.character(data$coda_vc) #change class of coda_vc
 data$ons_poa <- as.character(data$ons_poa) #change class of ons_poa
@@ -117,7 +117,9 @@ plot_overall + facet_wrap(~sub)
 
 # By Onset POA and Vowel
 
-```{r}
+I'm using a "ridge plot" here which is a stacked density plot for voiceless and voiced coda tokens by POA and vowel. 
+
+```{r, warning=FALSE}
 plot_vowel <- ggplot(data, aes(x = vowel,y = vot, fill = coda_vc)) + geom_boxplot(notch=TRUE) + 
   labs(y="VOT(s)", x="Vowel", fill="Coda voicing")+
   facet_wrap(~ons_poa, scale = "free")
@@ -144,8 +146,8 @@ vowel_labels <- c("ae" = "æ",
 
 plot_vowel_ridges <- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) + 
   geom_density_ridges(alpha = 0.7) + 
-  geom_vline(data = medians_data, aes(xintercept = median_vot), 
-             linetype = "dotted", color = "black", linewidth = 0.5) +
+  #geom_vline(data = medians_data, aes(xintercept = median_vot), 
+             #linetype = "dotted", color = "black", linewidth = 0.5) +
   scale_x_continuous(breaks = c(0, 0.1, 0.2), limits = c(0, NA)) +
   scale_y_discrete(labels = c("0" = "Voiceless", "1" = "Voiced")) +
   scale_fill_manual(
@@ -165,6 +167,43 @@ plot_vowel_ridges <- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) +
         panel.spacing = unit(0.3, "cm"))
 print(plot_vowel_ridges)
 
+## Remove the vowel facet:
+
+# Calculate means without vowel grouping
+means_data <- data %>%
+  group_by(ons_poa, coda_vc) %>%
+  summarise(mean_vot = mean(vot, na.rm = TRUE), .groups = 'drop')
+# I'm not using the means right now
+
+plot_ridges <- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) + 
+  geom_density_ridges(alpha = 0.7) + 
+  scale_x_continuous(breaks = c(0, 0.05, 0.1, 0.15, 0.2), limits = c(0, NA)) +
+  scale_y_discrete(labels = c("0" = "Voiceless", "1" = "Voiced"), expand = c(0,0)) +
+  scale_fill_manual(
+    name = "Coda", 
+    values = c("0" = "#F8766D", "1" = "#00BFC4"),
+    labels = c("0" = "Voiceless", "1" = "Voiced")
+  ) +
+  labs(x = "VOT(s)", y = "") +
+  facet_wrap(~ ons_poa, scales = "free_x",
+             labeller = labeller(ons_poa = poa_labels)) +
+  theme_ridges() + 
+  theme(axis.text.y = element_blank(),
+        axis.title.x = element_text(hjust = 0.5),
+        strip.text = element_text(margin = margin(t = 4, b = 4)),
+        strip.text.x = element_text(margin = margin(t = 3, b = 4)),  
+        panel.spacing = unit(0.3, "cm"),
+        legend.position = c(0.85, 0.85),  # Position legend inside plot area
+        legend.background = element_rect(fill = "white", color = "black", size = 0.3),
+        legend.margin = margin(t = 5, r = 5, b = 5, l = 5),
+        legend.title = element_text(size=12),
+        legend.text = element_text(size=10))
+
+# To widen the image when you save it, use:
+ggsave("plot_ridges.png", plot = plot_vowel_ridges, 
+       width = 12, height = 6, dpi = 300)
+plot_ridges
+
 ## overlapping density plots
 
 plot_vowel_density <- ggplot(data, aes(x = vot, fill = coda_vc)) + 
@@ -178,23 +217,35 @@ It looks like there is a clear effect of coda voicing on voiceless onset VOT.
 
 # Basic models
 
-```{r}
+```{r, warning=FALSE}
 library(lme4)
 library(tidyverse)
 data_mod <- data %>%
   #rename POA labels from 1,2,3 to p,t,k
   mutate(ons_poa = recode(ons_poa, "1" = "p-", "2" = "t-", "3" = "k-"))
 
-model <- lmer(vot ~ ons_poa * coda_vc + (1 | sub) + (1 | vowel), data = data_mod)
+model_full <- lmer(vot ~ ons_poa * coda_vc * vowel + (1 | sub), data = data_mod)
+summary(model_full)
+```
+Remove the vowel term:
+```{r}
+data_mod <- data %>%
+  #rename POA labels from 1,2,3 to p,t,k
+  mutate(ons_poa = recode(ons_poa, "1" = "p-", "2" = "t-", "3" = "k-"))
+
+model <- lmer(vot ~ ons_poa * coda_vc + (1 | sub), data = data_mod)
 summary(model)
 
+```
+# Plot of the model
+```{r, warning=FALSE}
 p <- ggplot(data_mod, aes(x=vdur, y=vot, color=coda_vc)) +
   geom_point(outlier.shape = NA) +
   geom_smooth(method=lm) + xlab("Vowel dur (ms)") + ylab("VOT (ms)")
 p + facet_wrap(~ons_poa)
 ```
 
-```{r}
+```{r, warning=FALSE}
 # Load required package
 library(lme4)
 

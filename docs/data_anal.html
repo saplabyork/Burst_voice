@@ -372,99 +372,394 @@ div.tocify {
 <div id="by-onset-poa" class="section level1">
 <h1>By Onset POA</h1>
 <p>This is just a first pass at looking at the data so far.</p>
-<pre class="r"><code>data &lt;- read.csv(&quot;/Users/chandannarayan/GitHub/Burst_voice/Data/data_04-14-24.csv&quot;, header=TRUE)
+<pre class="r"><code>data &lt;- read.csv(&quot;/Users/chandannarayan/GitHub/Burst_voice/Data/data_12-11-24.csv&quot;, header=TRUE)
 data$coda_vc &lt;- as.character(data$coda_vc) #change class of coda_vc
 data$ons_poa &lt;- as.character(data$ons_poa) #change class of ons_poa
-library(ggplot2)
+data$vot_ratio &lt;- (data$vot)/(data$vdur)
 
-plot_overall &lt;- ggplot(data, aes(x = ons_poa,y = vot, fill = coda_vc)) + geom_boxplot(outlier.shape = NA) + ylim(0, 0.15) + facet_wrap(~ons_poa, scale = &quot;free&quot;)  
+number_of_subs &lt;- length(unique(data$sub))
+number_of_subs</code></pre>
+<pre><code>## [1] 19</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(tidyverse)
+
+# Create a summary table with the mean and range of &#39;vot&#39; for each &#39;ons_poa&#39;
+summary_table &lt;- data %&gt;%
+  group_by(ons_poa, coda_vc) %&gt;%
+  summarize(
+    mean_vot = mean(vot, na.rm = TRUE),
+    vot_range = paste0(min(vot, na.rm = TRUE), &quot; to &quot;, max(vot, na.rm = TRUE))
+  ) %&gt;%
+  ungroup()  # Ungroup after summarizing
+
+# Print the summary table
+print(summary_table)</code></pre>
+<pre><code>## # A tibble: 6 × 4
+##   ons_poa coda_vc mean_vot vot_range     
+##   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;         
+## 1 1       0         0.0788 0.024 to 0.199
+## 2 1       1         0.0908 0.034 to 0.234
+## 3 2       0         0.0895 0.031 to 0.21 
+## 4 2       1         0.0969 0.034 to 0.2  
+## 5 3       0         0.0925 0.045 to 0.219
+## 6 3       1         0.100  0.051 to 0.225</code></pre>
+<pre class="r"><code>plot_overall &lt;- ggplot(data, aes(x = ons_poa, y = vot, fill = coda_vc)) +
+  geom_boxplot(notch = TRUE, outlier.shape = NA) +
+  # Remove x-axis tick labels
+  theme(axis.text.x = element_blank()) +
+  # Remove x-axis label and update y-axis label
+  labs(x = NULL, y = &quot;VOT(s)&quot;) +
+  # Change facet labels
+  facet_wrap(~ons_poa, scales = &quot;free&quot;, labeller = labeller(ons_poa = c(&quot;1&quot; = &quot;p&quot;, &quot;2&quot; = &quot;t&quot;, &quot;3&quot; = &quot;k&quot;))) +
+  # Set consistent y-axis range
+  scale_y_continuous(limits = c(0.015, 0.18)) +
+  # Update the legend
+  scale_fill_discrete(
+    name = &quot;Coda voice&quot;,
+    labels = c(&quot;-vc&quot;, &quot;+vc&quot;)
+  ) 
 # + stat_summary(fun = median,geom = &quot;text&quot;,aes(label = paste(&quot;Median:&quot;, round(..y.., 3))),  # Label with median values
 #    vjust = -0.5,  # Vertical position of the text (adjust as needed)
 #    position = position_dodge(width = 0.75),  # Dodge the text for better visibility
 #    show.legend = FALSE ) # Do not show in legend
   
 plot_overall</code></pre>
-<pre><code>## Warning: Removed 40 rows containing non-finite values (`stat_boxplot()`).</code></pre>
 <p><img src="data_anal_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
-<pre class="r"><code>plot_overall + facet_wrap(~sub)</code></pre>
-<pre><code>## Warning: Removed 40 rows containing non-finite values (`stat_boxplot()`).</code></pre>
+<pre class="r"><code># Plot by sub
+plot_vot_poa &lt;- ggplot(data, aes(x = vot, y = as.factor(ons_poa), fill = as.factor(coda_vc))) +
+  geom_boxplot(notch = TRUE, outlier.shape = NA, width = 0.5) +  # Notched boxplots
+  theme_minimal() +  # Clean aesthetic
+  labs(x = &quot;VOT(s)&quot;, y = &quot;Onset POA&quot;, fill = &quot;Coda voice&quot;) +
+  scale_y_discrete(labels = c(&quot;1&quot; = &quot;p&quot;, &quot;2&quot; = &quot;t&quot;, &quot;3&quot; = &quot;k&quot;)) +  # Custom y-axis labels
+  #scale_x_continuous(limits = c(0, 2), expand = c(0, 0)) +  # Adjust x-axis range
+  scale_fill_discrete(
+    labels = c(&quot;0&quot; = &quot;[-vc]&quot;, &quot;1&quot; = &quot;[+vc]&quot;)  # Custom legend labels
+  )
+
+print(plot_vot_poa + facet_wrap(~sub))</code></pre>
 <p><img src="data_anal_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
+<pre class="r"><code>plot_vdur_poa &lt;- ggplot(data, aes(x = vdur, y = as.factor(ons_poa), fill = as.factor(coda_vc))) +
+  geom_boxplot(notch = TRUE, outlier.shape = NA, width = 0.5) +  # Notched boxplots
+  theme_minimal() +  # Clean aesthetic
+  labs(x = &quot;Vdur(s)&quot;, y = &quot;Onset POA&quot;, fill = &quot;Coda voice&quot;) +
+  scale_y_discrete(labels = c(&quot;1&quot; = &quot;p&quot;, &quot;2&quot; = &quot;t&quot;, &quot;3&quot; = &quot;k&quot;)) +  # Custom y-axis labels
+  scale_x_continuous(limits = c(0, 0.3), expand = c(0, 0)) +  # Adjust x-axis range
+  scale_fill_discrete(
+    labels = c(&quot;0&quot; = &quot;[-vc]&quot;, &quot;1&quot; = &quot;[+vc]&quot;)  # Custom legend labels
+  )
+plot_vdur_poa</code></pre>
+<p><img src="data_anal_files/figure-html/unnamed-chunk-1-3.png" width="672" /></p>
+<pre class="r"><code>plot_vdur_poa + facet_wrap(~sub)</code></pre>
+<p><img src="data_anal_files/figure-html/unnamed-chunk-1-4.png" width="672" /></p>
+<pre class="r"><code>plot_overall + facet_wrap(~sub)</code></pre>
+<p><img src="data_anal_files/figure-html/unnamed-chunk-1-5.png" width="672" /></p>
 </div>
 <div id="by-onset-poa-and-vowel" class="section level1">
 <h1>By Onset POA and Vowel</h1>
-<pre class="r"><code>plot_vowel &lt;- ggplot(data, aes(x = vowel,y = vot, fill = coda_vc)) + geom_boxplot(outlier.shape = NA) + facet_wrap(~ons_poa, scale = &quot;free&quot;)
+<p>I’m using a “ridge plot” here which is a stacked density plot for
+voiceless and voiced coda tokens by POA and vowel.</p>
+<pre class="r"><code>plot_vowel &lt;- ggplot(data, aes(x = vowel,y = vot, fill = coda_vc)) + geom_boxplot(notch=TRUE) + 
+  labs(y=&quot;VOT(s)&quot;, x=&quot;Vowel&quot;, fill=&quot;Coda voicing&quot;)+
+  facet_wrap(~ons_poa, scale = &quot;free&quot;)
 plot_vowel</code></pre>
-<pre><code>## Warning: Removed 7 rows containing non-finite values (`stat_boxplot()`).</code></pre>
 <p><img src="data_anal_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>## Ridge plot with medians
+library(dplyr)
+library(ggridges)
+
+# New facet label names for POA variable
+poa.labs &lt;- c(&quot;p&quot;, &quot;t&quot;, &quot;k&quot;)
+names(poa.labs) &lt;- c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;)
+
+# Create custom labels
+poa_labels &lt;- c(&quot;1&quot; = &quot;[pʰ]&quot;,
+                &quot;2&quot; = &quot;[tʰ]&quot;,
+                &quot;3&quot; = &quot;[kʰ]&quot;)
+
+vowel_labels &lt;- c(&quot;ae&quot; = &quot;æ&quot;,
+                  &quot;aw&quot; = &quot;ɑ&quot;,
+                  &quot;eh&quot; = &quot;ɛ&quot;,
+                  &quot;ih&quot; = &quot;ɪ&quot;,
+                  &quot;uh&quot; = &quot;ʌ&quot;)
+
+plot_vowel_ridges &lt;- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) + 
+  geom_density_ridges(alpha = 0.7) + 
+  #geom_vline(data = medians_data, aes(xintercept = median_vot), 
+             #linetype = &quot;dotted&quot;, color = &quot;black&quot;, linewidth = 0.5) +
+  scale_x_continuous(breaks = c(0, 0.1, 0.2), limits = c(0, NA)) +
+  scale_y_discrete(labels = c(&quot;0&quot; = &quot;Voiceless&quot;, &quot;1&quot; = &quot;Voiced&quot;)) +
+  scale_fill_manual(
+    name = &quot;Coda&quot;, 
+    values = c(&quot;0&quot; = &quot;#F8766D&quot;, &quot;1&quot; = &quot;#00BFC4&quot;),
+    labels = c(&quot;0&quot; = &quot;Voiceless&quot;, &quot;1&quot; = &quot;Voiced&quot;)
+  ) +
+  labs(x = &quot;VOT(s)&quot;, y = &quot;&quot;) +
+  facet_grid(vowel ~ ons_poa, scales = &quot;free_x&quot;,
+             labeller = labeller(ons_poa = poa_labels, vowel = vowel_labels)) +
+  theme_ridges() + 
+  theme(axis.text.y = element_blank(),
+        axis.title.x = element_text(hjust = 0.5),
+        strip.text = element_text(margin = margin(t = 4, b = 4)),
+        strip.text.x = element_text(margin = margin(t = 3, b = 4)),  
+        strip.text.y = element_text(margin = margin(l = 3, r = 3)),
+        panel.spacing = unit(0.3, &quot;cm&quot;))
+print(plot_vowel_ridges)</code></pre>
+<p><img src="data_anal_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<pre class="r"><code>## Remove the vowel facet:
+
+# Calculate means without vowel grouping
+means_data &lt;- data %&gt;%
+  group_by(ons_poa, coda_vc) %&gt;%
+  summarise(mean_vot = mean(vot, na.rm = TRUE), .groups = &#39;drop&#39;)
+# I&#39;m not using the means right now
+
+plot_ridges &lt;- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) + 
+  geom_density_ridges(alpha = 0.7) + 
+  scale_x_continuous(breaks = c(0, 0.05, 0.1, 0.15, 0.2), limits = c(0, NA)) +
+  scale_y_discrete(labels = c(&quot;0&quot; = &quot;Voiceless&quot;, &quot;1&quot; = &quot;Voiced&quot;), expand = c(0,0)) +
+  scale_fill_manual(
+    name = &quot;Coda&quot;, 
+    values = c(&quot;0&quot; = &quot;#F8766D&quot;, &quot;1&quot; = &quot;#00BFC4&quot;),
+    labels = c(&quot;0&quot; = &quot;Voiceless&quot;, &quot;1&quot; = &quot;Voiced&quot;)
+  ) +
+  labs(x = &quot;VOT(s)&quot;, y = &quot;&quot;) +
+  facet_wrap(~ ons_poa, scales = &quot;free_x&quot;,
+             labeller = labeller(ons_poa = poa_labels)) +
+  theme_ridges() + 
+  theme(axis.text.y = element_blank(),
+        axis.title.x = element_text(hjust = 0.5),
+        strip.text = element_text(margin = margin(t = 4, b = 4)),
+        strip.text.x = element_text(margin = margin(t = 3, b = 4)),  
+        panel.spacing = unit(0.3, &quot;cm&quot;),
+        legend.position = c(0.85, 0.85),  # Position legend inside plot area
+        legend.background = element_rect(fill = &quot;white&quot;, color = &quot;black&quot;, size = 0.3),
+        legend.margin = margin(t = 5, r = 5, b = 5, l = 5),
+        legend.title = element_text(size=12),
+        legend.text = element_text(size=10))
+
+# To widen the image when you save it, use:
+ggsave(&quot;plot_ridges.png&quot;, plot = plot_vowel_ridges, 
+       width = 12, height = 6, dpi = 300)
+plot_ridges</code></pre>
+<p><img src="data_anal_files/figure-html/unnamed-chunk-2-3.png" width="672" /></p>
+<pre class="r"><code>## overlapping density plots
+
+plot_vowel_density &lt;- ggplot(data, aes(x = vot, fill = coda_vc)) + 
+  geom_density(alpha = 0.6) + 
+  labs(x = &quot;VOT(s)&quot;, y = &quot;Density&quot;, fill = &quot;Coda voicing&quot;) +
+  facet_wrap(~ons_poa + vowel, scales = &quot;free&quot;)
+plot_vowel_density</code></pre>
+<p><img src="data_anal_files/figure-html/unnamed-chunk-2-4.png" width="672" /></p>
 <p>It looks like there is a clear effect of coda voicing on voiceless
 onset VOT.</p>
 </div>
 <div id="basic-models" class="section level1">
 <h1>Basic models</h1>
-<pre class="r"><code>library(lme4)</code></pre>
-<pre><code>## Loading required package: Matrix</code></pre>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.4     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ lubridate 1.9.3     ✔ tibble    3.2.1
-## ✔ purrr     1.0.2     ✔ tidyr     1.3.0</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ tidyr::expand() masks Matrix::expand()
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ✖ tidyr::pack()   masks Matrix::pack()
-## ✖ tidyr::unpack() masks Matrix::unpack()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>library(lme4)
+library(tidyverse)
+data_mod &lt;- data %&gt;%
+  #rename POA labels from 1,2,3 to p,t,k
+  mutate(ons_poa = recode(ons_poa, &quot;1&quot; = &quot;p-&quot;, &quot;2&quot; = &quot;t-&quot;, &quot;3&quot; = &quot;k-&quot;))
+
+model_full &lt;- lmer(vot ~ ons_poa * coda_vc * vowel + (1 | sub), data = data_mod)
+summary(model_full)</code></pre>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: vot ~ ons_poa * coda_vc * vowel + (1 | sub)
+##    Data: data_mod
+## 
+## REML criterion at convergence: -11761.1
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.9437 -0.6436 -0.0556  0.5452  5.7280 
+## 
+## Random effects:
+##  Groups   Name        Variance  Std.Dev.
+##  sub      (Intercept) 0.0005812 0.02411 
+##  Residual             0.0003068 0.01752 
+## Number of obs: 2311, groups:  sub, 19
+## 
+## Fixed effects:
+##                              Estimate Std. Error t value
+## (Intercept)                 9.651e-02  5.769e-03  16.729
+## ons_poap-                  -9.673e-03  2.331e-03  -4.151
+## ons_poat-                  -2.342e-03  2.320e-03  -1.009
+## coda_vc1                    8.175e-03  2.594e-03   3.152
+## vowelaw                     2.241e-03  2.594e-03   0.864
+## voweleh                    -6.737e-03  5.800e-03  -1.161
+## vowelih                    -9.162e-03  2.325e-03  -3.940
+## voweluh                    -8.759e-03  2.594e-03  -3.377
+## ons_poap-:coda_vc1         -1.695e-03  4.188e-03  -0.405
+## ons_poat-:coda_vc1         -2.412e-03  3.480e-03  -0.693
+## ons_poap-:vowelaw          -2.612e-03  3.487e-03  -0.749
+## ons_poat-:vowelaw           6.579e-05  3.480e-03   0.019
+## ons_poap-:voweleh          -2.668e-03  6.253e-03  -0.427
+## ons_poat-:voweleh           2.044e-03  4.783e-03   0.427
+## ons_poap-:vowelih          -9.108e-03  3.491e-03  -2.609
+## ons_poat-:vowelih          -7.742e-03  4.022e-03  -1.925
+## ons_poap-:voweluh          -7.080e-03  3.491e-03  -2.028
+## ons_poat-:voweluh          -3.610e-03  3.480e-03  -1.037
+## coda_vc1:vowelaw           -5.549e-03  3.672e-03  -1.511
+## coda_vc1:voweleh            3.947e-04  4.640e-03   0.085
+## coda_vc1:vowelih           -2.470e-03  4.186e-03  -0.590
+## coda_vc1:voweluh            1.411e-03  3.855e-03   0.366
+## ons_poap-:coda_vc1:vowelaw  9.920e-03  5.570e-03   1.781
+## ons_poat-:coda_vc1:vowelaw  5.983e-03  5.059e-03   1.183
+## ons_poap-:coda_vc1:voweleh  9.326e-03  6.253e-03   1.492
+## ons_poap-:coda_vc1:vowelih  4.897e-03  6.360e-03   0.770
+## ons_poat-:coda_vc1:vowelih  8.470e-03  6.249e-03   1.355
+## ons_poap-:coda_vc1:voweluh  7.902e-03  5.694e-03   1.388
+## ons_poat-:coda_vc1:voweluh  2.002e-03  5.193e-03   0.385
+## fit warnings:
+## fixed-effect model matrix is rank deficient so dropping 1 column / coefficient</code></pre>
+<p>Remove the vowel term:</p>
 <pre class="r"><code>data_mod &lt;- data %&gt;%
   #rename POA labels from 1,2,3 to p,t,k
   mutate(ons_poa = recode(ons_poa, &quot;1&quot; = &quot;p-&quot;, &quot;2&quot; = &quot;t-&quot;, &quot;3&quot; = &quot;k-&quot;))
 
-model &lt;- lmer(vot ~ ons_poa * coda_vc + (1 | sub) + (1 | vowel), data = data_mod)
+model &lt;- lmer(vot ~ ons_poa * coda_vc + (1 | sub), data = data_mod)
 summary(model)</code></pre>
 <pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
-## Formula: vot ~ ons_poa * coda_vc + (1 | sub) + (1 | vowel)
+## Formula: vot ~ ons_poa * coda_vc + (1 | sub)
 ##    Data: data_mod
 ## 
-## REML criterion at convergence: -11114.7
+## REML criterion at convergence: -11732.6
 ## 
 ## Scaled residuals: 
 ##     Min      1Q  Median      3Q     Max 
-## -3.3713 -0.6408 -0.0512  0.5344  5.9968 
+## -3.4873 -0.6535 -0.0630  0.5458  5.5930 
 ## 
 ## Random effects:
 ##  Groups   Name        Variance  Std.Dev.
-##  sub      (Intercept) 2.778e-04 0.016669
-##  vowel    (Intercept) 3.974e-05 0.006304
-##  Residual             2.923e-04 0.017098
-## Number of obs: 2128, groups:  sub, 18; vowel, 5
+##  sub      (Intercept) 0.0005810 0.02410 
+##  Residual             0.0003405 0.01845 
+## Number of obs: 2311, groups:  sub, 19
 ## 
 ## Fixed effects:
-##                     Estimate Std. Error t value
-## (Intercept)         0.088384   0.004928  17.936
-## ons_poap-          -0.014854   0.001232 -12.057
-## ons_poat-          -0.005021   0.001286  -3.904
-## coda_vc1            0.005203   0.001354   3.844
-## ons_poap-:coda_vc1  0.007781   0.001859   4.186
-## ons_poat-:coda_vc1  0.002461   0.001882   1.308
+##                      Estimate Std. Error t value
+## (Intercept)         9.247e-02  5.610e-03  16.482
+## ons_poap-          -1.375e-02  1.242e-03 -11.066
+## ons_poat-          -3.011e-03  1.309e-03  -2.301
+## coda_vc1            7.485e-03  1.378e-03   5.430
+## ons_poap-:coda_vc1  4.575e-03  1.914e-03   2.390
+## ons_poat-:coda_vc1 -8.461e-05  1.926e-03  -0.044
 ## 
 ## Correlation of Fixed Effects:
 ##             (Intr) ons_pp- ons_pt- cd_vc1 ons_pp-:_1
-## ons_poap-   -0.149                                  
-## ons_poat-   -0.139  0.564                           
-## coda_vc1    -0.133  0.538   0.513                   
-## ons_pp-:c_1  0.095 -0.647  -0.369  -0.722           
-## ons_pt-:c_1  0.096 -0.388  -0.686  -0.723  0.521</code></pre>
+## ons_poap-   -0.129                                  
+## ons_poat-   -0.122  0.553                           
+## coda_vc1    -0.116  0.525   0.498                   
+## ons_pp-:c_1  0.084 -0.649  -0.359  -0.720           
+## ons_pt-:c_1  0.083 -0.375  -0.679  -0.716  0.515</code></pre>
+</div>
+<div id="plot-of-the-model" class="section level1">
+<h1>Plot of the model</h1>
 <pre class="r"><code>p &lt;- ggplot(data_mod, aes(x=vdur, y=vot, color=coda_vc)) +
   geom_point(outlier.shape = NA) +
-  geom_smooth(method=lm) + xlab(&quot;Vowel dur (ms)&quot;) + ylab(&quot;VOT (ms)&quot;)</code></pre>
-<pre><code>## Warning in geom_point(outlier.shape = NA): Ignoring unknown parameters:
-## `outlier.shape`</code></pre>
-<pre class="r"><code>p + facet_wrap(~ons_poa)</code></pre>
-<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 10 rows containing non-finite values (`stat_smooth()`).</code></pre>
-<pre><code>## Warning: Removed 10 rows containing missing values (`geom_point()`).</code></pre>
-<p><img src="data_anal_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+  geom_smooth(method=lm) + xlab(&quot;Vowel dur (ms)&quot;) + ylab(&quot;VOT (ms)&quot;)
+p + facet_wrap(~ons_poa)</code></pre>
+<p><img src="data_anal_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code># Load required package
+library(lme4)
+
+# Convert coda_vc to a factor if it&#39;s not already
+data$coda_vc &lt;- factor(data$coda_vc, levels = c(0,1))
+
+# Fit the GLMM
+model_coda &lt;- glmer(
+  coda_vc ~ vot * ons_poa + (1 | sub), 
+  data = data, 
+  family = binomial(link = &quot;logit&quot;)
+)
+
+# Summary of the model
+summary(model_coda)</code></pre>
+<pre><code>## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: coda_vc ~ vot * ons_poa + (1 | sub)
+##    Data: data
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##   3075.4   3115.7  -1530.7   3061.4     2304 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.2461 -0.8501 -0.6174  1.0540  2.0280 
+## 
+## Random effects:
+##  Groups Name        Variance Std.Dev.
+##  sub    (Intercept) 0.2331   0.4828  
+## Number of obs: 2311, groups:  sub, 19
+## 
+## Fixed effects:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)   -2.5975     0.3133  -8.291  &lt; 2e-16 ***
+## vot           24.2466     3.3339   7.273 3.52e-13 ***
+## ons_poa2       0.5109     0.3320   1.539    0.124    
+## ons_poa3       0.4505     0.3467   1.299    0.194    
+## vot:ons_poa2  -3.9918     3.5115  -1.137    0.256    
+## vot:ons_poa3  -3.0339     3.5976  -0.843    0.399    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Correlation of Fixed Effects:
+##             (Intr) vot    ons_p2 ons_p3 vt:n_2
+## vot         -0.905                            
+## ons_poa2    -0.426  0.410                     
+## ons_poa3    -0.380  0.362  0.428              
+## vot:ons_po2  0.454 -0.500 -0.946 -0.414       
+## vot:ons_po3  0.427 -0.470 -0.424 -0.947  0.467</code></pre>
+<pre class="r"><code># Generate new data for predictions
+vot_range &lt;- seq(from = 0, to = 0.25, by = 0.005)
+ons_poa_levels &lt;- c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;)
+#vowel_levels &lt;- c(&quot;ae&quot;,&quot;uh&quot;,&quot;aw&quot;,&quot;eh&quot;,&quot;ih&quot;)
+#sub_levels &lt;- c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19)
+sub = unique(data$sub)[1]
+
+# Create a data frame for plotting
+plot_data &lt;- expand.grid(
+  vot = vot_range,
+  ons_poa = ons_poa_levels,
+  #vowel = vowel_levels,
+  sub = sub
+)
+
+# Add a dummy coda_vc variable (not used in prediction but avoids the error)
+plot_data$coda_vc &lt;- NA
+
+# Add predictions from the model
+plot_data$predicted_prob &lt;- predict(model_coda, newdata = plot_data, type = &quot;response&quot;, re.form = ~(1 | sub))
+
+
+
+vc_pred &lt;- ggplot(plot_data, aes(x = vot, y = predicted_prob, color = ons_poa )) +
+  geom_line(size = 2) +
+  #geom_jitter(data = data, aes(x = vot, y = as.numeric(coda_vc), color = ons_poa), 
+   #           width = 0, height = 0.05, alpha = 0.5, shape = 16) +  # Jitter actual points
+scale_color_discrete(
+    labels = c(&quot;1&quot; = &quot;p&quot;, &quot;2&quot; = &quot;t&quot;, &quot;3&quot; = &quot;k&quot;)  # Custom legend labels
+  ) +
+  scale_fill_discrete(
+    labels = c(&quot;1&quot; = &quot;p&quot;, &quot;2&quot; = &quot;t&quot;, &quot;3&quot; = &quot;k&quot;)  # Custom legend labels for fill
+  ) +
+  labs(
+    title = &quot;&quot;,
+    x = &quot;VOT (s)&quot;,
+    y = &quot;Predicted Probability of Voiced Coda&quot;,
+    color = &quot;Onset POA&quot;
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16),
+    axis.title = element_text(size = 14),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  )
+
+vc_pred</code></pre>
+<p><img src="data_anal_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>ggsave(&quot;vc_pred.png&quot;, plot = vc_pred, bg = &#39;white&#39;, width = 7, height =4, dpi=300)</code></pre>
 </div>
 
 
