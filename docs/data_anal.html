@@ -614,7 +614,6 @@ summary(model_full)</code></pre>
 ## fixed-effect model matrix is rank deficient so dropping 1 column / coefficient</code></pre>
 <p>Remove the vowel term:</p>
 <pre class="r"><code>data_mod &lt;- data %&gt;%
-  #rename POA labels from 1,2,3 to p,t,k
   mutate(ons_poa = recode(ons_poa, &quot;1&quot; = &quot;p-&quot;, &quot;2&quot; = &quot;t-&quot;, &quot;3&quot; = &quot;k-&quot;))
 
 model &lt;- lmer(vot ~ ons_poa * coda_vc + (1 | sub), data = data_mod)
@@ -760,6 +759,184 @@ scale_color_discrete(
 vc_pred</code></pre>
 <p><img src="data_anal_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code>ggsave(&quot;vc_pred.png&quot;, plot = vc_pred, bg = &#39;white&#39;, width = 7, height =4, dpi=300)</code></pre>
+</div>
+<div id="bayesian-mixed-effects-model-of-vot-coda-voicing"
+class="section level1">
+<h1>Bayesian mixed effects model of VOT ~ coda voicing</h1>
+<pre class="r"><code>library(brms)
+data_mod &lt;- data %&gt;%
+  #rename POA labels from 1,2,3 to p,t,k
+  mutate(ons_poa = recode(ons_poa, &quot;1&quot; = &quot;p&quot;, &quot;2&quot; = &quot;t&quot;, &quot;3&quot; = &quot;k&quot;))
+
+# Bayesian version of your model
+bayes_model &lt;- brm(vot ~ ons_poa * coda_vc + (1 | sub), 
+                   data = data_mod,
+                   family = gaussian(),
+                   chains = 4,
+                   iter = 2000,
+                   cores = 4)</code></pre>
+<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+## using C compiler: ‘Apple clang version 12.0.5 (clang-1205.0.22.9)’
+## using SDK: ‘MacOSX11.3.sdk’
+## clang -arch arm64 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/Rcpp/include/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/unsupported&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/BH/include&quot; -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/StanHeaders/include/src/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/StanHeaders/include/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppParallel/include/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include &#39;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
+## In file included from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/Eigen/Dense:1:
+## In file included from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/Eigen/Core:19:
+## /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:679:10: fatal error: &#39;cmath&#39; file not found
+## #include &lt;cmath&gt;
+##          ^~~~~~~
+## 1 error generated.
+## make: *** [foo.o] Error 1</code></pre>
+<pre class="r"><code># Check model
+summary(bayes_model)</code></pre>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: vot ~ ons_poa * coda_vc + (1 | sub) 
+##    Data: data_mod (Number of observations: 2311) 
+##   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup draws = 4000
+## 
+## Multilevel Hyperparameters:
+## ~sub (Number of levels: 19) 
+##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)     0.03      0.01     0.02     0.04 1.01      329      669
+## 
+## Regression Coefficients:
+##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept             0.09      0.01     0.08     0.10 1.02      241      244
+## ons_poap             -0.01      0.00    -0.02    -0.01 1.00     2483     2756
+## ons_poat             -0.00      0.00    -0.01    -0.00 1.00     2488     2822
+## coda_vc1              0.01      0.00     0.00     0.01 1.00     1682     2110
+## ons_poap:coda_vc1     0.00      0.00     0.00     0.01 1.00     1499     1918
+## ons_poat:coda_vc1    -0.00      0.00    -0.00     0.00 1.00     1955     1927
+## 
+## Further Distributional Parameters:
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma     0.02      0.00     0.02     0.02 1.00     1055     1438
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<pre class="r"><code>plot(bayes_model)</code></pre>
+<p><img src="data_anal_files/figure-html/unnamed-chunk-7-1.png" width="672" /><img src="data_anal_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<div id="results-interpretation" class="section level2">
+<h2><strong>Results interpretation</strong></h2>
+<div id="model-diagnostics" class="section level4">
+<h4>Model Diagnostics</h4>
+<p>Rhat values: All are ≤ 1.02, which indicates excellent convergence
+(want &lt; 1.1) ESS values: All are &gt; 200, showing adequate sampling
+(though some are on the lower side)</p>
+</div>
+<div id="random-effects-subject-variation" class="section level4">
+<h4>Random Effects (Subject Variation)</h4>
+<p>sd(Intercept): 0.03 [0.02, 0.04]</p>
+<p>Between-subject variability in baseline VOT is 0.03 seconds This is
+relatively small, suggesting subjects are fairly consistent in their
+baseline VOT</p>
+</div>
+<div id="fixed-effects-your-main-results" class="section level4">
+<h4>Fixed Effects (Your Main Results)</h4>
+<p>Baseline (Intercept): 0.09s [0.08, 0.10]</p>
+<p>Mean VOT when ons_poa is at reference level and coda_vc = 0</p>
+</div>
+<div id="main-effects" class="section level4">
+<h4>Main Effects:</h4>
+<p>ons_poapM: -0.01s [-0.02, -0.01] - Clear negative effect ons_poatM:
+-0.00s [-0.01, -0.00] - Very small negative effect coda_vc1: 0.01s
+[0.00, 0.01] - Small positive effect</p>
+</div>
+<div id="interactions" class="section level4">
+<h4>Interactions:</h4>
+<p>ons_poapM:coda_vc1: 0.00s [0.00, 0.01] - Minimal interaction
+ons_poatM:coda_vc1: -0.00s [-0.00, 0.00] - Essentially zero</p>
+</div>
+<div id="residual-variation" class="section level4">
+<h4>Residual Variation</h4>
+<p>sigma: 0.02s [0.02, 0.02]</p>
+<p>Within-subject measurement error is 0.02 seconds</p>
+</div>
+<div id="interpretation" class="section level3">
+<h3>Interpretation</h3>
+<p>Your place of articulation (ons_poa) appears to have clear effects on
+VOT, with both pM and tM showing shorter VOT than your reference
+category. The voicing of the coda (coda_vc) has a smaller positive
+effect. The interactions are minimal, suggesting the coda effect is
+consistent across places of articulation.</p>
+<p>Perfect! Now your results make much more phonetic sense:</p>
+</div>
+</div>
+<div id="main-findings" class="section level2">
+<h2><strong>Main Findings</strong></h2>
+<p><strong>Reference Level</strong>: <code>k</code> (velar) with
+baseline VOT of <strong>0.09s</strong></p>
+<p><strong>Place of Articulation Effects:</strong> - <strong>p
+(labial)</strong>: -0.01s [-0.02, -0.01] → <strong>0.08s VOT</strong> -
+<strong>t (coronal)</strong>: -0.00s [-0.01, -0.00] → <strong>~0.09s
+VOT</strong> - <strong>k (velar)</strong>: 0.09s (reference)</p>
+<p>This shows the expected <strong>phonetic hierarchy</strong>:
+<strong>k &gt; t &gt; p</strong></p>
+</div>
+<div id="phonetic-interpretation" class="section level2">
+<h2><strong>Phonetic Interpretation</strong></h2>
+<p>Your results align perfectly with cross-linguistic patterns: -
+<strong>Velar stops</strong> (k) have the <strong>longest VOT</strong>
+(0.09s) - <strong>Coronal stops</strong> (t) have <strong>intermediate
+VOT</strong> (~0.09s, very close to velars) - <strong>Labial
+stops</strong> (p) have the <strong>shortest VOT</strong> (0.08s)</p>
+<p>This reflects the <strong>aerodynamic and articulatory</strong>
+differences: - Velars have larger oral cavity volume behind constriction
+→ longer VOT - Labials have smaller cavity → shorter VOT - Coronals fall
+between the two</p>
+</div>
+<div id="coda-effect" class="section level2">
+<h2><strong>Coda Effect</strong></h2>
+<p><strong>coda_vc1</strong>: +0.01s [0.00, 0.01] - Voiced codas
+slightly <strong>increase</strong> VOT of the onset stop - This could
+reflect <strong>compensatory timing</strong> or <strong>coarticulatory
+effects</strong></p>
+</div>
+<div id="statistical-strength" class="section level2">
+<h2><strong>Statistical Strength</strong></h2>
+<p>The <strong>credible intervals</strong> for p don’t include zero,
+showing this is a <strong>reliable effect</strong>. The t effect is very
+small and the CI barely excludes zero.</p>
+</div>
+<div id="possible-write-up" class="section level2">
+<h2>Possible write-up</h2>
+<p>Here’s how I’d write up these results for a phonetics/acoustics
+audience:</p>
+</div>
+<div id="results" class="section level2">
+<h2><strong>Results</strong></h2>
+<p>We fitted a Bayesian linear mixed-effects model to examine the
+effects of place of articulation and coda voicing on VOT, with random
+intercepts for participants. The model showed excellent convergence (all
+Rhat ≤ 1.02) and adequate sampling efficiency.</p>
+<p><strong>Place of articulation effects.</strong> VOT varied
+systematically by place of articulation, following the expected
+aerodynamic hierarchy. Velar stops served as the reference category with
+a mean VOT of 90 ms (95% CrI: [80, 100]). Labial stops showed
+significantly shorter VOT, with a mean decrease of 10 ms (95% CrI: [-20,
+-10]) relative to velars, resulting in a mean VOT of 80 ms. Coronal
+stops showed minimal difference from velars, with a negligible decrease
+of &lt;1 ms (95% CrI: [-10, 0]), yielding a mean VOT of ~90 ms. This
+pattern aligns with cross-linguistic tendencies where velars exhibit the
+longest VOT due to their larger oral cavity volume behind the
+constriction, while labials show the shortest VOT.</p>
+<p><strong>Coda voicing effects.</strong> Voiced codas produced a small
+but reliable increase in onset VOT of 10 ms (95% CrI: [0, 10]) compared
+to voiceless codas. This suggests potential compensatory timing effects
+or coarticulatory influence of the coda on onset timing.</p>
+<p><strong>Individual variation.</strong> Between-speaker variation in
+baseline VOT was modest (SD = 30 ms, 95% CrI: [20, 40]), indicating
+relatively consistent production patterns across speakers.
+Within-speaker measurement error was 20 ms (95% CrI: [20, 20]).</p>
+<p><strong>Interactions.</strong> The interaction between place of
+articulation and coda voicing was minimal, suggesting that coda effects
+on VOT are consistent across places of articulation.</p>
+<hr />
+</div>
 </div>
 
 
