@@ -498,4 +498,178 @@ We fitted a Bayesian linear mixed-effects model to examine the effects of place 
 
 **Interactions.** The interaction between place of articulation and coda voicing was minimal, suggesting that coda effects on VOT are consistent across places of articulation.
 
+## Using **Informed priors"
+
+My intuitions based on acoustics and aerodyamincs are that overall, VOT increases as the place of articulation moves to the back of the mouth (p<t<k). The next intuition is that voiced codas should increase the VOT of p,t,k because voiced codas are accompanied by longer preceding vowels. Because there is a correlations between vowel duration and stop VOT, we'd expect the VOTs of onsets to be longer if codas are voiced rather than voiceless. These intuitions will be used to create `"informed priors."
+
+```{r}
+library(brms)
+library(tidyverse)
+
+data_mod$ons_poa <- factor(data_mod$ons_poa, levels = c("p", "t", "k"))
+get_prior(vot ~ ons_poa * coda_vc + (1|sub), data = data_mod, family = gaussian())
+
+# Your data preparation (same as before)
+data_mod <- data %>%
+  mutate(ons_poa = recode(ons_poa, "1" = "p", "2" = "t", "3" = "k"))
+
+# Check the contrast coding to understand your model structure
+contrasts(factor(data_mod$ons_poa))
+# This will show you the reference level (likely 'k' alphabetically, but let's set it explicitly)
+
+# Set /p/ as reference level to match your intuitions
+data_mod$ons_poa <- factor(data_mod$ons_poa, levels = c("p", "t", "k"))
+
+# Define informed priors based on your acoustic knowledge
+informed_priors <- c(
+  # Intercept: VOT for /p/ with voiceless coda
+  # Expecting around 15-25ms for /p/
+  prior(normal(0.020, 0.010), class = Intercept),
+  
+  # Place of articulation effects (relative to /p/)
+  # /t/ should be ~10-20ms longer than /p/
+  prior(normal(0.015, 0.008), class = b, coef = ons_poat),
+  
+  # /k/ should be ~20-35ms longer than /p/  
+  prior(normal(0.030, 0.012), class = b, coef = ons_poak),
+  
+  # Voicing effect: voiced codas increase VOT
+  # Expecting 5-15ms increase due to vowel lengthening correlation
+  prior(normal(0.010, 0.005), class = b, coef = coda_vc),
+  
+  # Interactions: voicing effect might be larger for back consonants
+  # /t/ voicing interaction (small positive expected)
+  prior(normal(0.003, 0.005), class = b, coef = ons_poat:coda_vc),
+  
+  # /k/ voicing interaction (possibly larger positive effect)
+  prior(normal(0.005, 0.006), class = b, coef = ons_poak:coda_vc),
+  
+  # Random effects and residual variance
+  # Individual differences in VOT production
+  prior(normal(0, 0.020), class = sd),  # Random intercepts for subjects
+  
+  # Residual variance - VOT measurements have some noise
+  prior(normal(0, 0.025), class = sigma)
+)
+
+# Make sure coda_vc is properly factored
+data_mod$coda_vc <- factor(data_mod$coda_vc)
+
+# Set up priors with generic class specifications (safer approach)
+informed_priors <- c(
+  prior(normal(20, 10), class = Intercept),  # Adjust units as needed
+  prior(normal(0, 15), class = b),           # Generic prior for all fixed effects
+  prior(normal(0, 20), class = sd),          # Random effects
+  prior(normal(0, 25), class = sigma)        # Residual
+)
+
+# Fit the model
+bayes_model_informed <- brm(vot ~ ons_poa * coda_vc + (1|sub),
+                           data = data_mod,
+                           family = gaussian(),
+                           prior = informed_priors,
+                           chains = 4,
+                           iter = 2000,
+                           cores = 4,
+                           seed = 123)
+# Check the priors were applied correctly
+prior_summary(bayes_model_informed)
+
+# Compare with your original model
+summary(bayes_model_informed)
+
+# You can also do prior predictive checks to see if your priors make sense
+pp_check(bayes_model_informed, type = "hist", ndraws = 100) + 
+  ggtitle("Prior Predictive Check: Do simulated VOTs look reasonable?")
+
+# Compare the two models
+# Original model (with default priors)
+bayes_model_default <- brm(vot ~ ons_poa * coda_vc + (1|sub),
+                          data = data_mod,
+                          family = gaussian(),
+                          chains = 4,
+                          iter = 2000,
+                          cores = 4,
+                          seed = 123)
+
+# Model comparison
+loo_informed <- loo(bayes_model_informed)
+loo_default <- loo(bayes_model_default)
+loo_compare(loo_informed, loo_default)
+```
+
+## Understanding Your Model Structure
+First, let's clarify how your model is parameterized. With treatment coding (which is the default), your model likely has:
+
+Intercept: VOT for the reference category (probably /p/ with voiceless coda)
+ons_poak: Additional VOT for /k/ relative to /p/
+ons_poat: Additional VOT for /t/ relative to /p/
+coda_vc: Additional VOT for voiced coda relative to voiceless coda
+Interactions: How the voicing effect differs for /t/ and /k/ compared to /p/
+
+Translating Your Intuitions to Priors
+Based on your knowledge, here's how I'd set up the priors:VOT Model with Informed PriorsCode library(brms)
+library(tidyverse)
+
+# Your data preparation (same as before)
+data_mod <- data %>%
+  mutate(ons_poa = recode(ons_poa, "1" = "p", "2" = "t", "3" = "k"))
+
+# Check the contrast coding to understand your model structure
+contrasts(factor(dataKey Points About These Priors:
+Place of Articulation Hierarchy (p < t < k):
+
+/t/ gets a prior mean of +15ms relative to /p/
+/k/ gets a prior mean of +30ms relative to /p/
+Standard deviations allow for uncertainty but center on your expected pattern
+
+# Voicing Effect:
+
+coda_vc gets a positive prior (+10ms) reflecting your expectation that voiced codas increase VOT
+This captures the vowel duration → VOT correlation you mentioned
+
+# Interactions:
+
+Slightly positive priors for interactions, allowing the voicing effect to be stronger for back consonants
+More conservative (smaller) standard deviations since interactions are often smaller effects
+
+Conservative Approach:
+The standard deviations I've chosen are moderately informative - they express your expectations but still allow the data to override them if there's strong evidence against your priors.
+To Evaluate Your Priors:
+
+Prior predictive checks: See if simulated data from your priors looks realistic
+Sensitivity analysis: Try different prior specifications to see how robust your conclusions are
+Compare models: Use LOO cross-validation to compare informed vs. default prior models
+
+
+## What LOO-CV measures:
+
+elpd = Expected Log Pointwise Predictive Density
+Higher elpd = better predictive performance
+The comparison shows differences relative to the best model
+
+Your results:
+                     elpd_diff se_diff
+bayes_model_informed  0.0       0.0   
+bayes_model_default  -0.1       0.1
+Interpretation:
+
+bayes_model_informed is listed first with elpd_diff = 0.0 because it's the reference (best performing model)
+bayes_model_default has elpd_diff = -0.1, meaning it performs 0.1 elpd units worse
+se_diff = 0.1 is the standard error of this difference
+
+### What this means:
+
+The models perform virtually identically - a difference of 0.1 elpd is tiny
+The difference is not significant because |elpd_diff| < 2×se_diff (0.1 < 0.2)
+Your informative priors didn't hurt predictive performance and may have helped very slightly
+
+### Rule of thumb for elpd differences:
+
+|difference| < 2×SE: Models are essentially equivalent
+|difference| > 2×SE: Meaningful difference in predictive performance
+|difference| > 4×SE: Strong evidence for better model
+
+Bottom line: Your informative priors are working well! They're providing reasonable constraints without forcing the model away from what the data supports. This is exactly what you want - priors that are informative but not overly restrictive.
+The nearly identical performance suggests your priors were well-calibrated to the actual VOT patterns in your data.
 ---

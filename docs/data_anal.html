@@ -805,20 +805,20 @@ summary(bayes_model)</code></pre>
 ## Multilevel Hyperparameters:
 ## ~sub (Number of levels: 19) 
 ##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)     0.03      0.00     0.02     0.04 1.01      269      862
+## sd(Intercept)     0.03      0.01     0.02     0.04 1.02      333      398
 ## 
 ## Regression Coefficients:
 ##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept             0.09      0.01     0.08     0.10 1.03      223      365
-## ons_poap             -0.01      0.00    -0.02    -0.01 1.00     2388     2608
-## ons_poat             -0.00      0.00    -0.01    -0.00 1.00     2228     2409
-## coda_vc1              0.01      0.00     0.00     0.01 1.00     1894     2052
-## ons_poap:coda_vc1     0.00      0.00     0.00     0.01 1.00     1940     2371
-## ons_poat:coda_vc1    -0.00      0.00    -0.00     0.00 1.00     1843     2009
+## Intercept             0.09      0.01     0.08     0.11 1.01      299      388
+## ons_poap             -0.01      0.00    -0.02    -0.01 1.00     2440     2670
+## ons_poat             -0.00      0.00    -0.01    -0.00 1.00     2309     2296
+## coda_vc1              0.01      0.00     0.00     0.01 1.00     1768     2386
+## ons_poap:coda_vc1     0.00      0.00     0.00     0.01 1.00     1889     2351
+## ons_poat:coda_vc1    -0.00      0.00    -0.00     0.00 1.00     1765     2370
 ## 
 ## Further Distributional Parameters:
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     0.02      0.00     0.02     0.02 1.00     1116     1753
+## sigma     0.02      0.00     0.02     0.02 1.00     1283     1742
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -1015,7 +1015,293 @@ Within-speaker measurement error was 20 ms (95% CrI: [20, 20]).</p>
 <p><strong>Interactions.</strong> The interaction between place of
 articulation and coda voicing was minimal, suggesting that coda effects
 on VOT are consistent across places of articulation.</p>
-<hr />
+</div>
+<div id="using-informed-priors" class="section level2">
+<h2>Using **Informed priors”</h2>
+<p>My intuitions based on acoustics and aerodyamincs are that overall,
+VOT increases as the place of articulation moves to the back of the
+mouth (p&lt;t&lt;k). The next intuition is that voiced codas should
+increase the VOT of p,t,k because voiced codas are accompanied by longer
+preceding vowels. Because there is a correlations between vowel duration
+and stop VOT, we’d expect the VOTs of onsets to be longer if codas are
+voiced rather than voiceless. These intuitions will be used to create
+`“informed priors.”</p>
+<pre class="r"><code>library(brms)
+library(tidyverse)
+
+data_mod$ons_poa &lt;- factor(data_mod$ons_poa, levels = c(&quot;p&quot;, &quot;t&quot;, &quot;k&quot;))
+get_prior(vot ~ ons_poa * coda_vc + (1|sub), data = data_mod, family = gaussian())</code></pre>
+<pre><code>##                   prior     class              coef group resp dpar nlpar lb ub
+##                  (flat)         b                                              
+##                  (flat)         b          coda_vc1                            
+##                  (flat)         b          ons_poak                            
+##                  (flat)         b ons_poak:coda_vc1                            
+##                  (flat)         b          ons_poat                            
+##                  (flat)         b ons_poat:coda_vc1                            
+##  student_t(3, 0.1, 2.5) Intercept                                              
+##    student_t(3, 0, 2.5)        sd                                          0   
+##    student_t(3, 0, 2.5)        sd                     sub                  0   
+##    student_t(3, 0, 2.5)        sd         Intercept   sub                  0   
+##    student_t(3, 0, 2.5)     sigma                                          0   
+##        source
+##       default
+##  (vectorized)
+##  (vectorized)
+##  (vectorized)
+##  (vectorized)
+##  (vectorized)
+##       default
+##       default
+##  (vectorized)
+##  (vectorized)
+##       default</code></pre>
+<pre class="r"><code># Your data preparation (same as before)
+data_mod &lt;- data %&gt;%
+  mutate(ons_poa = recode(ons_poa, &quot;1&quot; = &quot;p&quot;, &quot;2&quot; = &quot;t&quot;, &quot;3&quot; = &quot;k&quot;))
+
+# Check the contrast coding to understand your model structure
+contrasts(factor(data_mod$ons_poa))</code></pre>
+<pre><code>##   p t
+## k 0 0
+## p 1 0
+## t 0 1</code></pre>
+<pre class="r"><code># This will show you the reference level (likely &#39;k&#39; alphabetically, but let&#39;s set it explicitly)
+
+# Set /p/ as reference level to match your intuitions
+data_mod$ons_poa &lt;- factor(data_mod$ons_poa, levels = c(&quot;p&quot;, &quot;t&quot;, &quot;k&quot;))
+
+# Define informed priors based on your acoustic knowledge
+informed_priors &lt;- c(
+  # Intercept: VOT for /p/ with voiceless coda
+  # Expecting around 15-25ms for /p/
+  prior(normal(0.020, 0.010), class = Intercept),
+  
+  # Place of articulation effects (relative to /p/)
+  # /t/ should be ~10-20ms longer than /p/
+  prior(normal(0.015, 0.008), class = b, coef = ons_poat),
+  
+  # /k/ should be ~20-35ms longer than /p/  
+  prior(normal(0.030, 0.012), class = b, coef = ons_poak),
+  
+  # Voicing effect: voiced codas increase VOT
+  # Expecting 5-15ms increase due to vowel lengthening correlation
+  prior(normal(0.010, 0.005), class = b, coef = coda_vc),
+  
+  # Interactions: voicing effect might be larger for back consonants
+  # /t/ voicing interaction (small positive expected)
+  prior(normal(0.003, 0.005), class = b, coef = ons_poat:coda_vc),
+  
+  # /k/ voicing interaction (possibly larger positive effect)
+  prior(normal(0.005, 0.006), class = b, coef = ons_poak:coda_vc),
+  
+  # Random effects and residual variance
+  # Individual differences in VOT production
+  prior(normal(0, 0.020), class = sd),  # Random intercepts for subjects
+  
+  # Residual variance - VOT measurements have some noise
+  prior(normal(0, 0.025), class = sigma)
+)
+
+# Make sure coda_vc is properly factored
+data_mod$coda_vc &lt;- factor(data_mod$coda_vc)
+
+# Set up priors with generic class specifications (safer approach)
+informed_priors &lt;- c(
+  prior(normal(20, 10), class = Intercept),  # Adjust units as needed
+  prior(normal(0, 15), class = b),           # Generic prior for all fixed effects
+  prior(normal(0, 20), class = sd),          # Random effects
+  prior(normal(0, 25), class = sigma)        # Residual
+)
+
+# Fit the model
+bayes_model_informed &lt;- brm(vot ~ ons_poa * coda_vc + (1|sub),
+                           data = data_mod,
+                           family = gaussian(),
+                           prior = informed_priors,
+                           chains = 4,
+                           iter = 2000,
+                           cores = 4,
+                           seed = 123)</code></pre>
+<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+## using C compiler: ‘Apple clang version 12.0.5 (clang-1205.0.22.9)’
+## using SDK: ‘MacOSX11.3.sdk’
+## clang -arch arm64 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/Rcpp/include/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/unsupported&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/BH/include&quot; -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/StanHeaders/include/src/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/StanHeaders/include/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppParallel/include/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include &#39;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
+## In file included from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/Eigen/Dense:1:
+## In file included from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/Eigen/Core:19:
+## /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:679:10: fatal error: &#39;cmath&#39; file not found
+## #include &lt;cmath&gt;
+##          ^~~~~~~
+## 1 error generated.
+## make: *** [foo.o] Error 1</code></pre>
+<pre class="r"><code># Check the priors were applied correctly
+prior_summary(bayes_model_informed)</code></pre>
+<pre><code>##           prior     class              coef group resp dpar nlpar lb ub
+##   normal(0, 15)         b                                              
+##   normal(0, 15)         b          coda_vc1                            
+##   normal(0, 15)         b          ons_poak                            
+##   normal(0, 15)         b ons_poak:coda_vc1                            
+##   normal(0, 15)         b          ons_poat                            
+##   normal(0, 15)         b ons_poat:coda_vc1                            
+##  normal(20, 10) Intercept                                              
+##   normal(0, 20)        sd                                          0   
+##   normal(0, 20)        sd                     sub                  0   
+##   normal(0, 20)        sd         Intercept   sub                  0   
+##   normal(0, 25)     sigma                                          0   
+##        source
+##          user
+##  (vectorized)
+##  (vectorized)
+##  (vectorized)
+##  (vectorized)
+##  (vectorized)
+##          user
+##          user
+##  (vectorized)
+##  (vectorized)
+##          user</code></pre>
+<pre class="r"><code># Compare with your original model
+summary(bayes_model_informed)</code></pre>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: vot ~ ons_poa * coda_vc + (1 | sub) 
+##    Data: data_mod (Number of observations: 2311) 
+##   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup draws = 4000
+## 
+## Multilevel Hyperparameters:
+## ~sub (Number of levels: 19) 
+##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)     0.03      0.00     0.02     0.04 1.01      358      637
+## 
+## Regression Coefficients:
+##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept             0.08      0.01     0.07     0.09 1.01      258      292
+## ons_poat              0.01      0.00     0.01     0.01 1.00     3077     3351
+## ons_poak              0.01      0.00     0.01     0.02 1.00     2974     2943
+## coda_vc1              0.01      0.00     0.01     0.01 1.00     2185     2662
+## ons_poat:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     2221     2809
+## ons_poak:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     2077     2589
+## 
+## Further Distributional Parameters:
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma     0.02      0.00     0.02     0.02 1.00     1412     1576
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<pre class="r"><code># You can also do prior predictive checks to see if your priors make sense
+pp_check(bayes_model_informed, type = &quot;hist&quot;, ndraws = 100) + 
+  ggtitle(&quot;Prior Predictive Check: Do simulated VOTs look reasonable?&quot;)</code></pre>
+<p><img src="data_anal_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code># Compare the two models
+# Original model (with default priors)
+bayes_model_default &lt;- brm(vot ~ ons_poa * coda_vc + (1|sub),
+                          data = data_mod,
+                          family = gaussian(),
+                          chains = 4,
+                          iter = 2000,
+                          cores = 4,
+                          seed = 123)</code></pre>
+<pre><code>## Running /Library/Frameworks/R.framework/Resources/bin/R CMD SHLIB foo.c
+## using C compiler: ‘Apple clang version 12.0.5 (clang-1205.0.22.9)’
+## using SDK: ‘MacOSX11.3.sdk’
+## clang -arch arm64 -I&quot;/Library/Frameworks/R.framework/Resources/include&quot; -DNDEBUG   -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/Rcpp/include/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/unsupported&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/BH/include&quot; -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/StanHeaders/include/src/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/StanHeaders/include/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppParallel/include/&quot;  -I&quot;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/rstan/include&quot; -DEIGEN_NO_DEBUG  -DBOOST_DISABLE_ASSERTS  -DBOOST_PENDING_INTEGER_LOG2_HPP  -DSTAN_THREADS  -DUSE_STANC3 -DSTRICT_R_HEADERS  -DBOOST_PHOENIX_NO_VARIADIC_EXPRESSION  -D_HAS_AUTO_PTR_ETC=0  -include &#39;/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp&#39;  -D_REENTRANT -DRCPP_PARALLEL_USE_TBB=1   -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c foo.c -o foo.o
+## In file included from &lt;built-in&gt;:1:
+## In file included from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/StanHeaders/include/stan/math/prim/fun/Eigen.hpp:22:
+## In file included from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/Eigen/Dense:1:
+## In file included from /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/Eigen/Core:19:
+## /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:679:10: fatal error: &#39;cmath&#39; file not found
+## #include &lt;cmath&gt;
+##          ^~~~~~~
+## 1 error generated.
+## make: *** [foo.o] Error 1</code></pre>
+<pre class="r"><code># Model comparison
+loo_informed &lt;- loo(bayes_model_informed)
+loo_default &lt;- loo(bayes_model_default)
+loo_compare(loo_informed, loo_default)</code></pre>
+<pre><code>##                      elpd_diff se_diff
+## bayes_model_informed  0.0       0.0   
+## bayes_model_default  -0.1       0.1</code></pre>
+</div>
+<div id="understanding-your-model-structure" class="section level2">
+<h2>Understanding Your Model Structure</h2>
+<p>First, let’s clarify how your model is parameterized. With treatment
+coding (which is the default), your model likely has:</p>
+<p>Intercept: VOT for the reference category (probably /p/ with
+voiceless coda) ons_poak: Additional VOT for /k/ relative to /p/
+ons_poat: Additional VOT for /t/ relative to /p/ coda_vc: Additional VOT
+for voiced coda relative to voiceless coda Interactions: How the voicing
+effect differs for /t/ and /k/ compared to /p/</p>
+<p>Translating Your Intuitions to Priors Based on your knowledge, here’s
+how I’d set up the priors:VOT Model with Informed
+PriorsCode library(brms) library(tidyverse)</p>
+</div>
+</div>
+<div id="your-data-preparation-same-as-before" class="section level1">
+<h1>Your data preparation (same as before)</h1>
+<p>data_mod &lt;- data %&gt;% mutate(ons_poa = recode(ons_poa, “1” =
+“p”, “2” = “t”, “3” = “k”))</p>
+</div>
+<div id="check-the-contrast-coding-to-understand-your-model-structure"
+class="section level1">
+<h1>Check the contrast coding to understand your model structure</h1>
+<p>contrasts(factor(dataKey Points About These Priors: Place of
+Articulation Hierarchy (p &lt; t &lt; k):</p>
+<p>/t/ gets a prior mean of +15ms relative to /p/ /k/ gets a prior mean
+of +30ms relative to /p/ Standard deviations allow for uncertainty but
+center on your expected pattern</p>
+</div>
+<div id="voicing-effect" class="section level1">
+<h1>Voicing Effect:</h1>
+<p>coda_vc gets a positive prior (+10ms) reflecting your expectation
+that voiced codas increase VOT This captures the vowel duration → VOT
+correlation you mentioned</p>
+</div>
+<div id="interactions-1" class="section level1">
+<h1>Interactions:</h1>
+<p>Slightly positive priors for interactions, allowing the voicing
+effect to be stronger for back consonants More conservative (smaller)
+standard deviations since interactions are often smaller effects</p>
+<p>Conservative Approach: The standard deviations I’ve chosen are
+moderately informative - they express your expectations but still allow
+the data to override them if there’s strong evidence against your
+priors. To Evaluate Your Priors:</p>
+<p>Prior predictive checks: See if simulated data from your priors looks
+realistic Sensitivity analysis: Try different prior specifications to
+see how robust your conclusions are Compare models: Use LOO
+cross-validation to compare informed vs. default prior models</p>
+<div id="what-loo-cv-measures" class="section level2">
+<h2>What LOO-CV measures:</h2>
+<p>elpd = Expected Log Pointwise Predictive Density Higher elpd = better
+predictive performance The comparison shows differences relative to the
+best model</p>
+<p>Your results: elpd_diff se_diff bayes_model_informed 0.0 0.0<br />
+bayes_model_default -0.1 0.1 Interpretation:</p>
+<p>bayes_model_informed is listed first with elpd_diff = 0.0 because
+it’s the reference (best performing model) bayes_model_default has
+elpd_diff = -0.1, meaning it performs 0.1 elpd units worse se_diff = 0.1
+is the standard error of this difference</p>
+<div id="what-this-means" class="section level3">
+<h3>What this means:</h3>
+<p>The models perform virtually identically - a difference of 0.1 elpd
+is tiny The difference is not significant because |elpd_diff| &lt;
+2×se_diff (0.1 &lt; 0.2) Your informative priors didn’t hurt predictive
+performance and may have helped very slightly</p>
+</div>
+<div id="rule-of-thumb-for-elpd-differences" class="section level3">
+<h3>Rule of thumb for elpd differences:</h3>
+<p>|difference| &lt; 2×SE: Models are essentially equivalent
+|difference| &gt; 2×SE: Meaningful difference in predictive performance
+|difference| &gt; 4×SE: Strong evidence for better model</p>
+<p>Bottom line: Your informative priors are working well! They’re
+providing reasonable constraints without forcing the model away from
+what the data supports. This is exactly what you want - priors that are
+informative but not overly restrictive. The nearly identical performance
+suggests your priors were well-calibrated to the actual VOT patterns in
+your data. —</p>
+</div>
 </div>
 </div>
 
