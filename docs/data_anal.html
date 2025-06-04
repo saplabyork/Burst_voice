@@ -329,7 +329,10 @@ div.tocify {
   <a href="Practice.html">Practice</a>
 </li>
 <li>
-  <a href="data_anal.html">Data analysis</a>
+  <a href="data_anal.html">Data Production</a>
+</li>
+<li>
+  <a href="single_stim_perception.html">Data Perception</a>
 </li>
 <li>
   <a href="notes.html">Notes</a>
@@ -477,7 +480,7 @@ poa_labels &lt;- c(&quot;1&quot; = &quot;[pʰ]&quot;,
                 &quot;3&quot; = &quot;[kʰ]&quot;)
 
 vowel_labels &lt;- c(&quot;ae&quot; = &quot;æ&quot;,
-                  &quot;aw&quot; = &quot;ɑ&quot;,
+                  &quot;aw&quot; = &quot;ɔ&quot;,
                   &quot;eh&quot; = &quot;ɛ&quot;,
                   &quot;ih&quot; = &quot;ɪ&quot;,
                   &quot;uh&quot; = &quot;ʌ&quot;)
@@ -559,7 +562,7 @@ onset VOT.</p>
 library(tidyverse)
 data_mod &lt;- data %&gt;%
   #rename POA labels from 1,2,3 to p,t,k
-  mutate(ons_poa = recode(ons_poa, &quot;1&quot; = &quot;p-&quot;, &quot;2&quot; = &quot;t-&quot;, &quot;3&quot; = &quot;k-&quot;))
+  mutate(ons_poa = recode(ons_poa, &quot;1&quot; = &quot;p&quot;, &quot;2&quot; = &quot;t&quot;, &quot;3&quot; = &quot;k&quot;))
 
 model_full &lt;- lmer(vot ~ ons_poa * coda_vc * vowel + (1 | sub), data = data_mod)
 summary(model_full)</code></pre>
@@ -580,36 +583,36 @@ summary(model_full)</code></pre>
 ## Number of obs: 2311, groups:  sub, 19
 ## 
 ## Fixed effects:
-##                              Estimate Std. Error t value
-## (Intercept)                 9.651e-02  5.769e-03  16.729
-## ons_poap-                  -9.673e-03  2.331e-03  -4.151
-## ons_poat-                  -2.342e-03  2.320e-03  -1.009
-## coda_vc1                    8.175e-03  2.594e-03   3.152
-## vowelaw                     2.241e-03  2.594e-03   0.864
-## voweleh                    -6.737e-03  5.800e-03  -1.161
-## vowelih                    -9.162e-03  2.325e-03  -3.940
-## voweluh                    -8.759e-03  2.594e-03  -3.377
-## ons_poap-:coda_vc1         -1.695e-03  4.188e-03  -0.405
-## ons_poat-:coda_vc1         -2.412e-03  3.480e-03  -0.693
-## ons_poap-:vowelaw          -2.612e-03  3.487e-03  -0.749
-## ons_poat-:vowelaw           6.579e-05  3.480e-03   0.019
-## ons_poap-:voweleh          -2.668e-03  6.253e-03  -0.427
-## ons_poat-:voweleh           2.044e-03  4.783e-03   0.427
-## ons_poap-:vowelih          -9.108e-03  3.491e-03  -2.609
-## ons_poat-:vowelih          -7.742e-03  4.022e-03  -1.925
-## ons_poap-:voweluh          -7.080e-03  3.491e-03  -2.028
-## ons_poat-:voweluh          -3.610e-03  3.480e-03  -1.037
-## coda_vc1:vowelaw           -5.549e-03  3.672e-03  -1.511
-## coda_vc1:voweleh            3.947e-04  4.640e-03   0.085
-## coda_vc1:vowelih           -2.470e-03  4.186e-03  -0.590
-## coda_vc1:voweluh            1.411e-03  3.855e-03   0.366
-## ons_poap-:coda_vc1:vowelaw  9.920e-03  5.570e-03   1.781
-## ons_poat-:coda_vc1:vowelaw  5.983e-03  5.059e-03   1.183
-## ons_poap-:coda_vc1:voweleh  9.326e-03  6.253e-03   1.492
-## ons_poap-:coda_vc1:vowelih  4.897e-03  6.360e-03   0.770
-## ons_poat-:coda_vc1:vowelih  8.470e-03  6.249e-03   1.355
-## ons_poap-:coda_vc1:voweluh  7.902e-03  5.694e-03   1.388
-## ons_poat-:coda_vc1:voweluh  2.002e-03  5.193e-03   0.385
+##                             Estimate Std. Error t value
+## (Intercept)                9.651e-02  5.769e-03  16.729
+## ons_poap                  -9.673e-03  2.331e-03  -4.151
+## ons_poat                  -2.342e-03  2.320e-03  -1.009
+## coda_vc1                   8.175e-03  2.594e-03   3.152
+## vowelaw                    2.241e-03  2.594e-03   0.864
+## voweleh                   -6.737e-03  5.800e-03  -1.161
+## vowelih                   -9.162e-03  2.325e-03  -3.940
+## voweluh                   -8.759e-03  2.594e-03  -3.377
+## ons_poap:coda_vc1         -1.695e-03  4.188e-03  -0.405
+## ons_poat:coda_vc1         -2.412e-03  3.480e-03  -0.693
+## ons_poap:vowelaw          -2.612e-03  3.487e-03  -0.749
+## ons_poat:vowelaw           6.579e-05  3.480e-03   0.019
+## ons_poap:voweleh          -2.668e-03  6.253e-03  -0.427
+## ons_poat:voweleh           2.044e-03  4.783e-03   0.427
+## ons_poap:vowelih          -9.108e-03  3.491e-03  -2.609
+## ons_poat:vowelih          -7.742e-03  4.022e-03  -1.925
+## ons_poap:voweluh          -7.080e-03  3.491e-03  -2.028
+## ons_poat:voweluh          -3.610e-03  3.480e-03  -1.037
+## coda_vc1:vowelaw          -5.549e-03  3.672e-03  -1.511
+## coda_vc1:voweleh           3.947e-04  4.640e-03   0.085
+## coda_vc1:vowelih          -2.470e-03  4.186e-03  -0.590
+## coda_vc1:voweluh           1.411e-03  3.855e-03   0.366
+## ons_poap:coda_vc1:vowelaw  9.920e-03  5.570e-03   1.781
+## ons_poat:coda_vc1:vowelaw  5.983e-03  5.059e-03   1.183
+## ons_poap:coda_vc1:voweleh  9.326e-03  6.253e-03   1.492
+## ons_poap:coda_vc1:vowelih  4.897e-03  6.360e-03   0.770
+## ons_poat:coda_vc1:vowelih  8.470e-03  6.249e-03   1.355
+## ons_poap:coda_vc1:voweluh  7.902e-03  5.694e-03   1.388
+## ons_poat:coda_vc1:voweluh  2.002e-03  5.193e-03   0.385
 ## fit warnings:
 ## fixed-effect model matrix is rank deficient so dropping 1 column / coefficient</code></pre>
 <p>Remove the vowel term:</p>
@@ -764,12 +767,14 @@ vc_pred</code></pre>
 class="section level1">
 <h1>Bayesian mixed effects model of VOT ~ coda voicing</h1>
 <pre class="r"><code>library(brms)
+library(tidyverse)
+
 data_mod &lt;- data %&gt;%
   #rename POA labels from 1,2,3 to p,t,k
   mutate(ons_poa = recode(ons_poa, &quot;1&quot; = &quot;p&quot;, &quot;2&quot; = &quot;t&quot;, &quot;3&quot; = &quot;k&quot;))
 
 # Bayesian version of your model
-bayes_model &lt;- brm(vot ~ ons_poa * coda_vc + (1 | sub), 
+bayes_model &lt;- brm(vot ~ ons_poa * coda_vc + (1 | sub),
                    data = data_mod,
                    family = gaussian(),
                    chains = 4,
@@ -800,26 +805,101 @@ summary(bayes_model)</code></pre>
 ## Multilevel Hyperparameters:
 ## ~sub (Number of levels: 19) 
 ##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)     0.03      0.01     0.02     0.04 1.01      329      669
+## sd(Intercept)     0.03      0.00     0.02     0.04 1.01      269      862
 ## 
 ## Regression Coefficients:
 ##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept             0.09      0.01     0.08     0.10 1.02      241      244
-## ons_poap             -0.01      0.00    -0.02    -0.01 1.00     2483     2756
-## ons_poat             -0.00      0.00    -0.01    -0.00 1.00     2488     2822
-## coda_vc1              0.01      0.00     0.00     0.01 1.00     1682     2110
-## ons_poap:coda_vc1     0.00      0.00     0.00     0.01 1.00     1499     1918
-## ons_poat:coda_vc1    -0.00      0.00    -0.00     0.00 1.00     1955     1927
+## Intercept             0.09      0.01     0.08     0.10 1.03      223      365
+## ons_poap             -0.01      0.00    -0.02    -0.01 1.00     2388     2608
+## ons_poat             -0.00      0.00    -0.01    -0.00 1.00     2228     2409
+## coda_vc1              0.01      0.00     0.00     0.01 1.00     1894     2052
+## ons_poap:coda_vc1     0.00      0.00     0.00     0.01 1.00     1940     2371
+## ons_poat:coda_vc1    -0.00      0.00    -0.00     0.00 1.00     1843     2009
 ## 
 ## Further Distributional Parameters:
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     0.02      0.00     0.02     0.02 1.00     1055     1438
+## sigma     0.02      0.00     0.02     0.02 1.00     1116     1753
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
 ## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <pre class="r"><code>plot(bayes_model)</code></pre>
 <p><img src="data_anal_files/figure-html/unnamed-chunk-7-1.png" width="672" /><img src="data_anal_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<pre class="r"><code>library(marginaleffects)
+library(ggplot2)
+library(ggridges)
+
+# Get predictions
+newdata &lt;- expand_grid(
+  ons_poa = c(&quot;k&quot;, &quot;p&quot;, &quot;t&quot;),
+  coda_vc = c(0, 1)
+)
+
+preds &lt;- posterior_epred(bayes_model, newdata = newdata,
+                         allow_new_levels = TRUE, re_formula = NA)
+
+pred_summary &lt;- newdata %&gt;%
+  mutate(
+    estimate = apply(preds, 2, mean),
+    lower = apply(preds, 2, quantile, 0.025),
+    upper = apply(preds, 2, quantile, 0.975)
+  )
+
+# Reorder the data and create color scheme
+data_mod$poa_coda &lt;- factor(interaction(data_mod$coda_vc, data_mod$ons_poa),
+                           levels = c(&quot;0.p&quot;, &quot;1.p&quot;, &quot;0.t&quot;, &quot;1.t&quot;, &quot;0.k&quot;, &quot;1.k&quot;))
+data_mod$coda_vc_factor &lt;- factor(data_mod$coda_vc, levels = c(&quot;1&quot;, &quot;0&quot;), 
+                                 labels = c(&quot;Voiced&quot;, &quot;Voiceless&quot;))
+pred_summary$poa_coda &lt;- factor(interaction(pred_summary$coda_vc, pred_summary$ons_poa),
+                               levels = c(&quot;0.p&quot;, &quot;1.p&quot;, &quot;0.t&quot;, &quot;1.t&quot;, &quot;0.k&quot;, &quot;1.k&quot;))
+
+# Create the plot
+p &lt;- ggplot() +
+  # Ridged density plot of actual data with increased contrast
+  geom_density_ridges(data = data_mod,
+                      aes(x = vot, y = poa_coda, fill = poa_coda, 
+                          linetype = coda_vc_factor),
+                     alpha = 0.8, scale = 0.8) +
+  scale_linetype_manual(name = &quot;Coda voicing&quot;,
+                       values = c(&quot;Voiceless&quot; = &quot;dashed&quot;, &quot;Voiced&quot; = &quot;solid&quot;)) +
+  # Overlay predictions with darker colors
+  geom_point(data = pred_summary,
+            aes(x = estimate, y = poa_coda, color = poa_coda),
+            size = 3, position = position_nudge(y = 0.2)) +
+  geom_errorbarh(data = pred_summary,
+                aes(x = estimate, y = poa_coda,
+                    xmin = lower, xmax = upper, color = poa_coda),
+                height = 0.1, position = position_nudge(y = 0.2)) +
+  # Custom colors with higher contrast between voiced/voiceless
+  scale_fill_manual(values = c(&quot;0.p&quot; = &quot;#B71C1C&quot;, &quot;1.p&quot; = &quot;#FFCDD2&quot;,
+                              &quot;0.t&quot; = &quot;#1B5E20&quot;, &quot;1.t&quot; = &quot;#C8E6C9&quot;,
+                              &quot;0.k&quot; = &quot;#0D47A1&quot;, &quot;1.k&quot; = &quot;#BBDEFB&quot;)) +
+  # Much darker colors for predictions
+  scale_color_manual(values = c(&quot;0.p&quot; = &quot;#67000D&quot;, &quot;1.p&quot; = &quot;#A50F15&quot;,
+                               &quot;0.t&quot; = &quot;#00441B&quot;, &quot;1.t&quot; = &quot;#006D2C&quot;,
+                               &quot;0.k&quot; = &quot;#08306B&quot;, &quot;1.k&quot; = &quot;#08519C&quot;)) +
+  # Add POA labels on the left
+  annotate(&quot;text&quot;, x = 0.01, y = 1.5, label = &quot;pʰ&quot;, hjust = 1.2, vjust = 0.5, size = 4, fontface = &quot;bold&quot;) +
+  annotate(&quot;text&quot;, x = 0.01, y = 3.5, label = &quot;tʰ&quot;, hjust = 1.2, vjust = 0.5, size = 4, fontface = &quot;bold&quot;) +
+  annotate(&quot;text&quot;, x = 0.01, y = 5.5, label = &quot;kʰ&quot;, hjust = 1.2, vjust = 0.5, size = 4, fontface = &quot;bold&quot;) +
+  # Formatting with restricted x-axis
+  labs(x = &quot;VOT (s)&quot;, y = &quot;&quot;) +
+  xlim(0, 0.2) +  # Restrict x-axis to 0-0.2
+  coord_cartesian(ylim = c(0.5, 6.5)) +  # Extend y-axis limits
+  theme_minimal() +
+  guides(fill = &quot;none&quot;, color = &quot;none&quot;,
+         linetype = guide_legend(title = &quot;Coda voicing&quot;, direction = &quot;vertical&quot;)) +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = c(0.85, 0.20),
+        legend.background = element_rect(fill = &quot;white&quot;, color = &quot;black&quot;, size = 0.3),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        plot.margin = margin(t = 15, r = 5, b = 0, l = 5, unit = &quot;pt&quot;)) +
+  scale_y_discrete(expand = expansion(mult = c(0.05, 0.15)))
+
+print(p)</code></pre>
+<p><img src="data_anal_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
 <div id="results-interpretation" class="section level2">
 <h2><strong>Results interpretation</strong></h2>
 <div id="model-diagnostics" class="section level4">

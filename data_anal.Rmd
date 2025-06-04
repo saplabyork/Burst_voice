@@ -139,7 +139,7 @@ poa_labels <- c("1" = "[pʰ]",
                 "3" = "[kʰ]")
 
 vowel_labels <- c("ae" = "æ",
-                  "aw" = "ɑ",
+                  "aw" = "ɔ",
                   "eh" = "ɛ",
                   "ih" = "ɪ",
                   "uh" = "ʌ")
@@ -222,7 +222,7 @@ library(lme4)
 library(tidyverse)
 data_mod <- data %>%
   #rename POA labels from 1,2,3 to p,t,k
-  mutate(ons_poa = recode(ons_poa, "1" = "p-", "2" = "t-", "3" = "k-"))
+  mutate(ons_poa = recode(ons_poa, "1" = "p", "2" = "t", "3" = "k"))
 
 model_full <- lmer(vot ~ ons_poa * coda_vc * vowel + (1 | sub), data = data_mod)
 summary(model_full)
@@ -318,12 +318,14 @@ ggsave("vc_pred.png", plot = vc_pred, bg = 'white', width = 7, height =4, dpi=30
 ```{r}
 
 library(brms)
+library(tidyverse)
+
 data_mod <- data %>%
   #rename POA labels from 1,2,3 to p,t,k
   mutate(ons_poa = recode(ons_poa, "1" = "p", "2" = "t", "3" = "k"))
 
 # Bayesian version of your model
-bayes_model <- brm(vot ~ ons_poa * coda_vc + (1 | sub), 
+bayes_model <- brm(vot ~ ons_poa * coda_vc + (1 | sub),
                    data = data_mod,
                    family = gaussian(),
                    chains = 4,
@@ -334,6 +336,80 @@ bayes_model <- brm(vot ~ ons_poa * coda_vc + (1 | sub),
 summary(bayes_model)
 plot(bayes_model)
 
+library(marginaleffects)
+library(ggplot2)
+library(ggridges)
+
+# Get predictions
+newdata <- expand_grid(
+  ons_poa = c("k", "p", "t"),
+  coda_vc = c(0, 1)
+)
+
+preds <- posterior_epred(bayes_model, newdata = newdata,
+                         allow_new_levels = TRUE, re_formula = NA)
+
+pred_summary <- newdata %>%
+  mutate(
+    estimate = apply(preds, 2, mean),
+    lower = apply(preds, 2, quantile, 0.025),
+    upper = apply(preds, 2, quantile, 0.975)
+  )
+
+# Reorder the data and create color scheme
+data_mod$poa_coda <- factor(interaction(data_mod$coda_vc, data_mod$ons_poa),
+                           levels = c("0.p", "1.p", "0.t", "1.t", "0.k", "1.k"))
+data_mod$coda_vc_factor <- factor(data_mod$coda_vc, levels = c("1", "0"), 
+                                 labels = c("Voiced", "Voiceless"))
+pred_summary$poa_coda <- factor(interaction(pred_summary$coda_vc, pred_summary$ons_poa),
+                               levels = c("0.p", "1.p", "0.t", "1.t", "0.k", "1.k"))
+
+# Create the plot
+p <- ggplot() +
+  # Ridged density plot of actual data with increased contrast
+  geom_density_ridges(data = data_mod,
+                      aes(x = vot, y = poa_coda, fill = poa_coda, 
+                          linetype = coda_vc_factor),
+                     alpha = 0.8, scale = 0.8) +
+  scale_linetype_manual(name = "Coda voicing",
+                       values = c("Voiceless" = "dashed", "Voiced" = "solid")) +
+  # Overlay predictions with darker colors
+  geom_point(data = pred_summary,
+            aes(x = estimate, y = poa_coda, color = poa_coda),
+            size = 3, position = position_nudge(y = 0.2)) +
+  geom_errorbarh(data = pred_summary,
+                aes(x = estimate, y = poa_coda,
+                    xmin = lower, xmax = upper, color = poa_coda),
+                height = 0.1, position = position_nudge(y = 0.2)) +
+  # Custom colors with higher contrast between voiced/voiceless
+  scale_fill_manual(values = c("0.p" = "#B71C1C", "1.p" = "#FFCDD2",
+                              "0.t" = "#1B5E20", "1.t" = "#C8E6C9",
+                              "0.k" = "#0D47A1", "1.k" = "#BBDEFB")) +
+  # Much darker colors for predictions
+  scale_color_manual(values = c("0.p" = "#67000D", "1.p" = "#A50F15",
+                               "0.t" = "#00441B", "1.t" = "#006D2C",
+                               "0.k" = "#08306B", "1.k" = "#08519C")) +
+  # Add POA labels on the left
+  annotate("text", x = 0.01, y = 1.5, label = "pʰ", hjust = 1.2, vjust = 0.5, size = 4, fontface = "bold") +
+  annotate("text", x = 0.01, y = 3.5, label = "tʰ", hjust = 1.2, vjust = 0.5, size = 4, fontface = "bold") +
+  annotate("text", x = 0.01, y = 5.5, label = "kʰ", hjust = 1.2, vjust = 0.5, size = 4, fontface = "bold") +
+  # Formatting with restricted x-axis
+  labs(x = "VOT (s)", y = "") +
+  xlim(0, 0.2) +  # Restrict x-axis to 0-0.2
+  coord_cartesian(ylim = c(0.5, 6.5)) +  # Extend y-axis limits
+  theme_minimal() +
+  guides(fill = "none", color = "none",
+         linetype = guide_legend(title = "Coda voicing", direction = "vertical")) +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = c(0.85, 0.20),
+        legend.background = element_rect(fill = "white", color = "black", size = 0.3),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        plot.margin = margin(t = 15, r = 5, b = 0, l = 5, unit = "pt")) +
+  scale_y_discrete(expand = expansion(mult = c(0.05, 0.15)))
+
+print(p)
 ```
 
 ## **Results interpretation**
