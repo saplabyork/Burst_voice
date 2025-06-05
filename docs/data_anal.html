@@ -805,20 +805,20 @@ summary(bayes_model)</code></pre>
 ## Multilevel Hyperparameters:
 ## ~sub (Number of levels: 19) 
 ##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)     0.03      0.01     0.02     0.04 1.02      333      398
+## sd(Intercept)     0.03      0.00     0.02     0.04 1.01      293      562
 ## 
 ## Regression Coefficients:
 ##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept             0.09      0.01     0.08     0.11 1.01      299      388
-## ons_poap             -0.01      0.00    -0.02    -0.01 1.00     2440     2670
-## ons_poat             -0.00      0.00    -0.01    -0.00 1.00     2309     2296
-## coda_vc1              0.01      0.00     0.00     0.01 1.00     1768     2386
-## ons_poap:coda_vc1     0.00      0.00     0.00     0.01 1.00     1889     2351
-## ons_poat:coda_vc1    -0.00      0.00    -0.00     0.00 1.00     1765     2370
+## Intercept             0.09      0.01     0.08     0.11 1.02      254      361
+## ons_poap             -0.01      0.00    -0.02    -0.01 1.00     2486     3187
+## ons_poat             -0.00      0.00    -0.01    -0.00 1.00     2592     2608
+## coda_vc1              0.01      0.00     0.00     0.01 1.00     2074     2467
+## ons_poap:coda_vc1     0.00      0.00     0.00     0.01 1.00     1978     2721
+## ons_poat:coda_vc1    -0.00      0.00    -0.00     0.00 1.00     2057     2627
 ## 
 ## Further Distributional Parameters:
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     0.02      0.00     0.02     0.02 1.00     1283     1742
+## sigma     0.02      0.00     0.02     0.02 1.00     1229     1812
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -1030,7 +1030,9 @@ voiced rather than voiceless. These intuitions will be used to create
 library(tidyverse)
 
 data_mod$ons_poa &lt;- factor(data_mod$ons_poa, levels = c(&quot;p&quot;, &quot;t&quot;, &quot;k&quot;))
-get_prior(vot ~ ons_poa * coda_vc + (1|sub), data = data_mod, family = gaussian())</code></pre>
+get_prior(vot ~ ons_poa * coda_vc + (1|sub), 
+          data = data_mod, 
+          family = gaussian())</code></pre>
 <pre><code>##                   prior     class              coef group resp dpar nlpar lb ub
 ##                  (flat)         b                                              
 ##                  (flat)         b          coda_vc1                            
@@ -1072,46 +1074,18 @@ data_mod$ons_poa &lt;- factor(data_mod$ons_poa, levels = c(&quot;p&quot;, &quot;
 
 # Define informed priors based on your acoustic knowledge
 informed_priors &lt;- c(
-  # Intercept: VOT for /p/ with voiceless coda
-  # Expecting around 15-25ms for /p/
-  prior(normal(0.020, 0.010), class = Intercept),
-  
-  # Place of articulation effects (relative to /p/)
-  # /t/ should be ~10-20ms longer than /p/
-  prior(normal(0.015, 0.008), class = b, coef = ons_poat),
-  
-  # /k/ should be ~20-35ms longer than /p/  
-  prior(normal(0.030, 0.012), class = b, coef = ons_poak),
-  
-  # Voicing effect: voiced codas increase VOT
-  # Expecting 5-15ms increase due to vowel lengthening correlation
-  prior(normal(0.010, 0.005), class = b, coef = coda_vc),
-  
-  # Interactions: voicing effect might be larger for back consonants
-  # /t/ voicing interaction (small positive expected)
-  prior(normal(0.003, 0.005), class = b, coef = ons_poat:coda_vc),
-  
-  # /k/ voicing interaction (possibly larger positive effect)
-  prior(normal(0.005, 0.006), class = b, coef = ons_poak:coda_vc),
-  
-  # Random effects and residual variance
-  # Individual differences in VOT production
-  prior(normal(0, 0.020), class = sd),  # Random intercepts for subjects
-  
-  # Residual variance - VOT measurements have some noise
-  prior(normal(0, 0.025), class = sigma)
+  prior(normal(30, 10), class = Intercept),              # 20ms ± 10ms for /p/
+  prior(normal(15, 8), class = b, coef = ons_poat),      # /t/ effect
+  prior(normal(30, 12), class = b, coef = ons_poak),     # /k/ effect
+  prior(normal(10, 5), class = b, coef = coda_vc1),      # voicing effect (note: coda_vc1)
+  prior(normal(3, 5), class = b, coef = &quot;ons_poat:coda_vc1&quot;),  # /t/ × voicing interaction
+  prior(normal(5, 6), class = b, coef = &quot;ons_poak:coda_vc1&quot;),  # /k/ × voicing interaction
+  prior(normal(0, 20), class = sd),                      # random effects
+  prior(normal(0, 25), class = sigma)                    # residual
 )
-
 # Make sure coda_vc is properly factored
 data_mod$coda_vc &lt;- factor(data_mod$coda_vc)
 
-# Set up priors with generic class specifications (safer approach)
-informed_priors &lt;- c(
-  prior(normal(20, 10), class = Intercept),  # Adjust units as needed
-  prior(normal(0, 15), class = b),           # Generic prior for all fixed effects
-  prior(normal(0, 20), class = sd),          # Random effects
-  prior(normal(0, 25), class = sigma)        # Residual
-)
 
 # Fit the model
 bayes_model_informed &lt;- brm(vot ~ ons_poa * coda_vc + (1|sub),
@@ -1138,24 +1112,24 @@ bayes_model_informed &lt;- brm(vot ~ ons_poa * coda_vc + (1|sub),
 <pre class="r"><code># Check the priors were applied correctly
 prior_summary(bayes_model_informed)</code></pre>
 <pre><code>##           prior     class              coef group resp dpar nlpar lb ub
-##   normal(0, 15)         b                                              
-##   normal(0, 15)         b          coda_vc1                            
-##   normal(0, 15)         b          ons_poak                            
-##   normal(0, 15)         b ons_poak:coda_vc1                            
-##   normal(0, 15)         b          ons_poat                            
-##   normal(0, 15)         b ons_poat:coda_vc1                            
-##  normal(20, 10) Intercept                                              
+##          (flat)         b                                              
+##   normal(10, 5)         b          coda_vc1                            
+##  normal(30, 12)         b          ons_poak                            
+##    normal(5, 6)         b ons_poak:coda_vc1                            
+##   normal(15, 8)         b          ons_poat                            
+##    normal(3, 5)         b ons_poat:coda_vc1                            
+##  normal(30, 10) Intercept                                              
 ##   normal(0, 20)        sd                                          0   
 ##   normal(0, 20)        sd                     sub                  0   
 ##   normal(0, 20)        sd         Intercept   sub                  0   
 ##   normal(0, 25)     sigma                                          0   
 ##        source
+##       default
 ##          user
-##  (vectorized)
-##  (vectorized)
-##  (vectorized)
-##  (vectorized)
-##  (vectorized)
+##          user
+##          user
+##          user
+##          user
 ##          user
 ##          user
 ##  (vectorized)
@@ -1173,20 +1147,20 @@ summary(bayes_model_informed)</code></pre>
 ## Multilevel Hyperparameters:
 ## ~sub (Number of levels: 19) 
 ##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)     0.03      0.00     0.02     0.04 1.01      358      637
+## sd(Intercept)     0.03      0.00     0.02     0.04 1.02      229      548
 ## 
 ## Regression Coefficients:
 ##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept             0.08      0.01     0.07     0.09 1.01      258      292
-## ons_poat              0.01      0.00     0.01     0.01 1.00     3077     3351
-## ons_poak              0.01      0.00     0.01     0.02 1.00     2974     2943
-## coda_vc1              0.01      0.00     0.01     0.01 1.00     2185     2662
-## ons_poat:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     2221     2809
-## ons_poak:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     2077     2589
+## Intercept             0.08      0.01     0.07     0.09 1.02      264      347
+## ons_poat              0.01      0.00     0.01     0.01 1.00     2888     2517
+## ons_poak              0.01      0.00     0.01     0.02 1.00     2755     2732
+## coda_vc1              0.01      0.00     0.01     0.01 1.00     2239     2621
+## ons_poat:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     2211     2320
+## ons_poak:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     2191     2492
 ## 
 ## Further Distributional Parameters:
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     0.02      0.00     0.02     0.02 1.00     1412     1576
+## sigma     0.02      0.00     0.02     0.02 1.00     1242     1706
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -1223,85 +1197,188 @@ loo_default &lt;- loo(bayes_model_default)
 loo_compare(loo_informed, loo_default)</code></pre>
 <pre><code>##                      elpd_diff se_diff
 ## bayes_model_informed  0.0       0.0   
-## bayes_model_default  -0.1       0.1</code></pre>
-</div>
-<div id="understanding-your-model-structure" class="section level2">
-<h2>Understanding Your Model Structure</h2>
-<p>First, let’s clarify how your model is parameterized. With treatment
-coding (which is the default), your model likely has:</p>
-<p>Intercept: VOT for the reference category (probably /p/ with
-voiceless coda) ons_poak: Additional VOT for /k/ relative to /p/
-ons_poat: Additional VOT for /t/ relative to /p/ coda_vc: Additional VOT
-for voiced coda relative to voiceless coda Interactions: How the voicing
-effect differs for /t/ and /k/ compared to /p/</p>
-<p>Translating Your Intuitions to Priors Based on your knowledge, here’s
-how I’d set up the priors:VOT Model with Informed
-PriorsCode library(brms) library(tidyverse)</p>
+## bayes_model_default  -0.3       0.1</code></pre>
 </div>
 </div>
-<div id="your-data-preparation-same-as-before" class="section level1">
-<h1>Your data preparation (same as before)</h1>
-<p>data_mod &lt;- data %&gt;% mutate(ons_poa = recode(ons_poa, “1” =
-“p”, “2” = “t”, “3” = “k”))</p>
-</div>
-<div id="check-the-contrast-coding-to-understand-your-model-structure"
+<div id="breakdown-of-the-model-and-comparisions"
 class="section level1">
-<h1>Check the contrast coding to understand your model structure</h1>
-<p>contrasts(factor(dataKey Points About These Priors: Place of
-Articulation Hierarchy (p &lt; t &lt; k):</p>
-<p>/t/ gets a prior mean of +15ms relative to /p/ /k/ gets a prior mean
-of +30ms relative to /p/ Standard deviations allow for uncertainty but
-center on your expected pattern</p>
+<h1>Breakdown of the model and comparisions</h1>
+<ol style="list-style-type: decimal">
+<li>Setup and Libraries rlibrary(brms) # Bayesian regression modeling
+library(tidyverse) # Data manipulation and visualization</li>
+<li>Data Preparation r# Convert numeric codes to phonetic symbols
+data_mod &lt;- data %&gt;% mutate(ons_poa = recode(ons_poa, “1” = “p”,
+“2” = “t”, “3” = “k”))</li>
+</ol>
+<div id="set-factor-levels-explicitly-important-for-interpretation"
+class="section level2">
+<h2>Set factor levels explicitly (important for interpretation!)</h2>
+<p>data_mod<span class="math inline">\(ons_poa &lt;-
+factor(data_mod\)</span>ons_poa, levels = c(“p”, “t”, “k”))
+data_mod<span class="math inline">\(coda_vc &lt;-
+factor(data_mod\)</span>coda_vc) What this does:</p>
+<p>Converts your place of articulation from numbers (1,2,3) to
+meaningful labels (p,t,k) Crucially sets /p/ as the reference level -
+all other effects will be relative to /p/ Makes sure coda_vc is treated
+as categorical, not continuous</p>
+<p>Check contrasts: rcontrasts(factor(data_mod$ons_poa)) This shows you
+the contrast matrix - how R will code your categorical variables
+internally. 3. Prior Specification rinformed_priors &lt;- c(
+prior(normal(30, 10), class = Intercept), # VOT for /p/ (reference)
+prior(normal(15, 8), class = b, coef = ons_poat), # /t/ - /p/ difference
+prior(normal(30, 12), class = b, coef = ons_poak), # /k/ - /p/
+difference<br />
+prior(normal(10, 5), class = b, coef = coda_vc1), # voicing effect
+prior(normal(3, 5), class = b, coef = “ons_poat:coda_vc1”), # /t/ ×
+voicing prior(normal(5, 6), class = b, coef = “ons_poak:coda_vc1”), #
+/k/ × voicing prior(normal(0, 20), class = sd), # between-subject
+variation prior(normal(0, 25), class = sigma) # within-condition noise )
+Your Linguistic Expectations:</p>
+<p>/p/ baseline: 30ms ± 10ms (reasonable for voiceless bilabial) /t/
+effect: +15ms ± 8ms (so /t/ ≈ 45ms total) /k/ effect: +30ms ± 12ms (so
+/k/ ≈ 60ms total) Voicing effect: +10ms ± 5ms (voiced codas increase
+VOT) Interactions: Small effects (3-5ms) where voicing might interact
+with place</p>
+<ol start="4" style="list-style-type: decimal">
+<li>Model Fitting rbayes_model_informed &lt;- brm(vot ~ ons_poa *
+coda_vc + (1|sub), …) Model Structure:</li>
+</ol>
+<p>vot ~ VOT is the outcome ons_poa * coda_vc main effects + interaction
+of place × voicing (1|sub) random intercepts for each subject (accounts
+for individual differences) family = gaussian() assumes normally
+distributed residuals</p>
+<p>MCMC Settings:</p>
+<p>chains = 4 (4 independent sampling chains for convergence checking)
+iter = 2000 (2000 iterations per chain, 1000 warmup + 1000 sampling)
+cores = 4 (parallel processing) seed = 123 (reproducibility)</p>
+<ol start="5" style="list-style-type: decimal">
+<li>Model Diagnostics rprior_summary(bayes_model_informed) # Check
+priors were applied correctly summary(bayes_model_informed) # Parameter
+estimates and credible intervals pp_check(…, type = “hist”) # Prior
+predictive check What these do:</li>
+</ol>
+<p>prior_summary: Confirms your priors were set correctly summary: Shows
+posterior distributions for all parameters pp_check: Simulates data from
+your priors - do they look like realistic VOT values?</p>
+<ol start="6" style="list-style-type: decimal">
+<li>Model Comparison r# Fit default model (flat priors)
+bayes_model_default &lt;- brm(same_formula, default_priors, …)</li>
+</ol>
 </div>
-<div id="voicing-effect" class="section level1">
-<h1>Voicing Effect:</h1>
-<p>coda_vc gets a positive prior (+10ms) reflecting your expectation
-that voiced codas increase VOT This captures the vowel duration → VOT
-correlation you mentioned</p>
+<div id="compare-predictive-performance" class="section level2">
+<h2>Compare predictive performance</h2>
+<p>loo_informed &lt;- loo(bayes_model_informed) # Leave-one-out
+cross-validation loo_default &lt;- loo(bayes_model_default)
+loo_compare(loo_informed, loo_default) # Which predicts better? The Two
+Models Being Compared: Model 1: Informed Priors</p>
+<p>Uses your linguistic knowledge as priors Regularizes parameters
+toward expected values Can help with overfitting, especially with small
+samples</p>
+<p>Model 2: Default Priors</p>
+<p>Uses brms default weakly informative priors Lets data drive estimates
+more strongly More similar to frequentist analysis</p>
+<p>What the Comparison Tells You:</p>
+<p>Similar performance: Your priors were reasonable, not forcing
+implausible values Informed model better: Your priors helped
+regularization/prediction Default model better: Your priors may have
+been too restrictive</p>
+<p>The key insight: This comparison shows whether incorporating your
+phonetic knowledge actually improves the model, or whether the data
+alone provides sufficient information.</p>
 </div>
-<div id="interactions-1" class="section level1">
-<h1>Interactions:</h1>
-<p>Slightly positive priors for interactions, allowing the voicing
-effect to be stronger for back consonants More conservative (smaller)
-standard deviations since interactions are often smaller effects</p>
-<p>Conservative Approach: The standard deviations I’ve chosen are
-moderately informative - they express your expectations but still allow
-the data to override them if there’s strong evidence against your
-priors. To Evaluate Your Priors:</p>
-<p>Prior predictive checks: See if simulated data from your priors looks
-realistic Sensitivity analysis: Try different prior specifications to
-see how robust your conclusions are Compare models: Use LOO
-cross-validation to compare informed vs. default prior models</p>
-<div id="what-loo-cv-measures" class="section level2">
-<h2>What LOO-CV measures:</h2>
-<p>elpd = Expected Log Pointwise Predictive Density Higher elpd = better
-predictive performance The comparison shows differences relative to the
-best model</p>
-<p>Your results: elpd_diff se_diff bayes_model_informed 0.0 0.0<br />
-bayes_model_default -0.1 0.1 Interpretation:</p>
-<p>bayes_model_informed is listed first with elpd_diff = 0.0 because
-it’s the reference (best performing model) bayes_model_default has
-elpd_diff = -0.1, meaning it performs 0.1 elpd units worse se_diff = 0.1
-is the standard error of this difference</p>
-<div id="what-this-means" class="section level3">
-<h3>What this means:</h3>
-<p>The models perform virtually identically - a difference of 0.1 elpd
-is tiny The difference is not significant because |elpd_diff| &lt;
-2×se_diff (0.1 &lt; 0.2) Your informative priors didn’t hurt predictive
-performance and may have helped very slightly</p>
 </div>
-<div id="rule-of-thumb-for-elpd-differences" class="section level3">
-<h3>Rule of thumb for elpd differences:</h3>
-<p>|difference| &lt; 2×SE: Models are essentially equivalent
-|difference| &gt; 2×SE: Meaningful difference in predictive performance
-|difference| &gt; 4×SE: Strong evidence for better model</p>
-<p>Bottom line: Your informative priors are working well! They’re
-providing reasonable constraints without forcing the model away from
-what the data supports. This is exactly what you want - priors that are
-informative but not overly restrictive. The nearly identical performance
-suggests your priors were well-calibrated to the actual VOT patterns in
-your data. —</p>
+<div id="understanding-the-results-of-the-informed-model"
+class="section level1">
+<h1>Understanding the results of the informed model</h1>
+<div id="model-quality-convergence" class="section level2">
+<h2>Model Quality &amp; Convergence</h2>
+<p>Rhat values: All ≈ 1.00-1.02 ✓ (good convergence) ESS (Effective
+Sample Size): Mostly good, some low values for Intercept (229) but
+acceptable 4000 posterior draws from 4 chains provide robust
+estimates</p>
+<p>Key Findings (Converting to Milliseconds) Your data is in seconds, so
+multiply by 1000 for interpretation: Baseline VOT (/p/ with reference
+coda condition):</p>
+<p>0.08s = 80ms (95% CI: 70-90ms) This is much higher than your prior
+expectation of 30ms Typical /p/ VOT is 15-25ms, so your data has
+unusually long VOTs</p>
 </div>
+<div id="place-of-articulation-effects" class="section level2">
+<h2>Place of Articulation Effects:</h2>
+<p>Priors vs Reality:</p>
+<p>Prior for /t/: Expected +15ms difference from /p/ Actual /t/ effect:
++10ms (95% CI: 10-10ms) - smaller than expected Prior for /k/: Expected
++30ms difference from /p/ Actual /k/ effect: +10ms (95% CI: 10-20ms) -
+much smaller than expected</p>
+<p>Interpretation: Your /t/ and /k/ are only ~10ms longer than /p/, not
+the 15-30ms differences you expected.</p>
+</div>
+<div id="voicing-effect-coda_vc1" class="section level2">
+<h2>Voicing Effect (coda_vc1):</h2>
+<p>Effect: +10ms (matches your prior expectation well!) This suggests
+whatever coda_vc1 represents (voiced vs voiceless codas) does increase
+VOT by ~10ms</p>
+</div>
+<div id="interactions-small-but-interesting" class="section level2">
+<h2>Interactions (Small but Interesting):</h2>
+<p>Both interactions are negative (~-0 to -5ms) This means the voicing
+effect is slightly smaller for /t/ and /k/ than for /p/ Opposite of what
+you might expect if interactions were positive</p>
+</div>
+<div id="what-this-says-about-the-data" class="section level2">
+<h2>What This Says About The Data:</h2>
+<p>Unusually long VOTs overall - your /p/ baseline of 80ms is very high
+Smaller place effects than typical - your consonants are more similar
+than expected Your priors were too optimistic about place differences
+Voicing effects work as expected - good match to your prior</p>
+</div>
+<div id="random-effects" class="section level2">
+<h2>Random Effects:</h2>
+<p>Between-subject SD: 30ms (substantial individual differences)
+Residual error: 20ms (reasonable measurement noise)</p>
+<p>The model successfully incorporated your priors but shows your data
+has different patterns than you initially expected - which is valuable
+scientific information!</p>
+</div>
+</div>
+<div id="understanding-the-comparisons-of-informed-vs.-default-models"
+class="section level1">
+<h1>Understanding the comparisons of Informed vs. Default models</h1>
+<p>This LOO-CV comparison shows a meaningful difference between your
+models: Interpretation: elpd_diff se_diff bayes_model_informed 0.0
+0.0<br />
+bayes_model_default -0.3 0.1 Key Finding:</p>
+<p>elpd_diff = -0.3 for the default model se_diff = 0.1 (standard error
+of the difference) |elpd_diff| &gt; 2×SE (0.3 &gt; 0.2) = statistically
+meaningful difference</p>
+<div id="what-this-means" class="section level2">
+<h2>What This Means:</h2>
+<p>Your informed priors model predicts better than the default priors
+model The difference is significant (not just random noise) Your
+linguistic knowledge was valuable - it improved predictive
+performance</p>
+</div>
+<div id="why-your-informed-priors-helped" class="section level2">
+<h2>Why Your Informed Priors Helped:</h2>
+<p>Even though your priors didn’t perfectly match the data patterns:</p>
+<p>Your prior for voicing effect (10ms) was spot-on Your place effects
+priors (15ms, 30ms) provided reasonable regularization even though
+actual effects were smaller (~10ms each) The intercept prior (30ms)
+helped constrain the baseline, even though actual was higher (80ms)</p>
+<p>Scientific Interpretation: This is a success story for informed
+priors! Your linguistic knowledge:</p>
+<p>-Improved predictive accuracy -Provided reasonable regularization
+-Didn’t force implausible parameter values -Helped the model generalize
+better to new data points</p>
+</div>
+<div id="practical-implications" class="section level2">
+<h2>Practical Implications:</h2>
+<p>Use the informed priors model for your final analysis Your domain
+expertise was valuable even when priors weren’t perfectly calibrated The
+model balanced your prior knowledge with what the data actually showed
+This demonstrates the benefit of Bayesian analysis for phonetic
+research</p>
+<hr />
 </div>
 </div>
 
