@@ -1,0 +1,974 @@
+---
+title: "EXP1 InLab"
+output: 
+  html_document:
+    includes:
+      in_header: "favicon.html"
+    theme: paper
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{=html}
+<style type="text/css">
+  body{
+  font-size: 12pt;
+}
+</style>
+```
+
+```{=html}
+<style type="text/css">
+.title {
+  display: none;
+}
+
+#getting-started img {
+  margin-right: 10px;
+}
+
+</style>
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(repos = c(CRAN = "https://cran.rstudio.com/"))
+install.packages("ggeffects")
+```
+
+```{r}
+exp1_data <- read.csv("/Users/chandan/Desktop/GitHub/Burst_voice/Data/full_data.csv", header=TRUE)
+
+number_of_subs <- length(unique(exp1_data$sub))
+number_of_subs
+
+library(lme4)
+library(ggplot2)
+library(ggeffects)
+
+exp1_data$ons_con <- as.factor(exp1_data$ons_con)
+
+#per_data_cor <- subset(per_data, Correct=="1")
+
+library(tidyverse)
+
+# Create a crosstab table with ons_con on rows, stim_length on columns
+# with marginal totals for each row and column
+
+crosstab_table <- exp1_data %>%
+  group_by(ons_con, stim_length) %>%
+  summarise(
+    percent_correct = mean(Correct) * 100,
+    n = n(),
+    .groups = "drop"
+  ) %>%
+  # Add formatted column combining percentage and n
+  mutate(formatted = paste0(round(percent_correct, 1), "%\n(n=", n, ")")) %>%
+  select(ons_con, stim_length, formatted) %>%
+  # Pivot wider to get stim_length as columns
+  pivot_wider(names_from = stim_length, values_from = formatted)
+
+# Calculate row totals (marginal totals for each ons_con)
+row_totals <- exp1_data %>%
+  group_by(ons_con) %>%
+  summarise(
+    percent_correct = mean(Correct) * 100,
+    n = n(),
+    .groups = "drop"
+  ) %>%
+  mutate(Total = paste0(round(percent_correct, 1), "%\n(n=", n, ")")) %>%
+  select(ons_con, Total)
+
+# Calculate column totals (marginal totals for each stim_length)
+col_totals <- exp1_data %>%
+  group_by(stim_length) %>%
+  summarise(
+    percent_correct = mean(Correct) * 100,
+    n = n(),
+    .groups = "drop"
+  ) %>%
+  mutate(formatted = paste0(round(percent_correct, 1), "%\n(n=", n, ")")) %>%
+  select(stim_length, formatted) %>%
+  pivot_wider(names_from = stim_length, values_from = formatted) %>%
+  mutate(ons_con = "Total")
+
+# Calculate overall total
+overall_total <- exp1_data %>%
+  summarise(
+    percent_correct = mean(Correct) * 100,
+    n = n()
+  ) %>%
+  mutate(Total = paste0(round(percent_correct, 1), "%\n(n=", n, ")")) %>%
+  pull(Total)
+
+# Add row totals to the main table
+final_table <- crosstab_table %>%
+  left_join(row_totals, by = "ons_con")
+
+# Add column totals row
+col_totals_row <- col_totals %>%
+  mutate(Total = overall_total)
+
+# Combine everything
+complete_table <- bind_rows(
+  final_table,
+  col_totals_row
+)
+
+# Display the table
+print(complete_table)
+
+# Alternative: Create a cleaner version without the \n formatting
+clean_table <- exp1_data %>%
+  group_by(ons_con, stim_length) %>%
+  summarise(
+    percent_correct = round(mean(Correct) * 100, 1),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(names_from = stim_length, values_from = percent_correct) %>%
+  # Add row totals
+  left_join(
+    per_data %>%
+      group_by(ons_con) %>%
+      summarise(Total = round(mean(Correct) * 100, 1), .groups = "drop"),
+    by = "ons_con"
+  )
+print(clean_table)
+
+# Add column totals
+col_totals_clean <- exp1_data %>%
+  group_by(stim_length) %>%
+  summarise(percent_correct = round(mean(Correct) * 100, 1), .groups = "drop") %>%
+  pivot_wider(names_from = stim_length, values_from = percent_correct) %>%
+  mutate(
+    ons_con = "Total",
+    Total = round(mean(exp1_data$Correct) * 100, 1)
+  )
+
+clean_complete_table <- bind_rows(clean_table, col_totals_clean)
+
+print("\nClean version (percentages only):")
+print(clean_complete_table)
+
+
+# Fit the mixed-effects logistic regression model with interaction term
+exp1_model <- glmer(response_vc ~ stim_length * ons_con + (1 | vowel) + (1 | sub), 
+                   data = exp1_data, 
+                   family = binomial)
+
+summary(exp1_model)
+
+# Fully crossed model with random slopes/intercepts
+exp1_model_full <- glmer(response_vc ~ stim_length * ons_con + (1 + stim_length + ons_con | sub), 
+                   data = exp1_data, 
+                   family = binomial, control=glmerControl(optimizer="bobyqa",
+                            optCtrl=list(maxfun=2e5)))
+
+summary(exp1_model_full)
+
+# Singularity problem with random effects structure, so random slopes/intercepts for just one variable
+
+exp1_model_full <- glmer(response_vc ~ stim_length * ons_con + (1 + stim_length | sub), 
+                   data = exp1_data, 
+                   family = binomial, control=glmerControl(optimizer="bobyqa",
+                            optCtrl=list(maxfun=2e5)))
+
+summary(exp1_model_full)
+
+## This includes vowel. THIS IS THE MODEL TO USE.
+## 
+
+exp1_model_full_vowel <- glmer(response_vc ~ stim_length * ons_con * vowel + (1 + stim_length | sub), 
+                   data = exp1_data, 
+                   family = binomial, control=glmerControl(optimizer="bobyqa",
+                            optCtrl=list(maxfun=2e5)))
+
+summary(exp1_model_full_vowel)
+
+
+# Make sure you have the predicted probabilities
+exp1_data$predicted <- predict(exp1_model_full_vowel, type = "response")
+
+# Summarize predicted probabilities
+summary_df <- exp1_data %>%
+  group_by(stim_length, ons_con, vowel) %>%
+  summarise(
+    mean_prob = mean(predicted),
+    se_prob = sd(predicted) / sqrt(n()),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    lower_ci = mean_prob - 1.96 * se_prob,
+    upper_ci = mean_prob + 1.96 * se_prob
+  )
+
+# Reorder stim_length factor
+summary_df$stim_length <- factor(summary_df$stim_length, levels = c("short", "long"))
+
+# Colorful plot with thin lines connecting points
+perception_plot <- ggplot(summary_df, aes(x = stim_length, y = mean_prob, color = vowel, group = vowel)) +
+  geom_line(linewidth = 0.1) +
+  geom_point(size = 4) +
+  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
+                width = 0.15, linewidth = 1) +
+  facet_wrap(~ ons_con, labeller = labeller(ons_con = c("k" = "[kʰ-]", "p" = "[pʰ-]"))) +
+  scale_color_viridis_d(option = "plasma", end = 0.85,
+                        labels = c("a" = "æ", "e" = "ɛ", "i" = "ɪ")) +
+  labs(x = "Long-lag aspiration Length",
+       y = "Predicted Probability of 'Voiced coda' Response",
+       color = "Vowel") +
+  theme_minimal(base_size = 14) +
+#    theme(
+#    strip.text = element_text(margin = margin_part(b = -18, l = 1)),
+#    strip.clip = "off",
+#    panel.spacing = unit(2, "lines"),
+#    plot.margin = margin(t = 24, r = 12, b = 12, l = 12)
+#  ) +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(color = "grey90"),
+    legend.position = "right",
+    strip.text = element_text(face = "bold", size = 13, color = "grey20"),
+    #strip.background = element_rect(fill = "grey95", color = NA),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
+
+ggsave("perception_plot.png", dpi=300, width=7, height=5)
+
+
+
+
+###
+
+# Install ggeffects if not already installed
+install.packages("ggeffects")
+
+# Load the package
+library(ggeffects)
+
+# Generate predicted probabilities for `stim_length`
+probabilities <- ggpredict(exp1_model, terms = "stim_length")
+
+# Print the probabilities
+print(probabilities)
+
+# Plot the probabilities
+plot(probabilities)
+
+
+```
+
+## Bayesian models
+
+```{r}
+# Install if needed
+# install.packages("brms")
+
+# Trying out Bayes
+
+library(brms)
+
+exp1_model_bayes <- brm(response_vc ~ stim_length * ons_con + (1 + stim_length | sub), 
+                       data = exp1_data, 
+                       family = bernoulli(),
+                       chains = 4,
+                       iter = 2000,
+                       cores = 4)
+
+# Check the model
+summary(exp1_model_bayes)
+plot(exp1_model_bayes)
+
+
+# Check the coding of stim_length
+table(exp1_data$stim_length)
+levels(factor(exp1_data$stim_length))
+
+# Check what the reference level is
+contrasts(factor(exp1_data$stim_length))
+
+
+## Get the actual probabilities from the model
+
+# Extract coefficients
+fixef(exp1_model_bayes)
+
+# For long stimuli, ons_con at reference level:
+intercept <- -0.34
+prob_long_ref <- plogis(intercept)  # plogis converts log-odds to probability
+prob_long_ref  # Should be around 0.42
+
+# For short stimuli, ons_con at reference level:
+prob_short_ref <- plogis(intercept + (-1.34))
+prob_short_ref  # Should be around 0.17
+
+# For long stimuli, ons_con = "p":
+prob_long_p <- plogis(intercept + (-0.08))
+prob_long_p
+
+# For short stimuli, ons_con = "p":
+prob_short_p <- plogis(intercept + (-1.34) + (-0.08) + 1.07)
+prob_short_p
+
+
+# Load required libraries
+library(brms)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Create a grid of predictor values to get estimates for each condition
+# Get unique values of your predictors
+stim_lengths <- unique(exp1_data$stim_length)
+ons_cons <- unique(exp1_data$ons_con)
+
+# Create prediction grid
+pred_grid <- expand.grid(
+  stim_length = stim_lengths,
+  ons_con = ons_cons
+)
+
+# Get posterior predictions for each condition
+# Get the full posterior draws first
+posterior_draws <- posterior_epred(exp1_model_bayes, 
+                                  newdata = pred_grid,
+                                  allow_new_levels = TRUE,
+                                  re_formula = NA)  # This marginalizes over random effects
+
+# Calculate summary statistics manually
+posterior_summary <- apply(posterior_draws, 2, function(x) {
+  c(estimate = mean(x),
+    lower = quantile(x, 0.025),
+    upper = quantile(x, 0.975))
+})
+
+# Combine predictions with the grid
+plot_data <- pred_grid %>%
+  mutate(
+    estimate = posterior_summary[1, ],
+    lower = posterior_summary[2, ],
+    upper = posterior_summary[3, ]
+  )
+
+# Create the plot
+ggplot(plot_data, aes(x = factor(ons_con, levels = c("p", "k")), y = estimate, color = factor(stim_length))) +
+  geom_point(size = 3, position = position_dodge(width = 0.1)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper), 
+                width = 0.05, 
+                size = 1,
+                position = position_dodge(width = 0.1)) +
+  labs(
+    title = "Bayesian Model Estimates by Stimulus Length and Onset Condition",
+    x = "Onset Condition",
+    y = "Predicted probability of a perceived VOICED coda",
+    color = "Stimulus Length"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5, size = 14),
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 12),
+    legend.text = element_text(size = 11),
+    panel.grid.major = element_line(color = "grey90", size = 0.5),
+    panel.grid.minor = element_line(color = "grey95", size = 0.3)
+  ) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format())
+
+# Alternative version with different styling
+ggplot(plot_data, aes(x = factor(ons_con, levels = c("p", "k")), y = estimate, color = factor(stim_length))) +
+  geom_point(size = 4, position = position_dodge(width = 0.3)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper), 
+                width = 0.2, 
+                size = 1.2,
+                position = position_dodge(width = 0.3)) +
+  labs(
+    title = "Model Estimates with 95% Credible Intervals",
+    x = "Onset",
+    y = "Predicted probability of a perceived VOICED coda",
+    color = "Stimulus Length"
+  ) +
+  theme_classic() +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 14),
+    legend.title = element_text(size = 12, face = "bold"),
+    legend.text = element_text(size = 11),
+    panel.grid.major = element_line(color = "grey90", size = 0.5),
+    panel.grid.minor = element_line(color = "grey95", size = 0.3)
+  ) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format())
+
+# If you want to see the actual data values used:
+print("Prediction grid and estimates:")
+print(plot_data)
+
+```
+
+# How to interpret the model and plot?
+
+The negative coefficient for stim_lengthshort (-1.33) means that short
+stimulus length decreases the probability that response_vc = 1 In other
+words: long stimuli have higher probability of voiced coda perception
+than short stimuli
+
+This matches your plot perfectly - you can see that the points for long
+stimuli (one color) are higher on the y-axis than the points for short
+stimuli (other color) for both onset conditions. In practical terms:
+
+Long stimuli → higher probability of perceiving a voiced coda Short
+stimuli → lower probability of perceiving a voiced coda The interaction
+shows this length effect is stronger for /k/ onsets than /p/ onsets
+
+# Key diagnostics you should report:
+
+```{r}
+# # Load required libraries
+# library(brms)        # Load brms first
+# library(ggplot2)
+# library(bayesplot)   # Load bayesplot after brms
+# rhat <- brms::rhat
+# 
+# # 1. CONVERGENCE DIAGNOSTICS (Most Important)
+# # Check Rhat values (should be < 1.01, ideally < 1.001)
+# rhat_values <- rhat(per_model_bayes)
+# print("Rhat values:")
+# print(rhat_values)
+# 
+# # Check effective sample sizes
+# #ess_bulk <- neff_ratio(per_model_bayes)
+# # For tail ESS, check the summary or use posterior package
+# # Check convergence diagnostics
+# summary(per_model_bayes)  # This shows Bulk_ESS and Tail_ESS in the output
+# model_summary <- summary(per_model_bayes)
+# print("Effective Sample Size ratios (should be > 0.1):")
+# print(paste("Bulk ESS ratio range:", round(min(ess_bulk), 3), "to", round(max(ess_bulk), 3)))
+# print(paste("Tail ESS ratio range:", round(min(ess_tail), 3), "to", round(max(ess_tail), 3)))
+# 
+# # 2. TRACE PLOTS (Visual convergence check)
+# plot(per_model_bayes, pars = c("b_Intercept", "b_stim_lengthshort", 
+#                                "b_ons_conp", "b_stim_lengthshort:ons_conp"))
+# 
+# # 3. POSTERIOR PREDICTIVE CHECKS
+# # Check if model reproduces key patterns in the data
+# pp_check(per_model_bayes, ndraws = 100)
+# 
+# # More specific posterior predictive checks
+# pp_check(per_model_bayes, type = "bars", ndraws = 500)  # For binary data
+# pp_check(per_model_bayes, type = "stat", stat = "mean", ndraws = 1000)
+# pp_check(per_model_bayes, type = "stat_grouped", 
+#          stat = "mean", group = "stim_length", ndraws = 500)
+# 
+# # 4. MODEL COMPARISON (if you have alternative models)
+# # Example: Compare to simpler models
+# # per_model_simple <- brm(response_vc ~ stim_length + ons_con + (1|sub), 
+# #                        data = per_data, family = bernoulli())
+# # loo_compare(loo(per_model_bayes), loo(per_model_simple))
+# 
+# # 5. RESIDUAL DIAGNOSTICS
+# # For mixed effects models, check residuals at different levels
+# residuals_plot <- plot(per_model_bayes, type = "residuals")
+# print(residuals_plot)
+# 
+# # 6. RANDOM EFFECTS DIAGNOSTICS
+# # Check if random effects are reasonable
+# plot(per_model_bayes, pars = "^r_sub")
+# 
+# # Check random effects correlations
+# plot(per_model_bayes, pars = "cor")
+# 
+# # 7. MCMC DIAGNOSTICS
+# # Check for divergent transitions
+# nuts_params <- nuts_params(per_model_bayes)
+# print("Number of divergent transitions:")
+# sum(subset(nuts_params, Parameter == "divergent__")$Value)
+# 
+# # Energy diagnostics
+# mcmc_nuts_energy(nuts_params)
+# 
+# # 8. MODEL SUMMARY FOR REPORTING
+# print("=== MODEL SUMMARY FOR REPORTING ===")
+# summary(per_model_bayes)
+# 
+# # 9. LEAVE-ONE-OUT CROSS-VALIDATION
+# loo_result <- loo(per_model_bayes)
+# print(loo_result)
+# 
+# # Check for problematic observations
+# plot(loo_result)
+# 
+# # 10. PRIOR-POSTERIOR COMPARISON (if you set informative priors)
+# # Check if priors were reasonable
+# prior_summary(per_model_bayes)
+# 
+# # 11. R-SQUARED (Bayesian version)
+# bayes_R2(per_model_bayes)
+# 
+# # 12. WHAT TO REPORT IN YOUR PAPER
+# cat("
+# === DIAGNOSTICS TO REPORT ===
+# 
+# 1. CONVERGENCE:
+#    - All Rhat values < 1.01 (report range)
+#    - Effective sample sizes > 400 for all parameters
+#    - No divergent transitions
+#    
+# 2. MODEL FIT:
+#    - Posterior predictive checks show model reproduces data patterns
+#    - LOO-CV information criterion for model comparison
+#    - Bayesian R-squared for explained variance
+#    
+# 3. SAMPLE DESCRIPTION:
+#    - 4 chains, 2000 iterations each (1000 warmup)
+#    - Total of 4000 post-warmup draws
+#    - MCMC sampling using NUTS algorithm
+# 
+# Example text for methods:
+# 'Model convergence was assessed using Rhat statistics (all < 1.01) 
+# and effective sample sizes (all > 400). Posterior predictive checks 
+# confirmed the model adequately reproduced the observed data patterns. 
+# No divergent transitions were observed during sampling.'
+# ")
+# 
+# # 13. SPECIFIC CHECKS FOR YOUR MODEL
+# # Check interaction effects visually
+# marginal_effects(per_model_bayes, effects = "stim_length:ons_con")
+# 
+# # Check if random effects structure is justified
+# # Compare models with/without random slopes
+# # This helps justify the complexity of your random effects
+```
+
+1.  Convergence (Essential)
+
+Rhat \< 1.01 for all parameters (yours look good: all ≈ 1.00) Effective
+sample sizes \> 400 (yours are excellent: 862-4104) No divergent
+transitions
+
+2.  Model Fit
+
+Posterior predictive checks (pp_check()) - shows if model reproduces
+data patterns LOO cross-validation for model comparison Bayesian R² for
+explained variance
+
+3.  What to report in your paper: "Model convergence was assessed using
+    R̂ statistics (all \< 1.01, range: 1.00-1.01) and effective sample
+    sizes (all \> 400, range: 862-4104). Posterior predictive checks
+    confirmed adequate model fit to the observed data. MCMC sampling
+    used 4 chains with 2000 iterations each (1000 warmup), yielding 4000
+    post-warmup draws with no divergent transitions." Your model already
+    shows excellent diagnostics:
+
+Perfect Rhat values (all 1.00-1.01) High effective sample sizes Good
+mixing indicated by the diagnostics
+
+The most important ones to run and report are the convergence checks
+(which you already have) and posterior predictive checks to show your
+model actually fits the data well.
+
+## Now including vowel as a crossed ind variable
+
+```{r}
+library(brms)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Fit Bayesian model with three-way interaction
+exp1_model_bayes <- brm(response_vc ~ stim_length * ons_con * vowel + (1 + stim_length | sub),
+                       data = exp1_data,
+                       family = bernoulli(),
+                       chains = 4,
+                       iter = 2000,
+                       cores = 4)
+
+# Check the model
+summary(exp1_model_bayes)
+plot(exp1_model_bayes)
+
+# Check the coding of all factors
+table(exp1_data$stim_length)
+table(exp1_data$ons_con)
+table(exp1_data$vowel)
+
+levels(factor(exp1_data$stim_length))
+levels(factor(exp1_data$ons_con))
+levels(factor(exp1_data$vowel))
+
+# Check what the reference levels are
+contrasts(factor(exp1_data$stim_length))
+contrasts(factor(exp1_data$ons_con))
+contrasts(factor(exp1_data$vowel))
+
+# Extract coefficients
+fixef(exp1_model_bayes)
+
+# Create a comprehensive grid of predictor values
+stim_lengths <- unique(exp1_data$stim_length)
+ons_cons <- unique(exp1_data$ons_con)
+vowels <- unique(exp1_data$vowel)
+
+# Create prediction grid for all combinations
+pred_grid <- expand.grid(
+  stim_length = stim_lengths,
+  ons_con = ons_cons,
+  vowel = vowels
+)
+
+# Get posterior predictions for each condition
+posterior_draws <- posterior_epred(exp1_model_bayes,
+                                   newdata = pred_grid,
+                                   allow_new_levels = TRUE,
+                                   re_formula = NA)  # This marginalizes over random effects
+
+# Calculate summary statistics
+posterior_summary <- apply(posterior_draws, 2, function(x) {
+  c(estimate = mean(x),
+    lower = quantile(x, 0.025),
+    upper = quantile(x, 0.975))
+})
+
+# Combine predictions with the grid
+plot_data <- pred_grid %>%
+  mutate(
+    estimate = posterior_summary[1, ],
+    lower = posterior_summary[2, ],
+    upper = posterior_summary[3, ]
+  )
+
+# Print the prediction data to see all combinations
+print("Prediction grid and estimates for all conditions:")
+print(plot_data)
+
+# Basic plot with faceting by vowel
+# Create custom labeller for vowel facets
+vowel_labels <- c("a" = "æ", "i" = "ɪ", "e" = "ɛ")
+
+p1 <- ggplot(plot_data, aes(x = factor(ons_con, levels = c("p", "k")), 
+                            y = estimate, 
+                            color = factor(stim_length))) +
+  geom_point(size = 3, position = position_dodge(width = 0.5)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper),
+                width = 0.1,
+                size = 1,
+                position = position_dodge(width = 0.5)) +
+  facet_wrap(~ vowel, labeller = labeller(vowel = vowel_labels)) +
+  labs(
+    #title = "Bayesian Model Estimates: Three-Way Interaction",
+    #subtitle = "Aspiration Length × Onset place × Vowel",
+    x = "Onset place",
+    y = "Predicted probability of perceived VOICED coda",
+    color = "Aspiration length"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 14),
+    axis.text.x = element_text(margin = margin(b = 10)),
+    legend.text = element_text(size = 10),
+    strip.text = element_text(size = 14, family = "Helvetica"),
+    strip.background = element_rect(fill = "grey90", color = "grey70", size = 0.5),  # Light background
+    panel.grid.major = element_line(color = "grey90", size = 0.5),
+    panel.grid.minor = element_line(color = "grey95", size = 0.3)
+  ) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format())
+
+print(p1)
+
+# Alternative options for different background styles:
+
+# Option 2: Slightly darker background with rounded corners
+p1_rounded <- ggplot(plot_data, aes(x = factor(ons_con, levels = c("p", "k")), 
+                            y = estimate, 
+                            color = factor(stim_length))) +
+  geom_point(size = 3, position = position_dodge(width = 0.2)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper),
+                width = 0.1,
+                size = 1,
+                position = position_dodge(width = 0.2)) +
+  facet_wrap(~ vowel, labeller = labeller(vowel = vowel_labels)) +
+  labs(
+    title = "Bayesian Model Estimates: Three-Way Interaction",
+    subtitle = "Aspiration Length × Onset place × Vowel",
+    x = "Onset place",
+    y = "Predicted probability of perceived VOICED coda",
+    color = "Aspiration Length"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 12),
+    legend.text = element_text(size = 10),
+    strip.text = element_text(size = 14, face = "bold", family = "Times New Roman"),
+    strip.background = element_rect(fill = "lightblue", color = "steelblue", size = 0.8),
+    panel.grid.major = element_line(color = "grey90", size = 0.5),
+    panel.grid.minor = element_line(color = "grey95", size = 0.3)
+  ) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format())
+
+print(p1_rounded)
+
+# Option 3: Very subtle background
+p1_subtle <- ggplot(plot_data, aes(x = factor(ons_con, levels = c("p", "k")), 
+                            y = estimate, 
+                            color = factor(stim_length))) +
+  geom_point(size = 3, position = position_dodge(width = 0.2)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper),
+                width = 0.1,
+                size = 1,
+                position = position_dodge(width = 0.2)) +
+  facet_wrap(~ vowel, labeller = labeller(vowel = vowel_labels)) +
+  labs(
+    title = "Bayesian Model Estimates: Three-Way Interaction",
+    subtitle = "Aspiration Length × Onset place × Vowel",
+    x = "Onset place",
+    y = "Predicted probability of a perceived VOICED coda",
+    color = "Aspiration Length"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    axis.text = element_text(size = 11),
+    axis.title = element_text(size = 12),
+    legend.text = element_text(size = 10),
+    strip.text = element_text(size = 14, face = "bold", family = "Times New Roman"),
+    strip.background = element_rect(fill = "white", color = "grey60", size = 0.3),
+    panel.grid.major = element_line(color = "grey90", size = 0.5),
+    panel.grid.minor = element_line(color = "grey95", size = 0.3)
+  ) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format())
+
+print(p1_subtle)
+
+```
+
+## Individual effects
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+
+# ============================================================================
+# 1. EXTRACT SUBJECT-SPECIFIC COEFFICIENTS FROM MODEL
+# ============================================================================
+
+# Get subject-specific coefficients (population + random effects)
+subject_coefs <- coef(exp1_model_bayes)$sub[, , "stim_lengthshort"]
+
+# Convert to dataframe
+subject_slopes <- data.frame(
+  subject = rownames(subject_coefs),
+  estimate = subject_coefs[, "Estimate"],
+  lower_ci = subject_coefs[, "Q2.5"],
+  upper_ci = subject_coefs[, "Q97.5"],
+  std_error = subject_coefs[, "Est.Error"]
+) %>%
+  mutate(subject = as.character(subject))  # Ensure character type
+
+# ============================================================================
+# 2. CATEGORIZE SUBJECTS BY EFFECT STRENGTH
+# ============================================================================
+
+subject_slopes <- subject_slopes %>%
+  mutate(
+    effect_category = case_when(
+      upper_ci < 0 ~ "Strong negative effect",
+      lower_ci < 0 & upper_ci > 0 ~ "Weak/uncertain effect",
+      lower_ci > 0 ~ "Positive effect (opposite)",
+      TRUE ~ "Other"
+    ),
+    ci_width = upper_ci - lower_ci,
+    abs_effect = abs(estimate)
+  )
+
+# Print summary
+cat("SUBJECT CATEGORIZATION BY STIM_LENGTH EFFECT\n")
+cat("=============================================\n\n")
+table(subject_slopes$effect_category)
+
+cat("\n\nSubjects with strong negative effect (short reduces voicing):\n")
+print(subject_slopes %>% 
+        filter(effect_category == "Strong negative effect") %>%
+        arrange(estimate) %>%
+        select(subject, estimate, lower_ci, upper_ci))
+
+cat("\n\nSubjects with weak/uncertain effect:\n")
+print(subject_slopes %>% 
+        filter(effect_category == "Weak/uncertain effect") %>%
+        arrange(desc(abs_effect)) %>%
+        select(subject, estimate, lower_ci, upper_ci))
+
+# ============================================================================
+# 3. VISUALIZE SUBJECT-SPECIFIC EFFECTS
+# ============================================================================
+
+# Forest plot of subject effects
+p1 <- ggplot(subject_slopes, aes(x = reorder(subject, estimate), y = estimate, 
+                                  color = effect_category)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), width = 0.3) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", linewidth = 0.8) +
+  coord_flip() +
+  labs(
+    title = "Subject-Specific Effects of Short Stimuli on Voicing Perception",
+    subtitle = "Negative values = short stimuli reduce voicing responses",
+    x = "Subject",
+    y = "Log-odds effect of short (vs. long) stimuli",
+    color = "Effect Type"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+print(p1)
+
+# ============================================================================
+# 4. COMPARE MODEL ESTIMATES TO RAW DATA
+# ============================================================================
+
+# Calculate observed proportions by subject and condition
+observed_props <- exp1_data %>%
+  mutate(sub = as.character(sub)) %>%  # Ensure character type
+  group_by(sub, stim_length) %>%
+  summarise(
+    prop_voicing = mean(response_vc),
+    n_obs = n(),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(
+    names_from = stim_length,
+    values_from = c(prop_voicing, n_obs),
+    names_sep = "_"
+  ) %>%
+  mutate(
+    raw_diff_long_minus_short = prop_voicing_long - prop_voicing_short,
+    raw_diff_short_minus_long = prop_voicing_short - prop_voicing_long
+  )
+
+# Merge with model estimates
+subject_comparison <- subject_slopes %>%
+  left_join(observed_props, by = c("subject" = "sub"))
+
+# Plot: Model estimates vs raw differences
+# Model estimates are for "short" effect (negative = short reduces voicing)
+# So we want to compare with short - long difference (negative = short reduces voicing)
+p2 <- ggplot(subject_comparison, aes(x = raw_diff_short_minus_long, y = estimate)) +
+  geom_point(aes(color = effect_category), size = 3) +
+  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci, color = effect_category), 
+                alpha = 0.5) +
+  geom_smooth(method = "lm", se = TRUE, color = "black", linetype = "dashed") +
+  geom_abline(slope = 1, intercept = 0, linetype = "dotted", alpha = 0.3) +
+  labs(
+    title = "Model Estimates vs. Raw Data Differences",
+    subtitle = "Both axes: negative = short reduces voicing (should correlate positively)",
+    x = "Raw difference (prop short - prop long)",
+    y = "Model estimate (log-odds effect of short)",
+    color = "Effect Type"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+print(p2)
+
+# ============================================================================
+# 5. DISTRIBUTION OF EFFECTS
+# ============================================================================
+
+# Get population-level effect for comparison
+pop_effect <- fixef(exp1_model_bayes)["stim_lengthshort", "Estimate"]
+
+p3 <- ggplot(subject_slopes, aes(x = estimate)) +
+  geom_histogram(aes(fill = effect_category), bins = 10, alpha = 0.7) +
+  geom_vline(xintercept = pop_effect, linetype = "dashed", 
+             color = "red", linewidth = 1) +
+  geom_vline(xintercept = 0, linetype = "solid", color = "black") +
+  annotate("text", x = pop_effect, y = Inf, 
+           label = "Population\neffect", vjust = 1.5, color = "red") +
+  labs(
+    title = "Distribution of Subject-Specific Effects",
+    x = "Effect of short stimuli (log-odds)",
+    y = "Number of subjects",
+    fill = "Effect Type"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+print(p3)
+
+# ============================================================================
+# 6. EXTRACT RANDOM EFFECTS (DEVIATIONS FROM POPULATION)
+# ============================================================================
+
+# Get just the random deviations (not including population effect)
+random_effects <- ranef(exp1_model_bayes)$sub[, , "stim_lengthshort"]
+
+random_slopes_only <- data.frame(
+  subject = rownames(random_effects),
+  deviation = random_effects[, "Estimate"],
+  lower_ci = random_effects[, "Q2.5"],
+  upper_ci = random_effects[, "Q97.5"]
+) %>%
+  mutate(subject = as.character(subject))  # Ensure character type
+
+cat("\n\nRANDOM EFFECT DEVIATIONS (from population mean):\n")
+cat("=================================================\n")
+print(random_slopes_only %>% arrange(desc(abs(deviation))))
+
+# ============================================================================
+# 7. CREATE SUBJECT SELECTION LISTS
+# ============================================================================
+
+# Create lists for filtering data
+strong_effect_subjects <- subject_slopes %>%
+  filter(effect_category == "Strong negative effect") %>%
+  pull(subject)
+
+weak_effect_subjects <- subject_slopes %>%
+  filter(effect_category == "Weak/uncertain effect") %>%
+  pull(subject)
+
+cat("\n\nSUBJECT SELECTION LISTS\n")
+cat("=======================\n\n")
+cat("Strong effect subjects (n =", length(strong_effect_subjects), "):\n")
+cat(paste(strong_effect_subjects, collapse = ", "), "\n\n")
+
+cat("Weak/uncertain effect subjects (n =", length(weak_effect_subjects), "):\n")
+cat(paste(weak_effect_subjects, collapse = ", "), "\n\n")
+
+# You can now filter your data:
+# exp1_data_strong <- exp1_data %>% filter(sub %in% strong_effect_subjects)
+# exp1_data_weak <- exp1_data %>% filter(sub %in% weak_effect_subjects)
+
+# ============================================================================
+# 8. EXPORT RESULTS
+# ============================================================================
+
+# Save complete results
+subject_results <- subject_comparison %>%
+  select(subject, estimate, lower_ci, upper_ci, effect_category, 
+         prop_voicing_long, prop_voicing_short, 
+         raw_diff_long_minus_short, raw_diff_short_minus_long,
+         n_obs_long, n_obs_short)
+
+# Uncomment to save:
+# write.csv(subject_results, "subject_specific_effects.csv", row.names = FALSE)
+
+cat("\n\nAnalysis complete! Check the plots and tables above.\n")
+```

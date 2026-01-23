@@ -1,0 +1,174 @@
+---
+title: "Production_stats"
+output: html_document
+date: "2026-01-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=FALSE}
+production <- read.csv("/Users/chandan/Desktop/GitHub/Burst_voice/Data/data_12-11-24.csv", header=TRUE)
+production$coda_vc <- as.character(data$coda_vc) #change class of coda_vc
+production$ons_poa <- as.character(data$ons_poa) #change class of ons_poa
+production$vot_ratio <- (data$vot)/(data$vdur)
+production$CVdur <- data$vot + data$vdur
+
+number_of_subs <- length(unique(production$sub))
+number_of_subs
+
+library(ggplot2)
+library(tidyverse)
+
+library(dplyr)
+
+library(dplyr)
+library(knitr)
+
+summary_table <- production %>%
+  group_by(ons_poa, coda_vc) %>%
+  summarise(
+    mean_vot = mean(vot, na.rm = TRUE),
+    mean_vot_ratio = mean(vot_ratio, na.rm = TRUE),
+    mean_CVdur = mean(CVdur, na.rm = TRUE),
+    .groups = "drop"
+  )
+print(summary_table)
+
+
+kable(summary_table, digits = 2, 
+      col.names = c("Coda VC", "Onset POA", "Mean VOT", "Mean VOT Ratio", "Mean CV Duration"))
+
+library(lme4)
+library(ggplot2)
+library(dplyr)
+library(ggridges)
+
+# Fit mixed effects model
+model_prod_lmer <- lmer(vot ~ ons_poa * coda_vc + (1|sub) + (1|word), 
+              data = production)
+
+# Print model summary
+summary(model_prod_lmer)
+
+# Get predicted values for each combination
+pred_data <- expand.grid(
+  ons_poa = c("1", "2", "3"),
+  coda_vc = unique(production$coda_vc)
+)
+pred_data$predicted_vot <- predict(model_prod_lmer, newdata = pred_data, re.form = NA)
+
+# Calculate standard errors
+X <- model.matrix(~ ons_poa * coda_vc, data = pred_data)
+pred_data$se <- sqrt(diag(X %*% vcov(model) %*% t(X)))
+pred_data$lower <- pred_data$predicted_vot - 1.96 * pred_data$se
+pred_data$upper <- pred_data$predicted_vot + 1.96 * pred_data$se
+
+# Create poa_coda variable (combining onset and coda)
+pred_data$poa_coda <- paste0(pred_data$coda_vc, ".", 
+                             c("p", "t", "k")[as.numeric(pred_data$ons_poa)])
+
+# Reorder factor levels: within each POA, voiceless (0) below voiced (1)
+pred_data$poa_coda <- factor(pred_data$poa_coda, 
+                             levels = c("0.p", "1.p", "0.t", "1.t", "0.k", "1.k"))
+
+# Prepare actual data with poa_coda variable
+production_plot <- production %>%
+  mutate(
+    poa_coda = paste0(coda_vc, ".", 
+                     c("p", "t", "k")[as.numeric(ons_poa)]),
+    poa_coda = factor(poa_coda, 
+                     levels = c("0.p", "1.p", "0.t", "1.t", "0.k", "1.k")),
+    coda_vc_factor = ifelse(coda_vc == "0", "Voiceless", "Voiced")
+  )
+
+# Create the plot
+production_lmer_plot <- ggplot() +
+  # Ridged density plot of actual data
+  geom_density_ridges(data = production_plot,
+                      aes(x = vot, y = poa_coda, fill = poa_coda, 
+                          linetype = coda_vc_factor),
+                     alpha = 0.8, scale = 0.8) +
+  scale_linetype_manual(name = "Coda voicing",
+                       values = c("Voiceless" = "dashed", "Voiced" = "solid")) +
+  # Overlay predictions
+  geom_point(data = pred_data,
+            aes(x = predicted_vot, y = poa_coda, color = poa_coda),
+            size = 3, position = position_nudge(y = 0.2)) +
+  geom_errorbarh(data = pred_data,
+                aes(x = predicted_vot, y = poa_coda,
+                    xmin = lower, xmax = upper, color = poa_coda),
+                height = 0.1, position = position_nudge(y = 0.2)) +
+  # Custom colors
+  scale_fill_manual(values = c("0.p" = "#B71C1C", "1.p" = "#FFCDD2",
+                              "0.t" = "#1B5E20", "1.t" = "#C8E6C9",
+                              "0.k" = "#0D47A1", "1.k" = "#BBDEFB")) +
+  scale_color_manual(values = c("0.p" = "#67000D", "1.p" = "#A50F15",
+                               "0.t" = "#00441B", "1.t" = "#006D2C",
+                               "0.k" = "#08306B", "1.k" = "#08519C")) +
+  # Add POA labels on the left
+  annotate("text", x = 0.01, y = 1.5, label = "pʰ", hjust = 1.2, vjust = 0.5, 
+           size = 4, fontface = "bold") +
+  annotate("text", x = 0.01, y = 3.5, label = "tʰ", hjust = 1.2, vjust = 0.5, 
+           size = 4, fontface = "bold") +
+  annotate("text", x = 0.01, y = 5.5, label = "kʰ", hjust = 1.2, vjust = 0.5, 
+           size = 4, fontface = "bold") +
+  # Formatting
+  labs(x = "VOT (s)", y = "") +
+  xlim(0, 0.2) +
+  coord_cartesian(ylim = c(0.5, 6.5)) +
+  theme_minimal() +
+  guides(fill = "none", color = "none",
+         linetype = guide_legend(title = "Coda voicing", direction = "vertical")) +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = c(0.85, 0.20),
+        legend.background = element_rect(fill = "white", color = "black", size = 0.3),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        plot.margin = margin(t = 15, r = 5, b = 0, l = 5, unit = "pt")) +
+  scale_y_discrete(expand = expansion(mult = c(0.05, 0.15)))
+
+production_lmer_plot
+print(production_lmer_plot)
+ggsave("production_lmer_plot.png", plot = production_lmer_plot, dpi=300, width=8, units ="in")
+       
+
+# Vdur x VOT scatterplot
+
+library(ggplot2)
+library(dplyr)
+
+# Prepare data with factor labels
+production_plot <- production %>%
+  mutate(
+    coda_vc_label = factor(coda_vc, 
+                          levels = c("0", "1"),
+                          labels = c("Voiceless", "Voiced")),
+    ons_poa_label = factor(ons_poa,
+                          levels = c("1", "2", "3"),
+                          labels = c("pʰ", "tʰ", "kʰ"))
+  )
+
+# Create scatterplot
+ggplot(production_plot, aes(x = vdur, y = vot, color = coda_vc_label)) +
+  geom_point(alpha = 0.6, size = 2) +
+  geom_smooth(method = "lm", se = TRUE, linewidth = 1.2, alpha = 0.2) +
+  facet_wrap(~ ons_poa_label, nrow = 1) +
+  labs(
+    title = "Relationship between VOT and Vowel Duration by Onset Place of Articulation",
+    x = "Vowel Duration (s)",
+    y = "VOT (s)",
+    color = "Coda Voicing"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15),
+    legend.position = "right",
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(face = "bold", size = 12)
+  ) +
+  scale_color_brewer(palette = "Set1")
+
+```

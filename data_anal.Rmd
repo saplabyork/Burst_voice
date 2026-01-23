@@ -44,12 +44,37 @@ data <- read.csv("/Users/chandannarayan/GitHub/Burst_voice/Data/data_12-11-24.cs
 data$coda_vc <- as.character(data$coda_vc) #change class of coda_vc
 data$ons_poa <- as.character(data$ons_poa) #change class of ons_poa
 data$vot_ratio <- (data$vot)/(data$vdur)
+data$CVdur <- data$vot + data$vdur
 
 number_of_subs <- length(unique(data$sub))
 number_of_subs
 
 library(ggplot2)
 library(tidyverse)
+
+## ASIDE CV duration--is it consistent within each speaker?
+
+library(dplyr)
+
+# Calculate CV (coefficient of variation) for each speaker-condition combination
+consistency_stats <- data %>%
+  group_by(sub, ons_poa, coda_vc, vowel) %>%
+  summarise(
+    n_obs = n(),
+    mean_CVdur = mean(CVdur, na.rm = TRUE),
+    sd_CVdur = sd(CVdur, na.rm = TRUE),
+    cv = sd_CVdur / mean_CVdur * 100,  # coefficient of variation as percentage
+    .groups = 'drop'
+  ) %>%
+  filter(n_obs > 1)  # only keep combinations with multiple observations
+
+# View speakers with highest variability
+consistency_stats %>%
+  arrange(desc(cv)) %>%
+  head(20)
+
+
+#########
 
 # Create a summary table with the mean and range of 'vot' for each 'ons_poa'
 summary_table <- data %>%
@@ -63,12 +88,12 @@ summary_table <- data %>%
 # Print the summary table
 print(summary_table)
 
-plot_overall <- ggplot(data, aes(x = ons_poa, y = vot, fill = coda_vc)) +
+plot_overall<- ggplot(data, aes(x = ons_poa, y = vot, fill = coda_vc)) +
   geom_boxplot(notch = TRUE, outlier.shape = NA) +
   # Remove x-axis tick labels
   theme(axis.text.x = element_blank()) +
   # Remove x-axis label and update y-axis label
-  labs(x = NULL, y = "VOT(s)") +
+  labs(x = NULL, y = "CV duration (s)") +
   # Change facet labels
   facet_wrap(~ons_poa, scales = "free", labeller = labeller(ons_poa = c("1" = "p", "2" = "t", "3" = "k"))) +
   # Set consistent y-axis range
@@ -83,7 +108,29 @@ plot_overall <- ggplot(data, aes(x = ons_poa, y = vot, fill = coda_vc)) +
 #    position = position_dodge(width = 0.75),  # Dodge the text for better visibility
 #    show.legend = FALSE ) # Do not show in legend
   
-plot_overall
+print(plot_overall)
+
+plot_overall_CVdur <- ggplot(data, aes(x = ons_poa, y = CVdur, fill = coda_vc)) +
+  geom_boxplot(notch = TRUE, outlier.shape = NA) +
+  # Remove x-axis tick labels
+  theme(axis.text.x = element_blank()) +
+  # Remove x-axis label and update y-axis label
+  labs(x = NULL, y = "CV duration (s)") +
+  # Change facet labels
+  facet_wrap(~ons_poa, scales = "free", labeller = labeller(ons_poa = c("1" = "p", "2" = "t", "3" = "k"))) +
+  # Set consistent y-axis range
+  #scale_y_continuous(limits = c(0.015, 0.18)) +
+  # Update the legend
+  scale_fill_discrete(
+    name = "Coda voice",
+    labels = c("-vc", "+vc")
+  ) 
+# + stat_summary(fun = median,geom = "text",aes(label = paste("Median:", round(..y.., 3))),  # Label with median values
+#    vjust = -0.5,  # Vertical position of the text (adjust as needed)
+#    position = position_dodge(width = 0.75),  # Dodge the text for better visibility
+#    show.legend = FALSE ) # Do not show in legend
+  
+print(plot_overall_CVdur)
 
 # Plot by sub
 plot_vot_poa <- ggplot(data, aes(x = vot, y = as.factor(ons_poa), fill = as.factor(coda_vc))) +
@@ -117,6 +164,173 @@ plot_overall + facet_wrap(~sub)
 
 # By Onset POA and Vowel
 
+First let's make a table of the VOTs for place x vowel (split according to coda voicing).
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+
+# Define the labels
+poa_labels <- c("1" = "[pʰ]",
+                "2" = "[tʰ]",
+                "3" = "[kʰ]")
+vowel_labels <- c("ae" = "æ",
+                  "aw" = "ɔ",
+                  "eh" = "ɛ",
+                  "ih" = "ɪ",
+                  "uh" = "ʌ")
+
+# Create the summary table
+vot_table <- data %>%
+  # Group by the relevant variables and calculate mean and SD
+  group_by(ons_poa, vowel, coda_vc) %>%
+  summarise(
+    mean_vot = round(mean(vot, na.rm = TRUE), 3),  # 3 decimal places
+    sd_vot = round(sd(vot, na.rm = TRUE), 3),      # 3 decimal places
+    n = n(),
+    .groups = 'drop'
+  ) %>%
+  # Create a combined mean(SD) string
+  mutate(mean_sd = paste0(mean_vot, " (", sd_vot, ")")) %>%
+  # Pivot to get coda_vc as separate columns
+  select(ons_poa, vowel, coda_vc, mean_sd) %>%
+  pivot_wider(
+    names_from = coda_vc,
+    values_from = mean_sd,
+    names_prefix = "coda_"
+  ) %>%
+  # Combine the two coda conditions into one cell
+  mutate(combined = paste0(coda_0, " / ", coda_1)) %>%
+  select(ons_poa, vowel, combined) %>%
+  # Pivot to get vowels as columns
+  pivot_wider(
+    names_from = vowel,
+    values_from = combined
+  ) %>%
+  # Apply the POA labels and ensure proper ordering (p, t, k from top to bottom)
+  mutate(ons_poa_label = poa_labels[as.character(ons_poa)]) %>%
+  arrange(ons_poa) %>%  # This ensures 1,2,3 order = p,t,k order
+  select(ons_poa_label, everything(), -ons_poa)
+
+# Rename the columns in the actual R table
+current_vowel_cols <- names(vot_table)[-1]
+new_col_names <- c("Onset", vowel_labels[current_vowel_cols])
+names(vot_table) <- new_col_names
+
+# View the table with updated column names
+print(vot_table)
+
+
+## **Create the summary table with differences**
+
+vot_table <- data %>%
+  # Group by the relevant variables and calculate mean and SD
+  group_by(ons_poa, vowel, coda_vc) %>%
+  summarise(
+    mean_vot = round(mean(vot, na.rm = TRUE), 3),  # 3 decimal places
+    sd_vot = round(sd(vot, na.rm = TRUE), 3),      # 3 decimal places
+    n = n(),
+    .groups = 'drop'
+  ) %>%
+  # Create a combined mean(SD) string
+  mutate(mean_sd = paste0(mean_vot, " (", sd_vot, ")")) %>%
+  # Pivot to get coda_vc as separate columns
+  select(ons_poa, vowel, coda_vc, mean_sd, mean_vot) %>%
+  pivot_wider(
+    names_from = coda_vc,
+    values_from = c(mean_sd, mean_vot),
+    names_sep = "_"
+  ) %>%
+  # Combine the two coda conditions into one cell
+  mutate(combined = paste0(mean_sd_0, " / ", mean_sd_1)) %>%
+  # Calculate the difference (coda_1 - coda_0) for each vowel
+  mutate(vot_diff = round(mean_vot_1 - mean_vot_0, 3)) %>%
+  select(ons_poa, vowel, combined, vot_diff) %>%
+  # Pivot to get vowels as columns
+  pivot_wider(
+    names_from = vowel,
+    values_from = c(combined, vot_diff)
+  ) %>%
+  # Calculate average difference across all vowels for each POA
+  rowwise() %>%
+  mutate(
+    avg_diff = round(mean(c_across(starts_with("vot_diff_")), na.rm = TRUE), 3)
+  ) %>%
+  ungroup() %>%
+  # Apply the POA labels and ensure proper ordering (p, t, k from top to bottom)
+  mutate(ons_poa_label = poa_labels[as.character(ons_poa)]) %>%
+  arrange(ons_poa) %>%  # This ensures 1,2,3 order = p,t,k order
+  # Select only the combined columns and average difference
+  select(ons_poa_label, starts_with("combined_"), avg_diff)
+
+# Rename the columns in the actual R table
+current_vowel_cols <- names(vot_table)[grepl("^combined_", names(vot_table))]
+vowel_names <- gsub("^combined_", "", current_vowel_cols)
+new_col_names <- c("Onset", vowel_labels[vowel_names], "Avg Diff")
+names(vot_table) <- new_col_names
+
+# Display the table
+print(vot_table)
+
+## **Create the summary table of VDUR with differences**
+
+vdur_table <- data %>%
+  # Group by the relevant variables and calculate mean and SD
+  group_by(ons_poa, vowel, coda_vc) %>%
+  summarise(
+    mean_vdur = round(mean(vdur, na.rm = TRUE), 3),  # 3 decimal places
+    sd_vdur = round(sd(vdur, na.rm = TRUE), 3),      # 3 decimal places
+    n = n(),
+    .groups = 'drop'
+  ) %>%
+  # Create a combined mean(SD) string
+  mutate(mean_sd = paste0(mean_vdur, " (", sd_vdur, ")")) %>%
+  # Pivot to get coda_vc as separate columns
+  select(ons_poa, vowel, coda_vc, mean_sd, mean_vdur) %>%
+  pivot_wider(
+    names_from = coda_vc,
+    values_from = c(mean_sd, mean_vdur),
+    names_sep = "_"
+  ) %>%
+  # Combine the two coda conditions into one cell
+  mutate(combined = paste0(mean_sd_0, " / ", mean_sd_1)) %>%
+  # Calculate the difference (coda_1 - coda_0) for each vowel
+  mutate(vdur_diff = round(mean_vdur_1 - mean_vdur_0, 3)) %>%
+  select(ons_poa, vowel, combined, vdur_diff) %>%
+  # Pivot to get vowels as columns
+  pivot_wider(
+    names_from = vowel,
+    values_from = c(combined, vdur_diff)
+  ) %>%
+  # Calculate average difference across all vowels for each POA
+  rowwise() %>%
+  mutate(
+    avg_diff = round(mean(c_across(starts_with("vdur_diff_")), na.rm = TRUE), 3)
+  ) %>%
+  ungroup() %>%
+  # Apply the POA labels and ensure proper ordering (p, t, k from top to bottom)
+  mutate(ons_poa_label = poa_labels[as.character(ons_poa)]) %>%
+  arrange(ons_poa) %>%  # This ensures 1,2,3 order = p,t,k order
+  # Select only the combined columns and average difference
+  select(ons_poa_label, starts_with("combined_"), avg_diff)
+
+# Rename the columns in the actual R table
+current_vowel_cols <- names(vdur_table)[grepl("^combined_", names(vdur_table))]
+vowel_names <- gsub("^combined_", "", current_vowel_cols)
+new_col_names <- c("Onset", vowel_labels[vowel_names], "Avg Diff")
+names(vdur_table) <- new_col_names
+
+# Display the table
+print(vdur_table)
+
+
+
+
+
+```
+
 I'm using a "ridge plot" here which is a stacked density plot for voiceless and voiced coda tokens by POA and vowel. 
 
 ```{r, warning=FALSE}
@@ -146,8 +360,8 @@ vowel_labels <- c("ae" = "æ",
 
 plot_vowel_ridges <- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) + 
   geom_density_ridges(alpha = 0.7) + 
-  #geom_vline(data = medians_data, aes(xintercept = median_vot), 
-             #linetype = "dotted", color = "black", linewidth = 0.5) +
+  geom_vline(data = medians_data, aes(xintercept = mean_vot), 
+             linetype = "dotted", color = "black", linewidth = 0.5) +
   scale_x_continuous(breaks = c(0, 0.1, 0.2), limits = c(0, NA)) +
   scale_y_discrete(labels = c("0" = "Voiceless", "1" = "Voiced")) +
   scale_fill_manual(
@@ -324,6 +538,15 @@ data_mod <- data %>%
   #rename POA labels from 1,2,3 to p,t,k
   mutate(ons_poa = recode(ons_poa, "1" = "p", "2" = "t", "3" = "k"))
 
+
+# Data without keh- so that we can run a vowel model too. 
+data_mod_NoKEH <- data %>%
+  # rename POA labels from 1,2,3 to p,t,k
+  mutate(ons_poa = recode(ons_poa, "1" = "p", "2" = "t", "3" = "k")) %>%
+  # remove all rows where ons_poa=k and vowel=eh
+  filter(!(ons_poa == "k" & vowel == "eh"))
+
+
 # Bayesian version of your model
 bayes_model <- brm(vot ~ ons_poa * coda_vc + (1 | sub),
                    data = data_mod,
@@ -331,6 +554,14 @@ bayes_model <- brm(vot ~ ons_poa * coda_vc + (1 | sub),
                    chains = 4,
                    iter = 2000,
                    cores = 4)
+
+bayes_model_vowel <- brm(vot ~ ons_poa * coda_vc * vowel + (1 | sub),
+                   data = data_mod_NoKEH,
+                   family = gaussian(),
+                   chains = 4,
+                   iter = 2000,
+                   cores = 4)
+summary(bayes_model_vowel)
 
 # Check model
 summary(bayes_model)
@@ -538,7 +769,7 @@ data_mod$coda_vc <- factor(data_mod$coda_vc)
 
 
 # Fit the model
-bayes_model_informed <- brm(vot ~ ons_poa * coda_vc + (1|sub),
+bayes_model_informed <- brm(vot ~ ons_poa * coda_vc + (ons_poa * coda_vc | sub),
                            data = data_mod,
                            family = gaussian(),
                            prior = informed_priors,
@@ -558,7 +789,7 @@ pp_check(bayes_model_informed, type = "hist", ndraws = 100) +
 
 # Compare the two models
 # Original model (with default priors)
-bayes_model_default <- brm(vot ~ ons_poa * coda_vc + (1|sub),
+bayes_model_default <- brm(vot ~ ons_poa * coda_vc + (ons_poa * coda_vc | sub),
                           data = data_mod,
                           family = gaussian(),
                           chains = 4,
@@ -570,6 +801,83 @@ bayes_model_default <- brm(vot ~ ons_poa * coda_vc + (1|sub),
 loo_informed <- loo(bayes_model_informed)
 loo_default <- loo(bayes_model_default)
 loo_compare(loo_informed, loo_default)
+
+
+# Plot the informed model over real values
+
+library(marginaleffects)
+library(ggplot2)
+library(ggridges)
+
+# Get predictions
+newdata <- expand_grid(
+  ons_poa = c("k", "p", "t"),
+  coda_vc = c(0, 1)
+)
+
+preds <- posterior_epred(bayes_model_informed, newdata = newdata,
+                         allow_new_levels = TRUE, re_formula = NA)
+
+pred_summary <- newdata %>%
+  mutate(
+    estimate = apply(preds, 2, mean),
+    lower = apply(preds, 2, quantile, 0.025),
+    upper = apply(preds, 2, quantile, 0.975)
+  )
+
+# Reorder the data and create color scheme
+data_mod$poa_coda <- factor(interaction(data_mod$coda_vc, data_mod$ons_poa),
+                           levels = c("0.p", "1.p", "0.t", "1.t", "0.k", "1.k"))
+data_mod$coda_vc_factor <- factor(data_mod$coda_vc, levels = c("1", "0"), 
+                                 labels = c("Voiced", "Voiceless"))
+pred_summary$poa_coda <- factor(interaction(pred_summary$coda_vc, pred_summary$ons_poa),
+                               levels = c("0.p", "1.p", "0.t", "1.t", "0.k", "1.k"))
+
+
+vot_prod_bayes <- ggplot() +
+  # Ridged density plot of actual data with increased contrast
+  geom_density_ridges(data = data_mod,
+                      aes(x = vot, y = poa_coda, fill = poa_coda, 
+                          linetype = coda_vc_factor),
+                     alpha = 0.8, scale = 0.8) +
+  scale_linetype_manual(name = "Coda voicing",
+                       values = c("Voiceless" = "dashed", "Voiced" = "solid")) +
+  # Overlay predictions with darker colors
+  geom_point(data = pred_summary,
+            aes(x = estimate, y = poa_coda, color = poa_coda),
+            size = 3, position = position_nudge(y = 0.2)) +
+  geom_errorbarh(data = pred_summary,
+                aes(x = estimate, y = poa_coda,
+                    xmin = lower, xmax = upper, color = poa_coda),
+                height = 0.1, position = position_nudge(y = 0.2)) +
+  # Custom colors with higher contrast between voiced/voiceless
+  scale_fill_manual(values = c("0.p" = "#B71C1C", "1.p" = "#FFCDD2",
+                              "0.t" = "#1B5E20", "1.t" = "#C8E6C9",
+                              "0.k" = "#0D47A1", "1.k" = "#BBDEFB")) +
+  # Much darker colors for predictions
+  scale_color_manual(values = c("0.p" = "#67000D", "1.p" = "#A50F15",
+                               "0.t" = "#00441B", "1.t" = "#006D2C",
+                               "0.k" = "#08306B", "1.k" = "#08519C")) +
+  # Add POA labels on the left
+  annotate("text", x = 0.01, y = 1.5, label = "pʰ", hjust = 1.2, vjust = 0.5, size = 4, fontface = "bold") +
+  annotate("text", x = 0.01, y = 3.5, label = "tʰ", hjust = 1.2, vjust = 0.5, size = 4, fontface = "bold") +
+  annotate("text", x = 0.01, y = 5.5, label = "kʰ", hjust = 1.2, vjust = 0.5, size = 4, fontface = "bold") +
+  # Formatting with restricted x-axis
+  labs(x = "VOT (s)", y = "") +
+  xlim(0, 0.2) +  # Restrict x-axis to 0-0.2
+  coord_cartesian(ylim = c(0.5, 6.5)) +  # Extend y-axis limits
+  theme_minimal() +
+  guides(fill = "none", color = "none",
+         linetype = guide_legend(title = "Coda voicing", direction = "vertical")) +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = c(0.85, 0.20),
+        legend.background = element_rect(fill = "white", color = "black", size = 0.2),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        plot.margin = margin(t = 15, r = 5, b = 0, l = 5, unit = "pt")) +
+  scale_y_discrete(expand = expansion(mult = c(0.05, 0.15)))
+print(vot_prod_bayes)
 ```
 
 # Breakdown of the model and comparisions

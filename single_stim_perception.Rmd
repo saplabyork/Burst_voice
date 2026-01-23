@@ -133,6 +133,7 @@ clean_table <- per_data %>%
       summarise(Total = round(mean(Correct) * 100, 1), .groups = "drop"),
     by = "ons_con"
   )
+print(clean_table)
 
 # Add column totals
 col_totals_clean <- per_data %>%
@@ -232,6 +233,9 @@ plot(probabilities)
 
 
 ```
+
+## Bayesian models
+
 
 ```{r}
 # Install if needed
@@ -532,3 +536,187 @@ High effective sample sizes
 Good mixing indicated by the diagnostics
 
 The most important ones to run and report are the convergence checks (which you already have) and posterior predictive checks to show your model actually fits the data well.
+
+## Now including vowel as a crossed ind variable
+
+```{r}
+library(brms)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Fit Bayesian model with three-way interaction
+per_model_bayes <- brm(response_vc ~ stim_length * ons_con * vowel + (1 + stim_length | sub),
+                       data = per_data,
+                       family = bernoulli(),
+                       chains = 4,
+                       iter = 2000,
+                       cores = 4)
+
+# Check the model
+summary(per_model_bayes)
+plot(per_model_bayes)
+
+# Check the coding of all factors
+table(per_data$stim_length)
+table(per_data$ons_con)
+table(per_data$vowel)
+
+levels(factor(per_data$stim_length))
+levels(factor(per_data$ons_con))
+levels(factor(per_data$vowel))
+
+# Check what the reference levels are
+contrasts(factor(per_data$stim_length))
+contrasts(factor(per_data$ons_con))
+contrasts(factor(per_data$vowel))
+
+# Extract coefficients
+fixef(per_model_bayes)
+
+# Create a comprehensive grid of predictor values
+stim_lengths <- unique(per_data$stim_length)
+ons_cons <- unique(per_data$ons_con)
+vowels <- unique(per_data$vowel)
+
+# Create prediction grid for all combinations
+pred_grid <- expand.grid(
+  stim_length = stim_lengths,
+  ons_con = ons_cons,
+  vowel = vowels
+)
+
+# Get posterior predictions for each condition
+posterior_draws <- posterior_epred(per_model_bayes,
+                                   newdata = pred_grid,
+                                   allow_new_levels = TRUE,
+                                   re_formula = NA)  # This marginalizes over random effects
+
+# Calculate summary statistics
+posterior_summary <- apply(posterior_draws, 2, function(x) {
+  c(estimate = mean(x),
+    lower = quantile(x, 0.025),
+    upper = quantile(x, 0.975))
+})
+
+# Combine predictions with the grid
+plot_data <- pred_grid %>%
+  mutate(
+    estimate = posterior_summary[1, ],
+    lower = posterior_summary[2, ],
+    upper = posterior_summary[3, ]
+  )
+
+# Print the prediction data to see all combinations
+print("Prediction grid and estimates for all conditions:")
+print(plot_data)
+
+# Basic plot with faceting by vowel
+# Create custom labeller for vowel facets
+vowel_labels <- c("a" = "ʌ", "i" = "ɪ", "e" = "ʊ")
+
+p1 <- ggplot(plot_data, aes(x = factor(ons_con, levels = c("p", "k")), 
+                            y = estimate, 
+                            color = factor(stim_length))) +
+  geom_point(size = 3, position = position_dodge(width = 0.5)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper),
+                width = 0.1,
+                size = 1,
+                position = position_dodge(width = 0.5)) +
+  facet_wrap(~ vowel, labeller = labeller(vowel = vowel_labels)) +
+  labs(
+    #title = "Bayesian Model Estimates: Three-Way Interaction",
+    #subtitle = "Aspiration Length × Onset place × Vowel",
+    x = "Onset place",
+    y = "Predicted probability of perceived VOICED coda",
+    color = "Aspiration length"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 14),
+    axis.text.x = element_text(margin = margin(b = 10)),
+    legend.text = element_text(size = 10),
+    strip.text = element_text(size = 14, family = "Helvetica"),
+    strip.background = element_rect(fill = "grey90", color = "grey70", size = 0.5),  # Light background
+    panel.grid.major = element_line(color = "grey90", size = 0.5),
+    panel.grid.minor = element_line(color = "grey95", size = 0.3)
+  ) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format())
+
+print(p1)
+
+# Alternative options for different background styles:
+
+# Option 2: Slightly darker background with rounded corners
+p1_rounded <- ggplot(plot_data, aes(x = factor(ons_con, levels = c("p", "k")), 
+                            y = estimate, 
+                            color = factor(stim_length))) +
+  geom_point(size = 3, position = position_dodge(width = 0.2)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper),
+                width = 0.1,
+                size = 1,
+                position = position_dodge(width = 0.2)) +
+  facet_wrap(~ vowel, labeller = labeller(vowel = vowel_labels)) +
+  labs(
+    title = "Bayesian Model Estimates: Three-Way Interaction",
+    subtitle = "Aspiration Length × Onset place × Vowel",
+    x = "Onset place",
+    y = "Predicted probability of perceived VOICED coda",
+    color = "Aspiration Length"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 12),
+    legend.text = element_text(size = 10),
+    strip.text = element_text(size = 14, face = "bold", family = "Times New Roman"),
+    strip.background = element_rect(fill = "lightblue", color = "steelblue", size = 0.8),
+    panel.grid.major = element_line(color = "grey90", size = 0.5),
+    panel.grid.minor = element_line(color = "grey95", size = 0.3)
+  ) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format())
+
+print(p1_rounded)
+
+# Option 3: Very subtle background
+p1_subtle <- ggplot(plot_data, aes(x = factor(ons_con, levels = c("p", "k")), 
+                            y = estimate, 
+                            color = factor(stim_length))) +
+  geom_point(size = 3, position = position_dodge(width = 0.2)) +
+  geom_errorbar(aes(ymin = lower, ymax = upper),
+                width = 0.1,
+                size = 1,
+                position = position_dodge(width = 0.2)) +
+  facet_wrap(~ vowel, labeller = labeller(vowel = vowel_labels)) +
+  labs(
+    title = "Bayesian Model Estimates: Three-Way Interaction",
+    subtitle = "Aspiration Length × Onset place × Vowel",
+    x = "Onset place",
+    y = "Predicted probability of a perceived VOICED coda",
+    color = "Aspiration Length"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    axis.text = element_text(size = 11),
+    axis.title = element_text(size = 12),
+    legend.text = element_text(size = 10),
+    strip.text = element_text(size = 14, face = "bold", family = "Times New Roman"),
+    strip.background = element_rect(fill = "white", color = "grey60", size = 0.3),
+    panel.grid.major = element_line(color = "grey90", size = 0.5),
+    panel.grid.minor = element_line(color = "grey95", size = 0.3)
+  ) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent_format())
+
+print(p1_subtle)
+
+```

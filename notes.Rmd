@@ -11,12 +11,24 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Oro-laryngeal timing of English onsets is affected by coda voicing
 
-Hawkins, S., & Nguyen, N. (2004). Influence of syllable-coda voicing on the acoustic properties of syllable-onset/l/in English. Journal of Phonetics, 32(2), 199-231.
+Arzbecker, L. J., Jacewicz, E., Goebel, R., & Fox, R. A. (2022, May). Structured covariation of acoustic cues to coda voicing throughout the syllable. In *Proceedings of Meetings on Acoustics (Vol. 46, No. 1)*. AIP Publishing.
 
-Mielke, J., & Nielsen, K. (2018). Voice Onset Time in English voiceless stops is affected by following postvocalic liquids and voiceless onsets. The Journal of the Acoustical Society of America, 144(4), 2166-2177.
+Chen, M. (1970). Vowel length variation as a function of the voicing of the consonant environment. *Phonetica, 22*(3), 129-159.
 
-Arzbecker, L. J., Jacewicz, E., Goebel, R., & Fox, R. A. (2022, May). Structured covariation of acoustic cues to coda voicing throughout the syllable. In Proceedings of Meetings on Acoustics (Vol. 46, No. 1). AIP Publishing.
+* Cite this for the general effect of coda voicing on vowel duration
 
-Choi, J., Kim, S., & Cho, T. (2016). Phonetic encoding of coda voicing contrast under different focus conditions in L1 vs. L2 English. Frontiers in psychology, 7, 624.
+Choi, J., Kim, S., & Cho, T. (2016). Phonetic encoding of coda voicing contrast under different focus conditions in L1 vs. L2 English. *Frontiers in psychology, 7*, 624.
 
-It looks like Choi et al. show a similar effect, though their study is limited to coronal codas. They also don't discuss the possible acoustic/aerodynamic sources of this effect.
+* It looks like Choi et al. show a similar effect, though their study is limited to coronal codas. They also don't discuss the possible acoustic/aerodynamic sources of this effect.
+
+Hawkins, S., & Nguyen, N. (2004). Influence of syllable-coda voicing on the acoustic properties of syllable-onset/l/in English. *Journal of Phonetics, 32*(2), 199-231.
+
+Mielke, J., & Nielsen, K. (2018). Voice Onset Time in English voiceless stops is affected by following postvocalic liquids and voiceless onsets. *The Journal of the Acoustical Society of America, 144*(4), 2166-2177.
+
+Rosner, B. S. (1984). Perception of voice‐onset‐time continua: A signal detection analysis. *The Journal of the Acoustical Society of America, 75*(4), 1231-1242.
+
+* This paper shows (generally) Weber's Law for VOT discrimination at the *long* end of the continuum; *d'* for 50/70ms VOT (synthesized) is very low
+
+Weismer, G. (1979). Sensitivity of voice-onset time (VOT) measures to certain segmental features in speech production. *Journal of Phonetics, 7*(2), 197-204.
+
+* This paper clearly shows the effect but very low *n*
