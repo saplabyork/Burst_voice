@@ -1,7 +1,5 @@
 ---
-title: "Untitled"
-author: "Chandan Narayan"
-date: "2024-01-26"
+title: "Notes"
 output: html_document
 ---
 
