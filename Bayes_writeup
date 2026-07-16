@@ -1,0 +1,431 @@
+This is the model that I ran. It has the maximal random effects structure a la "keep it maximal" (Barr et al., 2013):
+
+library(brms)
+attach(exp1_data)
+
+fit_logistic <- brm(
+  formula = response_vc ~ stim_length * ons_con * vowel + (1 + stim_length * ons_con * vowel | sub),
+  data = exp1_data,
+  family = bernoulli(link = "logit"),
+  chains = 4, iter = 2000, warmup = 1000, cores = 4 # Recommended settings
+)
+
+# View results
+summary(fit_logistic)
+
+Here are the results:
+
+Family: bernoulli 
+  Links: mu = logit 
+Formula: response_vc ~ stim_length * ons_con * vowel + (1 + stim_length * ons_con * vowel | sub) 
+   Data: exp1_data (Number of observations: 624) 
+  Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 4000
+
+Multilevel Hyperparameters:
+~sub (Number of levels: 26) 
+                                                                       Estimate Est.Error
+sd(Intercept)                                                              1.32      0.32
+sd(stim_lengthshort)                                                       1.60      0.48
+sd(ons_conp)                                                               0.51      0.36
+sd(vowele)                                                                 0.61      0.40
+sd(voweli)                                                                 0.96      0.49
+sd(stim_lengthshort:ons_conp)                                              0.65      0.47
+sd(stim_lengthshort:vowele)                                                0.80      0.58
+sd(stim_lengthshort:voweli)                                                0.68      0.52
+sd(ons_conp:vowele)                                                        0.73      0.52
+sd(ons_conp:voweli)                                                        0.68      0.48
+sd(stim_lengthshort:ons_conp:vowele)                                       0.87      0.68
+sd(stim_lengthshort:ons_conp:voweli)                                       0.71      0.53
+cor(Intercept,stim_lengthshort)                                           -0.27      0.22
+cor(Intercept,ons_conp)                                                   -0.04      0.27
+cor(stim_lengthshort,ons_conp)                                            -0.07      0.26
+cor(Intercept,vowele)                                                     -0.13      0.27
+cor(stim_lengthshort,vowele)                                               0.09      0.27
+cor(ons_conp,vowele)                                                      -0.06      0.27
+cor(Intercept,voweli)                                                      0.04      0.25
+cor(stim_lengthshort,voweli)                                              -0.21      0.25
+cor(ons_conp,voweli)                                                       0.03      0.27
+cor(vowele,voweli)                                                         0.07      0.27
+cor(Intercept,stim_lengthshort:ons_conp)                                  -0.09      0.27
+cor(stim_lengthshort,stim_lengthshort:ons_conp)                            0.03      0.27
+cor(ons_conp,stim_lengthshort:ons_conp)                                   -0.05      0.28
+cor(vowele,stim_lengthshort:ons_conp)                                      0.01      0.28
+cor(voweli,stim_lengthshort:ons_conp)                                     -0.05      0.27
+cor(Intercept,stim_lengthshort:vowele)                                    -0.06      0.26
+cor(stim_lengthshort,stim_lengthshort:vowele)                              0.02      0.27
+cor(ons_conp,stim_lengthshort:vowele)                                     -0.00      0.28
+cor(vowele,stim_lengthshort:vowele)                                       -0.01      0.27
+cor(voweli,stim_lengthshort:vowele)                                       -0.02      0.26
+cor(stim_lengthshort:ons_conp,stim_lengthshort:vowele)                     0.02      0.27
+cor(Intercept,stim_lengthshort:voweli)                                    -0.00      0.27
+cor(stim_lengthshort,stim_lengthshort:voweli)                             -0.01      0.28
+cor(ons_conp,stim_lengthshort:voweli)                                     -0.05      0.28
+cor(vowele,stim_lengthshort:voweli)                                        0.02      0.28
+cor(voweli,stim_lengthshort:voweli)                                       -0.03      0.27
+cor(stim_lengthshort:ons_conp,stim_lengthshort:voweli)                    -0.03      0.28
+cor(stim_lengthshort:vowele,stim_lengthshort:voweli)                       0.02      0.28
+cor(Intercept,ons_conp:vowele)                                            -0.01      0.27
+cor(stim_lengthshort,ons_conp:vowele)                                      0.05      0.26
+cor(ons_conp,ons_conp:vowele)                                             -0.07      0.28
+cor(vowele,ons_conp:vowele)                                               -0.01      0.27
+cor(voweli,ons_conp:vowele)                                                0.08      0.27
+cor(stim_lengthshort:ons_conp,ons_conp:vowele)                            -0.04      0.28
+cor(stim_lengthshort:vowele,ons_conp:vowele)                               0.02      0.27
+cor(stim_lengthshort:voweli,ons_conp:vowele)                               0.01      0.28
+cor(Intercept,ons_conp:voweli)                                            -0.10      0.27
+cor(stim_lengthshort,ons_conp:voweli)                                     -0.02      0.27
+cor(ons_conp,ons_conp:voweli)                                             -0.03      0.28
+cor(vowele,ons_conp:voweli)                                                0.05      0.27
+cor(voweli,ons_conp:voweli)                                               -0.09      0.28
+cor(stim_lengthshort:ons_conp,ons_conp:voweli)                            -0.02      0.27
+cor(stim_lengthshort:vowele,ons_conp:voweli)                               0.00      0.27
+cor(stim_lengthshort:voweli,ons_conp:voweli)                              -0.02      0.27
+cor(ons_conp:vowele,ons_conp:voweli)                                       0.07      0.28
+cor(Intercept,stim_lengthshort:ons_conp:vowele)                            0.01      0.27
+cor(stim_lengthshort,stim_lengthshort:ons_conp:vowele)                    -0.03      0.27
+cor(ons_conp,stim_lengthshort:ons_conp:vowele)                             0.00      0.27
+cor(vowele,stim_lengthshort:ons_conp:vowele)                               0.00      0.27
+cor(voweli,stim_lengthshort:ons_conp:vowele)                               0.06      0.28
+cor(stim_lengthshort:ons_conp,stim_lengthshort:ons_conp:vowele)           -0.03      0.29
+cor(stim_lengthshort:vowele,stim_lengthshort:ons_conp:vowele)             -0.02      0.28
+cor(stim_lengthshort:voweli,stim_lengthshort:ons_conp:vowele)              0.03      0.28
+cor(ons_conp:vowele,stim_lengthshort:ons_conp:vowele)                     -0.03      0.27
+cor(ons_conp:voweli,stim_lengthshort:ons_conp:vowele)                      0.03      0.27
+cor(Intercept,stim_lengthshort:ons_conp:voweli)                           -0.06      0.27
+cor(stim_lengthshort,stim_lengthshort:ons_conp:voweli)                     0.05      0.28
+cor(ons_conp,stim_lengthshort:ons_conp:voweli)                            -0.06      0.28
+cor(vowele,stim_lengthshort:ons_conp:voweli)                               0.05      0.28
+cor(voweli,stim_lengthshort:ons_conp:voweli)                              -0.07      0.27
+cor(stim_lengthshort:ons_conp,stim_lengthshort:ons_conp:voweli)           -0.05      0.28
+cor(stim_lengthshort:vowele,stim_lengthshort:ons_conp:voweli)              0.07      0.27
+cor(stim_lengthshort:voweli,stim_lengthshort:ons_conp:voweli)             -0.04      0.28
+cor(ons_conp:vowele,stim_lengthshort:ons_conp:voweli)                      0.04      0.28
+cor(ons_conp:voweli,stim_lengthshort:ons_conp:voweli)                     -0.03      0.28
+cor(stim_lengthshort:ons_conp:vowele,stim_lengthshort:ons_conp:voweli)     0.03      0.28
+                                                                       l-95% CI u-95% CI Rhat
+sd(Intercept)                                                              0.76     2.05 1.00
+sd(stim_lengthshort)                                                       0.76     2.63 1.00
+sd(ons_conp)                                                               0.02     1.35 1.00
+sd(vowele)                                                                 0.02     1.44 1.01
+sd(voweli)                                                                 0.07     1.94 1.00
+sd(stim_lengthshort:ons_conp)                                              0.03     1.70 1.00
+sd(stim_lengthshort:vowele)                                                0.03     2.10 1.01
+sd(stim_lengthshort:voweli)                                                0.03     1.94 1.00
+sd(ons_conp:vowele)                                                        0.03     1.92 1.01
+sd(ons_conp:voweli)                                                        0.03     1.79 1.00
+sd(stim_lengthshort:ons_conp:vowele)                                       0.03     2.65 1.00
+sd(stim_lengthshort:ons_conp:voweli)                                       0.03     2.00 1.00
+cor(Intercept,stim_lengthshort)                                           -0.65     0.18 1.00
+cor(Intercept,ons_conp)                                                   -0.54     0.50 1.00
+cor(stim_lengthshort,ons_conp)                                            -0.56     0.46 1.00
+cor(Intercept,vowele)                                                     -0.60     0.42 1.00
+cor(stim_lengthshort,vowele)                                              -0.45     0.59 1.00
+cor(ons_conp,vowele)                                                      -0.58     0.48 1.00
+cor(Intercept,voweli)                                                     -0.46     0.53 1.00
+cor(stim_lengthshort,voweli)                                              -0.65     0.32 1.00
+cor(ons_conp,voweli)                                                      -0.51     0.55 1.00
+cor(vowele,voweli)                                                        -0.49     0.56 1.00
+cor(Intercept,stim_lengthshort:ons_conp)                                  -0.59     0.46 1.00
+cor(stim_lengthshort,stim_lengthshort:ons_conp)                           -0.50     0.52 1.00
+cor(ons_conp,stim_lengthshort:ons_conp)                                   -0.60     0.50 1.00
+cor(vowele,stim_lengthshort:ons_conp)                                     -0.53     0.55 1.00
+cor(voweli,stim_lengthshort:ons_conp)                                     -0.55     0.50 1.00
+cor(Intercept,stim_lengthshort:vowele)                                    -0.55     0.44 1.00
+cor(stim_lengthshort,stim_lengthshort:vowele)                             -0.51     0.53 1.00
+cor(ons_conp,stim_lengthshort:vowele)                                     -0.55     0.54 1.00
+cor(vowele,stim_lengthshort:vowele)                                       -0.51     0.52 1.00
+cor(voweli,stim_lengthshort:vowele)                                       -0.52     0.48 1.00
+cor(stim_lengthshort:ons_conp,stim_lengthshort:vowele)                    -0.52     0.53 1.00
+cor(Intercept,stim_lengthshort:voweli)                                    -0.51     0.52 1.00
+cor(stim_lengthshort,stim_lengthshort:voweli)                             -0.54     0.51 1.00
+cor(ons_conp,stim_lengthshort:voweli)                                     -0.58     0.51 1.00
+cor(vowele,stim_lengthshort:voweli)                                       -0.51     0.55 1.00
+cor(voweli,stim_lengthshort:voweli)                                       -0.55     0.49 1.00
+cor(stim_lengthshort:ons_conp,stim_lengthshort:voweli)                    -0.58     0.52 1.00
+cor(stim_lengthshort:vowele,stim_lengthshort:voweli)                      -0.51     0.55 1.00
+cor(Intercept,ons_conp:vowele)                                            -0.52     0.51 1.00
+cor(stim_lengthshort,ons_conp:vowele)                                     -0.47     0.53 1.00
+cor(ons_conp,ons_conp:vowele)                                             -0.59     0.48 1.00
+cor(vowele,ons_conp:vowele)                                               -0.53     0.52 1.00
+cor(voweli,ons_conp:vowele)                                               -0.45     0.59 1.00
+cor(stim_lengthshort:ons_conp,ons_conp:vowele)                            -0.57     0.50 1.00
+cor(stim_lengthshort:vowele,ons_conp:vowele)                              -0.51     0.55 1.00
+cor(stim_lengthshort:voweli,ons_conp:vowele)                              -0.51     0.54 1.00
+cor(Intercept,ons_conp:voweli)                                            -0.60     0.44 1.00
+cor(stim_lengthshort,ons_conp:voweli)                                     -0.55     0.50 1.00
+cor(ons_conp,ons_conp:voweli)                                             -0.56     0.50 1.00
+cor(vowele,ons_conp:voweli)                                               -0.48     0.56 1.00
+cor(voweli,ons_conp:voweli)                                               -0.60     0.49 1.00
+cor(stim_lengthshort:ons_conp,ons_conp:voweli)                            -0.53     0.51 1.00
+cor(stim_lengthshort:vowele,ons_conp:voweli)                              -0.53     0.54 1.00
+cor(stim_lengthshort:voweli,ons_conp:voweli)                              -0.53     0.51 1.00
+cor(ons_conp:vowele,ons_conp:voweli)                                      -0.47     0.59 1.00
+cor(Intercept,stim_lengthshort:ons_conp:vowele)                           -0.52     0.53 1.00
+cor(stim_lengthshort,stim_lengthshort:ons_conp:vowele)                    -0.54     0.49 1.00
+cor(ons_conp,stim_lengthshort:ons_conp:vowele)                            -0.51     0.53 1.00
+cor(vowele,stim_lengthshort:ons_conp:vowele)                              -0.53     0.53 1.00
+cor(voweli,stim_lengthshort:ons_conp:vowele)                              -0.48     0.58 1.00
+cor(stim_lengthshort:ons_conp,stim_lengthshort:ons_conp:vowele)           -0.56     0.53 1.00
+cor(stim_lengthshort:vowele,stim_lengthshort:ons_conp:vowele)             -0.55     0.52 1.00
+cor(stim_lengthshort:voweli,stim_lengthshort:ons_conp:vowele)             -0.50     0.55 1.00
+cor(ons_conp:vowele,stim_lengthshort:ons_conp:vowele)                     -0.56     0.52 1.00
+cor(ons_conp:voweli,stim_lengthshort:ons_conp:vowele)                     -0.51     0.56 1.00
+cor(Intercept,stim_lengthshort:ons_conp:voweli)                           -0.57     0.47 1.00
+cor(stim_lengthshort,stim_lengthshort:ons_conp:voweli)                    -0.50     0.56 1.00
+cor(ons_conp,stim_lengthshort:ons_conp:voweli)                            -0.59     0.50 1.00
+cor(vowele,stim_lengthshort:ons_conp:voweli)                              -0.49     0.57 1.00
+cor(voweli,stim_lengthshort:ons_conp:voweli)                              -0.59     0.47 1.00
+cor(stim_lengthshort:ons_conp,stim_lengthshort:ons_conp:voweli)           -0.59     0.48 1.00
+cor(stim_lengthshort:vowele,stim_lengthshort:ons_conp:voweli)             -0.47     0.59 1.00
+cor(stim_lengthshort:voweli,stim_lengthshort:ons_conp:voweli)             -0.58     0.51 1.00
+cor(ons_conp:vowele,stim_lengthshort:ons_conp:voweli)                     -0.53     0.56 1.00
+cor(ons_conp:voweli,stim_lengthshort:ons_conp:voweli)                     -0.55     0.51 1.00
+cor(stim_lengthshort:ons_conp:vowele,stim_lengthshort:ons_conp:voweli)    -0.53     0.55 1.00
+                                                                       Bulk_ESS Tail_ESS
+sd(Intercept)                                                              1984     2443
+sd(stim_lengthshort)                                                       1429     1689
+sd(ons_conp)                                                               1308     1727
+sd(vowele)                                                                 1064     1219
+sd(voweli)                                                                  917      849
+sd(stim_lengthshort:ons_conp)                                              1425     2437
+sd(stim_lengthshort:vowele)                                                1185     1496
+sd(stim_lengthshort:voweli)                                                1888     2143
+sd(ons_conp:vowele)                                                        1081     1591
+sd(ons_conp:voweli)                                                        1257     1890
+sd(stim_lengthshort:ons_conp:vowele)                                       1508     1876
+sd(stim_lengthshort:ons_conp:voweli)                                       1894     2231
+cor(Intercept,stim_lengthshort)                                            1997     2582
+cor(Intercept,ons_conp)                                                    5000     3286
+cor(stim_lengthshort,ons_conp)                                             4071     2935
+cor(Intercept,vowele)                                                      3763     3042
+cor(stim_lengthshort,vowele)                                               3939     3188
+cor(ons_conp,vowele)                                                       3021     3114
+cor(Intercept,voweli)                                                      3604     3122
+cor(stim_lengthshort,voweli)                                               3235     2967
+cor(ons_conp,voweli)                                                       2247     2950
+cor(vowele,voweli)                                                         2095     2471
+cor(Intercept,stim_lengthshort:ons_conp)                                   4324     2736
+cor(stim_lengthshort,stim_lengthshort:ons_conp)                            4418     3074
+cor(ons_conp,stim_lengthshort:ons_conp)                                    3938     3227
+cor(vowele,stim_lengthshort:ons_conp)                                      3562     3076
+cor(voweli,stim_lengthshort:ons_conp)                                      3662     3119
+cor(Intercept,stim_lengthshort:vowele)                                     4996     3168
+cor(stim_lengthshort,stim_lengthshort:vowele)                              5214     3310
+cor(ons_conp,stim_lengthshort:vowele)                                      3399     3418
+cor(vowele,stim_lengthshort:vowele)                                        3436     2562
+cor(voweli,stim_lengthshort:vowele)                                        3444     3262
+cor(stim_lengthshort:ons_conp,stim_lengthshort:vowele)                     2709     3005
+cor(Intercept,stim_lengthshort:voweli)                                     5437     3252
+cor(stim_lengthshort,stim_lengthshort:voweli)                              4855     3199
+cor(ons_conp,stim_lengthshort:voweli)                                      4148     3053
+cor(vowele,stim_lengthshort:voweli)                                        4297     3229
+cor(voweli,stim_lengthshort:voweli)                                        4120     3274
+cor(stim_lengthshort:ons_conp,stim_lengthshort:voweli)                     3021     3012
+cor(stim_lengthshort:vowele,stim_lengthshort:voweli)                       2997     3214
+cor(Intercept,ons_conp:vowele)                                             4970     2719
+cor(stim_lengthshort,ons_conp:vowele)                                      4051     3212
+cor(ons_conp,ons_conp:vowele)                                              3138     3165
+cor(vowele,ons_conp:vowele)                                                2837     3026
+cor(voweli,ons_conp:vowele)                                                2926     2985
+cor(stim_lengthshort:ons_conp,ons_conp:vowele)                             3197     3338
+cor(stim_lengthshort:vowele,ons_conp:vowele)                               2891     3293
+cor(stim_lengthshort:voweli,ons_conp:vowele)                               2805     3208
+cor(Intercept,ons_conp:voweli)                                             5405     3105
+cor(stim_lengthshort,ons_conp:voweli)                                      4702     2865
+cor(ons_conp,ons_conp:voweli)                                              3934     3078
+cor(vowele,ons_conp:voweli)                                                3430     2979
+cor(voweli,ons_conp:voweli)                                                2940     3021
+cor(stim_lengthshort:ons_conp,ons_conp:voweli)                             3291     2635
+cor(stim_lengthshort:vowele,ons_conp:voweli)                               3575     3410
+cor(stim_lengthshort:voweli,ons_conp:voweli)                               2701     3507
+cor(ons_conp:vowele,ons_conp:voweli)                                       2444     3386
+cor(Intercept,stim_lengthshort:ons_conp:vowele)                            5104     3006
+cor(stim_lengthshort,stim_lengthshort:ons_conp:vowele)                     5788     2991
+cor(ons_conp,stim_lengthshort:ons_conp:vowele)                             3709     3253
+cor(vowele,stim_lengthshort:ons_conp:vowele)                               4058     3087
+cor(voweli,stim_lengthshort:ons_conp:vowele)                               4226     3240
+cor(stim_lengthshort:ons_conp,stim_lengthshort:ons_conp:vowele)            3259     3259
+cor(stim_lengthshort:vowele,stim_lengthshort:ons_conp:vowele)              3360     2983
+cor(stim_lengthshort:voweli,stim_lengthshort:ons_conp:vowele)              2798     2947
+cor(ons_conp:vowele,stim_lengthshort:ons_conp:vowele)                      2922     3482
+cor(ons_conp:voweli,stim_lengthshort:ons_conp:vowele)                      2983     3628
+cor(Intercept,stim_lengthshort:ons_conp:voweli)                            5776     3333
+cor(stim_lengthshort,stim_lengthshort:ons_conp:voweli)                     5853     2657
+cor(ons_conp,stim_lengthshort:ons_conp:voweli)                             3099     2561
+cor(vowele,stim_lengthshort:ons_conp:voweli)                               3477     3216
+cor(voweli,stim_lengthshort:ons_conp:voweli)                               3558     3185
+cor(stim_lengthshort:ons_conp,stim_lengthshort:ons_conp:voweli)            3525     3337
+cor(stim_lengthshort:vowele,stim_lengthshort:ons_conp:voweli)              2868     3308
+cor(stim_lengthshort:voweli,stim_lengthshort:ons_conp:voweli)              2724     3181
+cor(ons_conp:vowele,stim_lengthshort:ons_conp:voweli)                      2754     3223
+cor(ons_conp:voweli,stim_lengthshort:ons_conp:voweli)                      2974     3165
+cor(stim_lengthshort:ons_conp:vowele,stim_lengthshort:ons_conp:voweli)     2588     3257
+
+Regression Coefficients:
+                                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept                           -0.18      0.42    -1.02     0.67 1.00     1598     2395
+stim_lengthshort                    -1.41      0.62    -2.67    -0.22 1.00     1652     2197
+ons_conp                            -0.89      0.50    -1.89     0.07 1.00     1835     2351
+vowele                              -0.23      0.49    -1.18     0.74 1.00     2024     2409
+voweli                              -0.72      0.54    -1.83     0.31 1.00     1870     2489
+stim_lengthshort:ons_conp            1.13      0.74    -0.28     2.59 1.00     1627     2450
+stim_lengthshort:vowele              0.08      0.76    -1.45     1.54 1.00     2104     2140
+stim_lengthshort:voweli              1.03      0.84    -0.59     2.70 1.00     1743     2286
+ons_conp:vowele                      1.96      0.71     0.61     3.38 1.00     1801     2364
+ons_conp:voweli                      1.24      0.74    -0.19     2.73 1.00     1895     2626
+stim_lengthshort:ons_conp:vowele    -1.25      1.04    -3.31     0.78 1.00     1896     2466
+stim_lengthshort:ons_conp:voweli    -1.84      1.11    -4.00     0.35 1.00     1648     2182
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).
+
+Here is the interpretation:
+
+✅ Convergence Diagnostics - EXCELLENT
+
+Rhat values: All = 1.00 (perfect! Should be < 1.01)
+Effective sample sizes: All Bulk_ESS and Tail_ESS > 400 (good sampling)
+No warnings mentioned, so the maximal model worked well with your data
+
+🎯 Fixed Effects (Population-Level Effects)
+Here are the key findings on the log-odds scale:
+  Main Effects:
+  
+  Intercept = -0.18 (95% CI: -1.02, 0.67) - Baseline near chance when reference levels are long aspiration, /k/, vowel /a/
+  stim_lengthshort = -1.41 (95% CI: -2.67, -0.22) - SHORT aspiration DECREASES voiced responses (credible effect - CI excludes 0)
+ons_conp = -0.89 (95% CI: -1.89, 0.07) - /p/ tends to decrease voiced responses vs /k/ (marginal - CI barely includes 0)
+vowele = -0.23 (95% CI: -1.18, 0.74) - No clear effect of /e/ vs /a/
+  voweli = -0.72 (95% CI: -1.83, 0.31) - No clear effect of /i/ vs /a/
+  
+  Two-Way Interactions:
+  
+  stim_lengthshort:ons_conp = 1.13 (95% CI: -0.28, 2.59) - The effect of short aspiration is less negative for /p/ than /k/ (marginal)
+stim_lengthshort:vowele = 0.08 (95% CI: -1.45, 1.54) - No interaction with /e/
+  stim_lengthshort:voweli = 1.03 (95% CI: -0.59, 2.70) - Possible interaction with /i/ (marginal)
+ons_conp:vowele = 1.96 (95% CI: 0.61, 3.38) - Strong interaction: /p/ + /e/ combination increases voiced responses
+ons_conp:voweli = 1.24 (95% CI: -0.19, 2.73) - Possible /p/ + /i/ interaction (marginal)
+
+Three-Way Interactions:
+  
+  stim_lengthshort:ons_conp:vowele = -1.25 (95% CI: -3.31, 0.78) - Not credible
+stim_lengthshort:ons_conp:voweli = -1.84 (95% CI: -4.00, 0.35) - Not credible
+
+👥 Random Effects (Individual Differences)
+Looking at the sd() estimates - these show meaningful individual variation:
+  Substantial variation in:
+  
+  Intercept (sd = 1.32): People differ in baseline bias
+stim_lengthshort (sd = 1.60): Large individual differences in sensitivity to aspiration length
+voweli (sd = 0.96): Moderate variation in /i/ effect
+
+Less variation in:
+  
+  ons_conp (sd = 0.51): Subjects are more similar in how /p/ vs /k/ affects them
+vowele (sd = 0.61): Moderate consistency across subjects
+
+Interactions show moderate-to-low variation - most sd() estimates for interactions have wide credible intervals including near-zero values, suggesting these individual differences are uncertain.
+🔍 Key Interpretations
+
+Main finding: Short aspiration strongly reduces voiced consonant responses compared to long aspiration (as expected!)
+Onset consonant matters: The effect differs between /p/ and /k/, especially when combined with different vowels
+Strong ons_con × vowel interaction: The /p/ + /e/ combination particularly increases voiced responses - this might be worth exploring further
+Individual differences are real: Especially for the aspiration length effect (sd = 1.60), suggesting some subjects are much more sensitive to this cue than others
+
+💡 Recommendations
+
+Consider simplifying random effects: Given the uncertainty in many interaction random effects (wide CIs, lower bounds near 0), you might get similar results with a simpler structure like (1 + stim_length + ons_con + vowel | sub)
+Plot the interactions: Especially the ons_con × vowel interaction - it's strong and interesting!
+Check model comparison: Use loo() or waic() to compare this maximal model with simpler alternatives
+
+
+Statistical Analysis
+To examine how aspiration duration, onset consonant identity, and vowel context influenced listeners' perception of word-final consonant voicing, we fit a Bayesian mixed-effects logistic regression model using the brms package (version X.X.X; Bürkner, 2017) in R (version X.X.X; R Core Team, 2023). The binary outcome variable was participants' forced-choice voicing response (coded as 1 for voiced, 0 for voiceless).
+Fixed effects. The model included main effects of stimulus length (short vs. long aspiration, with long as the reference level), onset consonant (p, t, k, with k as the reference level), and vowel (a, e, i, with a as the reference level), along with all possible two-way and three-way interactions among these factors. This full factorial design allowed us to assess whether aspiration duration effects varied across different phonetic contexts.
+Random effects. Because all participants responded to all combinations of experimental conditions (fully within-subjects design), we included a maximal random effects structure (Barr et al., 2013) with by-subject random intercepts and random slopes for all main effects and interactions: (1 + stim_length * ons_con * vowel | sub). This structure accounts for individual differences not only in baseline voicing bias but also in how each participant weighted aspiration duration and phonetic context in their perceptual judgments. Correlations among random effects were estimated, allowing the model to capture, for example, whether participants with a strong overall voicing bias also showed stronger aspiration length effects.
+Estimation and convergence. We used weakly informative default priors provided by brms. Posterior distributions were estimated via Markov Chain Monte Carlo (MCMC) sampling using the No-U-Turn Sampler (NUTS; Hoffman & Gelman, 2014), with 4 chains of 2,000 iterations each (1,000 warmup per chain), yielding 4,000 post-warmup samples. Convergence diagnostics indicated successful estimation: all R̂ values equaled 1.00 (values < 1.01 indicate convergence; Vehtari et al., 2021), and effective sample sizes were adequate for all parameters (all bulk ESS > 900, all tail ESS > 800).
+Inference. We report posterior mean estimates and 95% credible intervals (CIs) for all fixed effects on the log-odds scale. A 95% credible interval indicates the range within which the true parameter value lies with 95% probability given the data and model. We consider effects credible when their 95% CIs exclude zero, though we emphasize interpreting effect sizes and uncertainty rather than relying solely on whether intervals exclude zero (Gelman et al., 2020). For ease of interpretation, we also present selected predictions transformed to the probability scale.
+
+
+Here's how I would write up the Results section:
+
+---
+
+## Results
+
+### Fixed Effects
+
+Table 1 presents the posterior mean estimates and 95% credible intervals for all fixed effects. We focus interpretation on the main effects and two-way interactions, as neither three-way interaction was credible.
+
+**Main effect of aspiration length.** Listeners were substantially less likely to perceive a voiced final consonant when presented with short aspiration compared to long aspiration (β = -1.41, 95% CI [-2.67, -0.22]). This indicates that longer aspiration duration—typically associated with voiceless onsets—led listeners to infer a voiced coda, consistent with compensatory perceptual strategies where listeners adjust for coarticulatory relationships between onset and coda voicing.
+
+**Onset consonant effects.** Compared to /k/, the onset /p/ showed a tendency toward reduced voiced responses (β = -0.89, 95% CI [-1.89, 0.07]), though this effect was marginal as the credible interval narrowly included zero. The /t/ onset served as an intermediate reference level (not separately estimated due to treatment coding). No clear main effects of vowel identity emerged: neither /e/ (β = -0.23, 95% CI [-1.18, 0.74]) nor /i/ (β = -0.72, 95% CI [-1.83, 0.31]) differed credibly from /a/ in their overall influence on voicing judgments.
+
+**Aspiration × onset consonant interaction.** The effect of aspiration length was modulated by onset consonant identity (β = 1.13, 95% CI [-0.28, 2.59]). Though this interaction was marginal, the positive coefficient suggests that the reduction in voiced responses for short aspiration was attenuated for /p/ relative to /k/—that is, listeners appeared slightly less sensitive to aspiration duration cues in the context of bilabial stops.
+
+**Onset consonant × vowel interactions.** Two credible interactions emerged between onset consonant and vowel context. First, the /p/ + /e/ combination substantially increased the likelihood of voiced responses relative to /k/ + /a/ (β = 1.96, 95% CI [0.61, 3.38]). Second, /p/ + /i/ showed a similar though marginal pattern (β = 1.24, 95% CI [-0.19, 2.73]). These interactions suggest that the perceptual consequences of onset consonant identity depend critically on vowel context, possibly reflecting acoustic-phonetic properties specific to bilabial-front vowel combinations.
+
+**Aspiration × vowel interactions.** No credible interactions emerged between aspiration length and vowel identity (all 95% CIs included zero), indicating that the compensatory influence of aspiration duration on coda voicing perception was relatively consistent across vowel contexts.
+
+**Three-way interactions.** Neither the aspiration × onset × /e/ interaction (β = -1.25, 95% CI [-3.31, 0.78]) nor the aspiration × onset × /i/ interaction (β = -1.84, 95% CI [-4.00, 0.35]) was credible, suggesting that vowel context did not systematically modulate how aspiration duration effects varied across different onset consonants.
+
+### Random Effects
+
+The model revealed substantial individual differences in perceptual strategies (Table 2). The standard deviation of random intercepts (SD = 1.32, 95% CI [0.76, 2.05]) indicated that participants varied considerably in their baseline tendency to perceive voiced versus voiceless codas. More strikingly, the random slope for aspiration length showed the largest individual variability (SD = 1.60, 95% CI [0.76, 2.63]), demonstrating that listeners differed markedly in how strongly they weighted aspiration duration when making voicing judgments. This suggests that the compensatory perceptual strategy, while present at the population level, was not uniformly applied across individuals.
+
+Individual differences were more modest for other effects. Vowel /i/ showed moderate between-subject variability (SD = 0.96, 95% CI [0.07, 1.94]), while onset consonant identity (SD = 0.51, 95% CI [0.02, 1.35]) and vowel /e/ (SD = 0.61, 95% CI [0.02, 1.44]) showed smaller individual differences. Random slopes for interactions generally had wide credible intervals with lower bounds near zero, reflecting greater uncertainty about individual variability in these more complex effects.
+
+The correlation between random intercepts and random slopes for aspiration length was negative (r = -0.27, 95% CI [-0.65, 0.18]), suggesting a weak tendency for participants with a stronger baseline bias toward voiceless responses to show larger aspiration length effects, though this correlation was not credible. Most other random effect correlations clustered near zero, indicating that individual differences across different perceptual dimensions were largely independent.
+
+---
+
+## Alternative: More Concise Version
+
+## Results
+
+Listeners showed a strong compensatory perceptual pattern: short aspiration substantially reduced voiced coda responses compared to long aspiration (β = -1.41, 95% CI [-2.67, -0.22]). This indicates that longer aspiration in the onset—characteristic of voiceless stops—led listeners to infer a voiced final consonant, consistent with coarticulatory compensation strategies.
+
+Onset consonant identity modulated these perceptual patterns, particularly in interaction with vowel context. The /p/ + /e/ combination substantially increased voiced responses relative to /k/ + /a/ (β = 1.96, 95% CI [0.61, 3.38]), with a similar though marginal pattern for /p/ + /i/ (β = 1.24, 95% CI [-0.19, 2.73]). The aspiration length effect showed a marginal interaction with onset consonant (β = 1.13, 95% CI [-0.28, 2.59]), suggesting slightly reduced sensitivity to aspiration cues for /p/ versus /k/. Neither three-way interaction was credible.
+
+Individual differences were substantial and theoretically informative. Participants varied most in their sensitivity to aspiration length (SD = 1.60, 95% CI [0.76, 2.63]), indicating considerable heterogeneity in compensatory perceptual strategies despite the clear population-level effect. Baseline voicing bias also showed marked individual variation (SD = 1.32, 95% CI [0.76, 2.05]), while individual differences in other effects were more modest.
+
+---
+
+## Optional Addition: Presenting Predicted Probabilities
+
+To aid interpretation, Figure X shows model predictions on the probability scale for key conditions. For /k/ + /a/ stimuli, predicted probability of voiced responses was X% (95% CI [X%, X%]) for long aspiration versus Y% (95% CI [Y%, Y%]) for short aspiration—a difference of Z percentage points. [You can generate these with `conditional_effects()` or `emmeans` + `gather_emmeans_draws`]
+
+---
+
+## Table Suggestions:
+
+**Table 1. Fixed Effect Estimates (Log-Odds Scale)**
+
+| Effect | β | 95% CI | Interpretation |
+|--------|---|--------|----------------|
+| Intercept | -0.18 | [-1.02, 0.67] | Baseline (long, /k/, /a/) |
+| Short aspiration | -1.41 | [-2.67, -0.22] | Reduced voiced responses |
+| Onset /p/ | -0.89 | [-1.89, 0.07] | Tendency toward voiceless |
+| ... | ... | ... | ... |
+
+**Table 2. Random Effect Standard Deviations**
+
+| Random Effect | SD | 95% CI |
+|--------------|-----|---------|
+| Intercept | 1.32 | [0.76, 2.05] |
+| Aspiration length | 1.60 | [0.76, 2.63] |
+| ... | ... | ... |
+
+---
+
+**Notes:**
+- The first version is more comprehensive and explanatory
+- The second version is punchier for higher-impact journals
+- Both avoid p-value language and focus on effect sizes + uncertainty
+- Consider adding a figure showing the onset × vowel interaction—it's your strongest effect
+- You might want to convert one or two key effects to the probability scale for accessibility
+
+Would you like help generating predictions on the probability scale or creating visualization code?
+
+

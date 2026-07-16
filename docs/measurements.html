@@ -13,7 +13,7 @@
 
 <title>Acoustics methods</title>
 
-<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
@@ -329,7 +329,10 @@ div.tocify {
   <a href="Practice.html">Practice</a>
 </li>
 <li>
-  <a href="data_anal.html">Data analysis</a>
+  <a href="data_anal.html">Data Production</a>
+</li>
+<li>
+  <a href="single_stim_perception.html">Data Perception</a>
 </li>
 <li>
   <a href="notes.html">Notes</a>
@@ -643,6 +646,39 @@ interval and one Tier 2 interval.</p></li>
 <li><p>Save both the data files in the folder you’re working in and also
 send a copy to me.</p></li>
 </ol>
+</div>
+</div>
+<div id="burst-amplitude-vot-second-round-of-measurements"
+class="section level1">
+<h1>Burst amplitude + VOT (Second round of measurements)</h1>
+<p>The first round of measurements were great. In hindsight, we should
+have <em>also</em> measured the burst amplitude of the onset stops. We
+will do that now, as well as do the VOT measures again. I have written a
+Praat script that should make the whole measurement process a little
+easier, BUT there is still some <em>art</em> involved.</p>
+<div id="audio-files" class="section level2">
+<h2>Audio files</h2>
+<p>These are the same files that are located in the SAP drive
+<code>(Studies/Burst_voice/Recordings/NEW/)</code>. Please read <a
+href="https://saplabyork.github.io/Burst_voice/measurements.html#The_data">The
+data</a> section above.</p>
+</div>
+<div id="making-a-textgrid" class="section level2">
+<h2>Making a textgrid</h2>
+<p>Open a <code>.wav</code> file into Praat. See above for the naming
+conventions of the files. Also read the <a
+href="https://saplabyork.github.io/Burst_voice/measurements.html#Creating_the_TextGrid">Creating
+the Textgrid</a> above. For this project we will be making a special
+textgrid different from the first round.</p>
+<p>When you create the textgrid, it will ask you for “Tier names”. Input
+these as the tiers: region, amp, word. It should look like this:</p>
+<center>
+<img src="images/textgrid_tiers_2026.png"
+style="width:50.0%;height:50.0%" />
+</center>
+<p>Once you do this, there will be a Textgrid object in your objects
+window. Select both (hold down the shift key) the textgrid and the
+<code>.wav</code> file. Then click “View and edit”.</p>
 </div>
 </div>
 

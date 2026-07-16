@@ -198,3 +198,25 @@ Notice the data has three columns, the file name (OC_list1) and the target word 
 
 7. Save both the data files in the folder you're working in and also send a copy to me. 
 
+# Burst amplitude + VOT (Second round of measurements)
+
+The first round of measurements were great. In hindsight, we should have *also* measured the burst amplitude of the onset stops. We will do that now, as well as do the VOT measures again. I have written a Praat script that should make the whole measurement process a little easier, BUT there is still some *art* involved.
+
+## Audio files
+
+These are the same files that are located in the SAP drive `(Studies/Burst_voice/Recordings/NEW/)`. Please read [The data](https://saplabyork.github.io/Burst_voice/measurements.html#The_data) section above.
+
+## Making a textgrid
+
+Open a `.wav` file into Praat. See above for the naming conventions of the files. Also read the [Creating the Textgrid](https://saplabyork.github.io/Burst_voice/measurements.html#Creating_the_TextGrid) above. For this project we will be making a special textgrid different from the first round.
+
+When you create the textgrid, it will ask you for "Tier names". Input these as the tiers: region, amp, word. It should look like this:
+
+<center>
+![](images/textgrid_tiers_2026.png){width=50% height=50%}
+</center>
+
+
+Once you do this, there will be a Textgrid object in your objects window. Select both (hold down the shift key) the textgrid and the `.wav` file. Then click "View and edit". 
+
+

@@ -217,10 +217,10 @@ perception_plot <- ggplot(summary_df, aes(x = stim_length, y = mean_prob, color 
   geom_point(size = 4) +
   geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
                 width = 0.15, linewidth = 1) +
-  facet_wrap(~ ons_con, labeller = labeller(ons_con = c("k" = "[kʰ-]", "p" = "[pʰ-]"))) +
+  facet_wrap(~ ons_con, labeller = labeller(ons_con = c("k" = "/k-/", "p" = "/p-/"))) +
   scale_color_viridis_d(option = "plasma", end = 0.85,
                         labels = c("a" = "æ", "e" = "ɛ", "i" = "ɪ")) +
-  labs(x = "Long-lag aspiration Length",
+  labs(x = "Long-lag aspiration length",
        y = "Predicted Probability of 'Voiced coda' Response",
        color = "Vowel") +
   theme_minimal(base_size = 14) +
@@ -972,3 +972,9 @@ subject_results <- subject_comparison %>%
 
 cat("\n\nAnalysis complete! Check the plots and tables above.\n")
 ```
+# Bayseian (second round) with Udi
+
+
+
+
+

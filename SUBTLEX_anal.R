@@ -6,7 +6,7 @@ library(stringr)
 
 # Read the SUBTLEX Excel file
 # Note: Replace 'subtlex.xlsx' with the actual path to your file
-subtlex <- read_excel("/Users/chandannarayan/Desktop/SUBTLEXusExcel2007.xlsx")
+subtlex <- read_excel("/Users/chandan/Desktop/SUBTLEXusExcel2007.xlsx")
 
 # Step 1: Create initial corpus - words beginning with p,t,k,c followed by vowel
 # Exclude words where c/C is followed by i

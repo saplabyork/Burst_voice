@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Your Name" />
+
+<meta name="date" content="2026-05-31" />
+
+<title>Direct and Indirect Effects of Coda Voicing on Onset VOT</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #204a87; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">BurstVoice</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Background</a>
+</li>
+<li>
+  <a href="measurements.html">Acoustics methods</a>
+</li>
+<li>
+  <a href="Practice.html">Practice</a>
+</li>
+<li>
+  <a href="data_anal.html">Data Production</a>
+</li>
+<li>
+  <a href="single_stim_perception.html">Data Perception</a>
+</li>
+<li>
+  <a href="notes.html">Notes</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Direct and Indirect Effects of Coda Voicing
+on Onset VOT</h1>
+<h4 class="author">Your Name</h4>
+<h4 class="date">2026-05-31</h4>
+
+</div>
+
+
+<hr />
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>This analysis examines the <strong>voicing effect</strong> in English
+monosyllables: the well-documented phenomenon whereby voiced codas are
+preceded by longer vowels than voiceless codas. We extend this by asking
+whether coda voicing also exerts a <strong>long-distance, indirect
+effect</strong> on onset Voice Onset Time (VOT), mediated by vowel
+duration.</p>
+<p>The hypothesized causal chain is:</p>
+<p><span class="math display">\[\text{Coda Voicing} \xrightarrow{a}
+\text{Vowel Duration} \xrightarrow{b} \text{VOT}\]</span></p>
+<p>We use <strong>Structural Equation Modelling (SEM)</strong> via the
+<code>lavaan</code> package to estimate:</p>
+<ul>
+<li>The <strong>direct effect</strong> of coda voicing on vowel duration
+(path <em>a</em>)</li>
+<li>The <strong>direct effect</strong> of vowel duration on VOT (path
+<em>b</em>)</li>
+<li>The <strong>indirect effect</strong> of coda voicing on VOT via
+vowel duration (path <em>a</em> × <em>b</em>)</li>
+<li>The <strong>direct effect</strong> of coda voicing on VOT (path
+<em>c</em>, bypassing vowel duration)</li>
+</ul>
+<p>Because speakers vary substantially, we also fit a parallel
+<strong>mixed-effects mediation analysis</strong> using the
+<code>mediation</code> package with <code>lme4</code> models, which
+explicitly accounts for by-speaker random effects.</p>
+<hr />
+</div>
+<div id="load-packages" class="section level1">
+<h1>1. Load Packages</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install any packages you do not yet have by uncommenting the line below:</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># install.packages(c(&quot;lavaan&quot;, &quot;lme4&quot;, &quot;mediation&quot;, &quot;semPlot&quot;, &quot;tidyverse&quot;))</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(lavaan)      <span class="co"># Structural equation modelling</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(lme4)        <span class="co"># Mixed-effects models (for the mediation approach)</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(mediation)   <span class="co"># Mediation analysis with mixed-effects models</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">library</span>(semPlot)     <span class="co"># Path diagram visualization for SEM</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">library</span>(tidyverse)   <span class="co"># Data manipulation and plotting</span></span></code></pre></div>
+<hr />
+</div>
+<div id="prepare-the-data" class="section level1">
+<h1>2. Prepare the Data</h1>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># IMPORTANT: Replace this section with your own data loading step.</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># For example: data &lt;- read.csv(&quot;your_data.csv&quot;)</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># The analysis below assumes a dataframe called &quot;data&quot; with the </span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># following columns:</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#   sub      : speaker identifier (factor)</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#   ons_poa  : onset place of articulation (1=bilabial, 2=alveolar, 3=velar)</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#   coda_vc  : coda voicing (0=voiceless, 1=voiced)</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#   vdur     : vowel duration (numeric, milliseconds)</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#   vot      : voice onset time (numeric, milliseconds)</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/chandan/Desktop/data_12-11-24.csv&quot;</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co"># Convert speaker ID to a factor if it is not already.</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co"># This ensures R treats it as a grouping variable, not a number.</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>data<span class="sc">$</span>sub <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(data<span class="sc">$</span>sub)</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co"># Convert onset place of articulation to a labelled factor.</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co"># This prevents R from treating it as a continuous numeric variable,</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co"># which would be phonologically meaningless (velar is not &quot;more&quot; than bilabial).</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>data<span class="sc">$</span>ons_poa <span class="ot">&lt;-</span> <span class="fu">factor</span>(data<span class="sc">$</span>ons_poa,</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>                       <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;bilabial&quot;</span>, <span class="st">&quot;alveolar&quot;</span>, <span class="st">&quot;velar&quot;</span>))</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="co"># Coda voicing is already coded 0/1, which is what we need.</span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="co"># 0 = voiceless coda, 1 = voiced coda.</span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="co"># No transformation needed, but make sure R sees it as numeric.</span></span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>data<span class="sc">$</span>coda_vc <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data<span class="sc">$</span>coda_vc)</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="co"># Create dummy variables for onset place of articulation.</span></span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="co"># lavaan does not handle factors automatically the way lme4 does,</span></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="co"># so we need to create these explicitly.</span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a><span class="co"># Bilabial (level 1) serves as the reference category.</span></span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>data<span class="sc">$</span>alveolar <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(data<span class="sc">$</span>ons_poa <span class="sc">==</span> <span class="st">&quot;alveolar&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a>data<span class="sc">$</span>velar    <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(data<span class="sc">$</span>ons_poa <span class="sc">==</span> <span class="st">&quot;velar&quot;</span>,    <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a><span class="co"># Quick check: make sure the data looks as expected</span></span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span></code></pre></div>
+<pre><code>## Rows: 2,376
+## Columns: 12
+## $ sub      &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+## $ init     &lt;chr&gt; &quot;AR&quot;, &quot;AR&quot;, &quot;AR&quot;, &quot;AR&quot;, &quot;AR&quot;, &quot;AR&quot;, &quot;AR&quot;, &quot;AR&quot;, &quot;AR&quot;, &quot;AR&quot;, &quot;…
+## $ list     &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+## $ word     &lt;chr&gt; &quot;pack&quot;, &quot;pup&quot;, &quot;cat&quot;, &quot;tup&quot;, &quot;cog&quot;, &quot;puck&quot;, &quot;pig&quot;, &quot;kick&quot;, &quot;t…
+## $ ons_poa  &lt;fct&gt; bilabial, bilabial, velar, alveolar, velar, bilabial, bilabia…
+## $ coda_vc  &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0…
+## $ coda_poa &lt;int&gt; 3, 1, 2, 1, 3, 3, 3, 3, 3, 1, 1, 3, 1, 2, 1, 2, 1, 1, 2, 3, 2…
+## $ vowel    &lt;chr&gt; &quot;ae&quot;, &quot;uh&quot;, &quot;ae&quot;, &quot;uh&quot;, &quot;aw&quot;, &quot;uh&quot;, &quot;ih&quot;, &quot;ih&quot;, &quot;uh&quot;, &quot;uh&quot;, &quot;…
+## $ vot      &lt;dbl&gt; NA, 0.064, 0.115, 0.113, 0.103, 0.072, 0.101, 0.098, 0.127, 0…
+## $ vdur     &lt;dbl&gt; NA, 0.080, 0.143, 0.083, 0.160, 0.090, 0.112, 0.095, 0.150, 0…
+## $ alveolar &lt;dbl&gt; 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1…
+## $ velar    &lt;dbl&gt; 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0…</code></pre>
+<hr />
+</div>
+<div id="descriptive-statistics" class="section level1">
+<h1>3. Descriptive Statistics</h1>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># It is always good practice to examine your data before modelling.</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># Here we look at mean VOT and vowel duration by coda voicing and place.</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>data <span class="sc">%&gt;%</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">group_by</span>(ons_poa, coda_vc) <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="at">n           =</span> <span class="fu">n</span>(),</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    <span class="at">mean_vot    =</span> <span class="fu">round</span>(<span class="fu">mean</span>(vot,  <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">2</span>),</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="at">sd_vot      =</span> <span class="fu">round</span>(<span class="fu">sd</span>(vot,    <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">2</span>),</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">mean_vdur   =</span> <span class="fu">round</span>(<span class="fu">mean</span>(vdur, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">2</span>),</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>    <span class="at">sd_vdur     =</span> <span class="fu">round</span>(<span class="fu">sd</span>(vdur,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">2</span>),</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  )</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["ons_poa"],"name":[1],"type":["fct"],"align":["left"]},{"label":["coda_vc"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]},{"label":["mean_vot"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["sd_vot"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["mean_vdur"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["sd_vdur"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"bilabial","2":"0","3":"546","4":"0.08","5":"0.03","6":"0.10","7":"0.03"},{"1":"bilabial","2":"1","3":"312","4":"0.09","5":"0.03","6":"0.15","7":"0.05"},{"1":"alveolar","2":"0","3":"426","4":"0.09","5":"0.03","6":"0.11","7":"0.03"},{"1":"alveolar","2":"1","3":"351","4":"0.10","5":"0.03","6":"0.16","7":"0.05"},{"1":"velar","2":"0","3":"390","4":"0.09","5":"0.03","6":"0.11","7":"0.04"},{"1":"velar","2":"1","3":"351","4":"0.10","5":"0.03","6":"0.16","7":"0.05"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Visualize the key relationships before modelling.</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co"># Panel 1: Vowel duration by coda voicing (the classic voicing effect)</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co"># Panel 2: VOT by coda voicing (the long-distance effect we are testing)</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(coda_vc, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Voiceless&quot;</span>, <span class="st">&quot;Voiced&quot;</span>)),</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>                        <span class="at">y =</span> vdur, <span class="at">fill =</span> <span class="fu">factor</span>(coda_vc))) <span class="sc">+</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>ons_poa) <span class="sc">+</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Vowel Duration by Coda Voicing and Onset Place&quot;</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Coda Voicing&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Vowel Duration (ms)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(coda_vc, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Voiceless&quot;</span>, <span class="st">&quot;Voiced&quot;</span>)),</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>                        <span class="at">y =</span> vot, <span class="at">fill =</span> <span class="fu">factor</span>(coda_vc))) <span class="sc">+</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>ons_poa) <span class="sc">+</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;VOT by Coda Voicing and Onset Place&quot;</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Coda Voicing&quot;</span>, <span class="at">y =</span> <span class="st">&quot;VOT (ms)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co"># Print both plots side by side</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(p1, p2, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="coda_voicing_SEM_files/figure-html/plot-descriptives-1.png" alt="" width="960" /></p>
+<hr />
+</div>
+<div id="structural-equation-model-lavaan" class="section level1">
+<h1>4. Structural Equation Model (lavaan)</h1>
+<p>The SEM approach estimates all paths simultaneously in a single
+model. It does not natively handle random effects, but we include
+cluster-robust standard errors to partially account for speaker
+clustering.</p>
+<div id="specify-the-model" class="section level2">
+<h2>4.1 Specify the Model</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># In lavaan syntax:</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#   ~   means &quot;is regressed on&quot;</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#   *   is used to label a path coefficient (e.g., a*coda_vc labels the </span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#       coefficient of coda_vc as &quot;a&quot; so we can refer to it later)</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#   :=  defines a new parameter as a function of existing ones</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="st">&#39;</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="st">  # ---------------------------------------------------------</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="st">  # MEDIATOR MODEL</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="st">  # Coda voicing predicts vowel duration (path a).</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="st">  # We also control for onset place of articulation.</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="st">  # ---------------------------------------------------------</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="st">  vdur ~ a*coda_vc + alveolar + velar</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="st">  # ---------------------------------------------------------</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="st">  # OUTCOME MODEL</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="st">  # Vowel duration predicts VOT (path b).</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="st">  # Coda voicing also has a potential direct path to VOT (path c).</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="st">  # We again control for onset place.</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="st">  # ---------------------------------------------------------</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="st">  vot ~ b*vdur + c*coda_vc + alveolar + velar</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="st">  # ---------------------------------------------------------</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="st">  # DEFINED PARAMETERS</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="st">  # These compute the effects we care about from the labeled paths above.</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="st">  # ---------------------------------------------------------</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="st">  </span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="st">  # Indirect effect: how much of the coda voicing effect on VOT</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="st">  # is carried through vowel duration? This is the key quantity.</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="st">  indirect := a * b</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="st">  # Direct effect: the remaining effect of coda voicing on VOT</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="st">  # after accounting for the mediation through vowel duration.</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="st">  direct := c</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a></span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a><span class="st">  # Total effect: the sum of direct and indirect paths.</span></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="st">  total := c + (a * b)</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="st">&#39;</span></span></code></pre></div>
+</div>
+<div id="fit-the-model" class="section level2">
+<h2>4.2 Fit the Model</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># We use bootstrap standard errors (1000 resamples) because the indirect </span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co"># effect (a product of two coefficients) is not normally distributed.</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co"># Bootstrap confidence intervals are more reliable for inference on </span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co"># indirect effects than standard asymptotic SEs.</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co"># se = &quot;bootstrap&quot; requests bootstrapped SEs.</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co"># bootstrap = 1000 sets the number of resamples (increase to 5000 for publication).</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co"># cluster = &quot;sub&quot; provides cluster-robust resampling by speaker,</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co"># which partially addresses the non-independence of observations.</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)  <span class="co"># Set seed for reproducibility</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">sem</span>(model,</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>           <span class="at">data      =</span> data,</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>           <span class="at">se        =</span> <span class="st">&quot;bootstrap&quot;</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>           <span class="at">bootstrap =</span> <span class="dv">5000</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>           <span class="at">cluster   =</span> <span class="st">&quot;sub&quot;</span>)</span></code></pre></div>
+</div>
+<div id="examine-model-fit" class="section level2">
+<h2>4.3 Examine Model Fit</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Before interpreting path coefficients, check whether the model fits the data well.</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co"># Key fit indices and conventional benchmarks:</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#   CFI  &gt; 0.95  (Comparative Fit Index; higher is better)</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#   RMSEA &lt; 0.06 (Root Mean Square Error of Approximation; lower is better)</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#   SRMR  &lt; 0.08 (Standardized Root Mean Square Residual; lower is better)</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="fu">summary</span>(fit, <span class="at">fit.measures =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## lavaan 0.6-21 ended normally after 1 iteration
+## 
+##   Estimator                                         ML
+##   Optimization method                           NLMINB
+##   Number of model parameters                        11
+## 
+##                                                   Used       Total
+##   Number of observations                          2366        2376
+##   Number of clusters [sub]                          20            
+## 
+## Model Test User Model:
+##                                               Standard      Scaled
+##   Test Statistic                                 0.000       0.000
+##   Degrees of freedom                                 0           0
+##   Information                                 Expected            
+## 
+## Model Test Baseline Model:
+## 
+##   Test statistic                              1221.310     202.395
+##   Degrees of freedom                                 7           7
+##   P-value                                        0.000       0.000
+##   Scaling correction factor                                  6.034
+## 
+## User Model versus Baseline Model:
+## 
+##   Comparative Fit Index (CFI)                    1.000       1.000
+##   Tucker-Lewis Index (TLI)                       1.000       1.000
+##                                                                   
+##   Robust Comparative Fit Index (CFI)                            NA
+##   Robust Tucker-Lewis Index (TLI)                               NA
+## 
+## Loglikelihood and Information Criteria:
+## 
+##   Loglikelihood user model (H0)               9336.654    9336.654
+##   Loglikelihood unrestricted model (H1)       9336.654    9336.654
+##                                                                   
+##   Akaike (AIC)                              -18651.308  -18651.308
+##   Bayesian (BIC)                            -18587.850  -18587.850
+##   Sample-size adjusted Bayesian (SABIC)     -18622.799  -18622.799
+## 
+## Root Mean Square Error of Approximation:
+## 
+##   RMSEA                                          0.000          NA
+##   90 Percent confidence interval - lower         0.000          NA
+##   90 Percent confidence interval - upper         0.000          NA
+##   P-value H_0: RMSEA &lt;= 0.050                       NA          NA
+##   P-value H_0: RMSEA &gt;= 0.080                       NA          NA
+##                                                                   
+##   Robust RMSEA                                               0.000
+##   90 Percent confidence interval - lower                     0.000
+##   90 Percent confidence interval - upper                     0.000
+##   P-value H_0: Robust RMSEA &lt;= 0.050                            NA
+##   P-value H_0: Robust RMSEA &gt;= 0.080                            NA
+## 
+## Standardized Root Mean Square Residual:
+## 
+##   SRMR                                           0.000       0.000
+## 
+## Parameter Estimates:
+## 
+##   Standard errors                            Bootstrap
+##   Number of requested bootstrap draws             5000
+##   Number of successful bootstrap draws            5000
+## 
+## Regressions:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##   vdur ~                                              
+##     coda_vc    (a)    0.051    0.002   28.458    0.000
+##     alveolar          0.010    0.002    5.040    0.000
+##     velar             0.007    0.002    3.259    0.001
+##   vot ~                                               
+##     vdur       (b)    0.242    0.016   14.944    0.000
+##     coda_vc    (c)   -0.003    0.001   -2.177    0.029
+##     alveolar          0.007    0.001    4.608    0.000
+##     velar             0.010    0.001    7.358    0.000
+## 
+## Intercepts:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##    .vdur              0.102    0.001   77.885    0.000
+##    .vot               0.055    0.002   28.483    0.000
+## 
+## Variances:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##    .vdur              0.002    0.000   26.702    0.000
+##    .vot               0.001    0.000   26.275    0.000
+## 
+## Defined Parameters:
+##                    Estimate  Std.Err  z-value  P(&gt;|z|)
+##     indirect          0.012    0.001   12.516    0.000
+##     direct           -0.003    0.001   -2.177    0.029
+##     total             0.009    0.001    7.397    0.000</code></pre>
+</div>
+<div id="extract-parameter-estimates" class="section level2">
+<h2>4.4 Extract Parameter Estimates</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Extract the full parameter table with bootstrap confidence intervals.</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co"># boot.ci.type = &quot;bca&quot; requests bias-corrected accelerated intervals,</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co"># which are more accurate than percentile intervals for indirect effects.</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="fu">parameterEstimates</span>(fit,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>                   <span class="at">ci            =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>                   <span class="at">boot.ci.type  =</span> <span class="st">&quot;bca.simple&quot;</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>                   <span class="at">standardized  =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>  <span class="fu">filter</span>(op <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;~&quot;</span>, <span class="st">&quot;:=&quot;</span>)) <span class="sc">%&gt;%</span>   <span class="co"># Keep regression paths and defined parameters</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>  <span class="fu">select</span>(lhs, op, rhs, est, se, ci.lower, ci.upper, pvalue, std.all) <span class="sc">%&gt;%</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span><span class="fu">round</span>(.x, <span class="dv">4</span>)))</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["lhs"],"name":[1],"type":["chr"],"align":["left"]},{"label":["op"],"name":[2],"type":["chr"],"align":["left"]},{"label":["rhs"],"name":[3],"type":["chr"],"align":["left"]},{"label":["est"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["se"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["ci.lower"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["ci.upper"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["pvalue"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["std.all"],"name":[9],"type":["dbl"],"align":["right"]}],"data":[{"1":"vdur","2":"~","3":"coda_vc","4":"0.0510","5":"0.0018","6":"0.0474","7":"0.0544","8":"0.0000","9":"0.5240"},{"1":"vdur","2":"~","3":"alveolar","4":"0.0099","5":"0.0020","6":"0.0060","7":"0.0137","8":"0.0000","9":"0.0961"},{"1":"vdur","2":"~","3":"velar","4":"0.0066","5":"0.0020","6":"0.0027","7":"0.0106","8":"0.0011","9":"0.0637"},{"1":"vot","2":"~","3":"vdur","4":"0.2416","5":"0.0162","6":"0.2098","7":"0.2741","8":"0.0000","9":"0.3818"},{"1":"vot","2":"~","3":"coda_vc","4":"-0.0031","5":"0.0014","6":"-0.0058","7":"-0.0002","8":"0.0295","9":"-0.0504"},{"1":"vot","2":"~","3":"alveolar","4":"0.0066","5":"0.0014","6":"0.0036","7":"0.0093","8":"0.0000","9":"0.1012"},{"1":"vot","2":"~","3":"velar","4":"0.0104","5":"0.0014","6":"0.0077","7":"0.0133","8":"0.0000","9":"0.1586"},{"1":"indirect","2":":=","3":"a*b","4":"0.0123","5":"0.0010","6":"0.0105","7":"0.0143","8":"0.0000","9":"0.2001"},{"1":"direct","2":":=","3":"c","4":"-0.0031","5":"0.0014","6":"-0.0058","7":"-0.0002","8":"0.0295","9":"-0.0504"},{"1":"total","2":":=","3":"c+(a*b)","4":"0.0092","5":"0.0012","6":"0.0068","7":"0.0117","8":"0.0000","9":"0.1497"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="path-diagram" class="section level2">
+<h2>4.5 Path Diagram</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># semPlot produces a visual representation of the path model.</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co"># This is useful for presentations and papers.</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="fu">semPaths</span>(fit,</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>         <span class="at">what       =</span> <span class="st">&quot;std&quot;</span>,          <span class="co"># Show standardized coefficients</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>         <span class="at">whatLabels =</span> <span class="st">&quot;std&quot;</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>         <span class="at">style      =</span> <span class="st">&quot;ram&quot;</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>         <span class="at">layout     =</span> <span class="st">&quot;tree2&quot;</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>         <span class="at">residuals  =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>         <span class="at">intercepts =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>         <span class="at">nCharNodes =</span> <span class="dv">8</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>         <span class="at">edge.label.cex =</span> <span class="fl">0.9</span>,</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>         <span class="at">title      =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="fu">title</span>(<span class="st">&quot;SEM Path Diagram: Indirect Effect of Coda Voicing on VOT</span><span class="sc">\n</span><span class="st">(standardized coefficients)&quot;</span>)</span></code></pre></div>
+<p><img src="coda_voicing_SEM_files/figure-html/sem-path-diagram-1.png" alt="" width="768" /></p>
+<hr />
+</div>
+</div>
+<div id="mixed-effects-mediation-analysis-lme4-mediation"
+class="section level1">
+<h1>5. Mixed-Effects Mediation Analysis (lme4 + mediation)</h1>
+<p>The <code>mediation</code> package fits the two component models as
+mixed-effects models with <code>lme4</code>, which properly accounts for
+by-speaker random effects. This is the more conservative and
+statistically appropriate approach given the speaker variation in your
+data.</p>
+<div id="fit-the-two-component-models" class="section level2">
+<h2>5.1 Fit the Two Component Models</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># MODEL 1: The mediator model</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co"># Does coda voicing predict vowel duration, after accounting for</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co"># onset place and by-speaker variability?</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co"># (1 | sub) adds a random intercept for each speaker.</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>model.M <span class="ot">&lt;-</span> <span class="fu">lmer</span>(vdur <span class="sc">~</span> coda_vc <span class="sc">+</span> ons_poa <span class="sc">+</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>                  (<span class="dv">1</span> <span class="sc">|</span> sub),</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>                <span class="at">data =</span> data,</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>                <span class="at">REML =</span> <span class="cn">FALSE</span>)   <span class="co"># REML = FALSE is required for model comparison</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co"># MODEL 2: The outcome model</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co"># Does vowel duration predict VOT, after controlling for coda voicing,</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co"># onset place, and by-speaker variability?</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>model.Y <span class="ot">&lt;-</span> <span class="fu">lmer</span>(vot <span class="sc">~</span> vdur <span class="sc">+</span> coda_vc <span class="sc">+</span> ons_poa <span class="sc">+</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a>                  (<span class="dv">1</span> <span class="sc">|</span> sub),</span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a>                <span class="at">data =</span> data,</span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a>                <span class="at">REML =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="co"># Quick summaries to check the component models before running mediation</span></span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="fu">summary</span>(model.M)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by maximum likelihood  [&#39;lmerMod&#39;]
+## Formula: vdur ~ coda_vc + ons_poa + (1 | sub)
+##    Data: data
+## 
+##       AIC       BIC    logLik -2*log(L)  df.resid 
+##   -8914.8   -8880.2    4463.4   -8926.8      2360 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.5194 -0.7721 -0.0954  0.7419  4.1936 
+## 
+## Random effects:
+##  Groups   Name        Variance  Std.Dev.
+##  sub      (Intercept) 0.0003278 0.01811 
+##  Residual             0.0013074 0.03616 
+## Number of obs: 2366, groups:  sub, 20
+## 
+## Fixed effects:
+##                 Estimate Std. Error t value
+## (Intercept)     0.101738   0.004271  23.821
+## coda_vc         0.050932   0.001510  33.739
+## ons_poaalveolar 0.009809   0.001799   5.453
+## ons_poavelar    0.006639   0.001825   3.637
+## 
+## Correlation of Fixed Effects:
+##             (Intr) cod_vc ons_pl
+## coda_vc     -0.129              
+## ons_poalvlr -0.190 -0.074       
+## ons_poavelr -0.185 -0.089  0.473</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">summary</span>(model.Y)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by maximum likelihood  [&#39;lmerMod&#39;]
+## Formula: vot ~ vdur + coda_vc + ons_poa + (1 | sub)
+##    Data: data
+## 
+##       AIC       BIC    logLik -2*log(L)  df.resid 
+##  -12234.0  -12193.6    6124.0  -12248.0      2359 
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -3.5814 -0.6325 -0.0515  0.5578  6.1157 
+## 
+## Random effects:
+##  Groups   Name        Variance  Std.Dev.
+##  sub      (Intercept) 0.0004712 0.02171 
+##  Residual             0.0003165 0.01779 
+## Number of obs: 2366, groups:  sub, 20
+## 
+## Fixed effects:
+##                  Estimate Std. Error t value
+## (Intercept)     0.0671739  0.0050076  13.414
+## vdur            0.1237283  0.0101503  12.190
+## coda_vc         0.0029075  0.0009049   3.213
+## ons_poaalveolar 0.0077491  0.0008906   8.701
+## ons_poavelar    0.0112172  0.0009006  12.455
+## 
+## Correlation of Fixed Effects:
+##             (Intr) vdur   cod_vc ons_pl
+## vdur        -0.206                     
+## coda_vc      0.073 -0.571              
+## ons_poalvlr -0.056 -0.112  0.004       
+## ons_poavelr -0.062 -0.075 -0.030  0.477</code></pre>
+</div>
+<div id="run-the-mediation-analysis" class="section level2">
+<h2>5.2 Run the Mediation Analysis</h2>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># mediate() takes the two fitted models and estimates the indirect effect</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co"># using quasi-Bayesian Monte Carlo simulation (or bootstrapping if boot = TRUE).</span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co"># treat     = the independent variable (coda voicing)</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co"># mediator  = the mediating variable (vowel duration)</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co"># boot      = TRUE requests bootstrapped confidence intervals</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co"># boot.ci.type = &quot;bca&quot; requests bias-corrected accelerated intervals</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co"># sims      = number of simulations (increase to 5000 for publication)</span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a>med.out <span class="ot">&lt;-</span> <span class="fu">mediate</span>(model.M,</span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a>                   model.Y,</span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a>                   <span class="at">treat        =</span> <span class="st">&quot;coda_vc&quot;</span>,</span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a>                   <span class="at">mediator     =</span> <span class="st">&quot;vdur&quot;</span>,</span>
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a>                   <span class="at">boot         =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a>                   <span class="at">boot.ci.type =</span> <span class="st">&quot;bca&quot;</span>,</span>
+<span id="cb16-18"><a href="#cb16-18" tabindex="-1"></a>                   <span class="at">sims         =</span> <span class="dv">1000</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" tabindex="-1"></a></span>
+<span id="cb16-20"><a href="#cb16-20" tabindex="-1"></a><span class="fu">summary</span>(med.out)</span></code></pre></div>
+<pre><code>## 
+## Causal Mediation Analysis 
+## 
+## Quasi-Bayesian Confidence Intervals
+## 
+## Mediator Groups: sub 
+## 
+## Outcome Groups: sub 
+## 
+## Output Based on Overall Averages Across Groups 
+## 
+##                 Estimate 95% CI Lower 95% CI Upper p-value    
+## ACME           0.0063076    0.0051629    0.0073749  &lt;2e-16 ***
+## ADE            0.0029231    0.0012534    0.0047452   0.002 ** 
+## Total Effect   0.0092307    0.0077717    0.0108185  &lt;2e-16 ***
+## Prop. Mediated 0.6832336    0.5382465    0.8541139  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Sample Size Used: 2366 
+## 
+## 
+## Simulations: 1000</code></pre>
+</div>
+<div id="interpret-the-output" class="section level2">
+<h2>5.3 Interpret the Output</h2>
+<p>The <code>mediate()</code> summary reports four key quantities:</p>
+<table>
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>ACME</strong></td>
+<td>Average Causal Mediation Effect — the indirect effect of coda
+voicing on VOT <em>via</em> vowel duration. This is the key result.</td>
+</tr>
+<tr class="even">
+<td><strong>ADE</strong></td>
+<td>Average Direct Effect — the effect of coda voicing on VOT after
+controlling for vowel duration.</td>
+</tr>
+<tr class="odd">
+<td><strong>Total Effect</strong></td>
+<td>ACME + ADE — the overall effect of coda voicing on VOT.</td>
+</tr>
+<tr class="even">
+<td><strong>Prop. Mediated</strong></td>
+<td>The proportion of the total effect carried by the indirect
+path.</td>
+</tr>
+</tbody>
+</table>
+<p>If the <strong>95% CI for ACME excludes zero</strong>, we have
+reliable evidence for an indirect effect of coda voicing on VOT mediated
+by vowel duration.</p>
+</div>
+<div id="visualize-the-mediation-results" class="section level2">
+<h2>5.4 Visualize the Mediation Results</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># The default plot shows ACME, ADE, and Total Effect with confidence intervals.</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">plot</span>(med.out,</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Mediation Analysis: Indirect Effect of Coda Voicing on VOT&quot;</span>)</span></code></pre></div>
+<p><img src="coda_voicing_SEM_files/figure-html/mediation-plot-1.png" alt="" width="672" /></p>
+<hr />
+</div>
+</div>
+<div id="expanding-the-random-effects-structure" class="section level1">
+<h1>6. Expanding the Random Effects Structure</h1>
+<p>The models above use random intercepts only. If you want a more
+conservative and thorough analysis, you can add random slopes, allowing
+the effects of interest to vary across speakers. This is theoretically
+motivated because speakers likely differ not just in their baseline VOT
+and vowel duration, but in how strongly their vowel duration responds to
+coda voicing.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: eval=FALSE means this chunk is shown but not run automatically.</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="co"># Run it manually if your data support it. Random slopes models </span></span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="co"># can fail to converge with small datasets or few speakers.</span></span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>model.M.slopes <span class="ot">&lt;-</span> <span class="fu">lmer</span>(vdur <span class="sc">~</span> coda_vc <span class="sc">+</span> ons_poa <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>                         (<span class="dv">1</span> <span class="sc">+</span> coda_vc <span class="sc">|</span> sub),   <span class="co"># Random slope for coda voicing</span></span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a>                       <span class="at">data    =</span> data,</span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a>                       <span class="at">REML    =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a>                       <span class="at">control =</span> <span class="fu">lmerControl</span>(<span class="at">optimizer =</span> <span class="st">&quot;bobyqa&quot;</span>))</span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>model.Y.slopes <span class="ot">&lt;-</span> <span class="fu">lmer</span>(vot <span class="sc">~</span> vdur <span class="sc">+</span> coda_vc <span class="sc">+</span> ons_poa <span class="sc">+</span></span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a>                         (<span class="dv">1</span> <span class="sc">+</span> vdur <span class="sc">+</span> coda_vc <span class="sc">|</span> sub),  <span class="co"># Random slopes for both predictors</span></span>
+<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>                       <span class="at">data    =</span> data,</span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a>                       <span class="at">REML    =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a>                       <span class="at">control =</span> <span class="fu">lmerControl</span>(<span class="at">optimizer =</span> <span class="st">&quot;bobyqa&quot;</span>))</span>
+<span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a></span>
+<span id="cb19-17"><a href="#cb19-17" tabindex="-1"></a><span class="co"># If these converge, re-run the mediation with the slope models:</span></span>
+<span id="cb19-18"><a href="#cb19-18" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb19-19"><a href="#cb19-19" tabindex="-1"></a>med.out.slopes <span class="ot">&lt;-</span> <span class="fu">mediate</span>(model.M.slopes,</span>
+<span id="cb19-20"><a href="#cb19-20" tabindex="-1"></a>                           model.Y.slopes,</span>
+<span id="cb19-21"><a href="#cb19-21" tabindex="-1"></a>                           <span class="at">treat        =</span> <span class="st">&quot;coda_vc&quot;</span>,</span>
+<span id="cb19-22"><a href="#cb19-22" tabindex="-1"></a>                           <span class="at">mediator     =</span> <span class="st">&quot;vdur&quot;</span>,</span>
+<span id="cb19-23"><a href="#cb19-23" tabindex="-1"></a>                           <span class="at">boot         =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb19-24"><a href="#cb19-24" tabindex="-1"></a>                           <span class="at">boot.ci.type =</span> <span class="st">&quot;bca&quot;</span>,</span>
+<span id="cb19-25"><a href="#cb19-25" tabindex="-1"></a>                           <span class="at">sims         =</span> <span class="dv">1000</span>)</span>
+<span id="cb19-26"><a href="#cb19-26" tabindex="-1"></a><span class="fu">summary</span>(med.out.slopes)</span></code></pre></div>
+<hr />
+</div>
+<div id="summary-of-results" class="section level1">
+<h1>7. Summary of Results</h1>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># Pull the key numbers from the mediation output for a clean summary table.</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>med_summary <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>  <span class="at">Effect            =</span> <span class="fu">c</span>(<span class="st">&quot;Indirect (ACME)&quot;</span>, <span class="st">&quot;Direct (ADE)&quot;</span>, <span class="st">&quot;Total&quot;</span>, <span class="st">&quot;Proportion Mediated&quot;</span>),</span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>  <span class="at">Estimate          =</span> <span class="fu">c</span>(med.out<span class="sc">$</span>d.avg,    med.out<span class="sc">$</span>z.avg,</span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>                        med.out<span class="sc">$</span>tau.coef, med.out<span class="sc">$</span>n.avg),</span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>  <span class="at">CI_Lower          =</span> <span class="fu">c</span>(med.out<span class="sc">$</span>d.avg.ci[<span class="dv">1</span>], med.out<span class="sc">$</span>z.avg.ci[<span class="dv">1</span>],</span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a>                        med.out<span class="sc">$</span>tau.ci[<span class="dv">1</span>],   med.out<span class="sc">$</span>n.avg.ci[<span class="dv">1</span>]),</span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a>  <span class="at">CI_Upper          =</span> <span class="fu">c</span>(med.out<span class="sc">$</span>d.avg.ci[<span class="dv">2</span>], med.out<span class="sc">$</span>z.avg.ci[<span class="dv">2</span>],</span>
+<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a>                        med.out<span class="sc">$</span>tau.ci[<span class="dv">2</span>],   med.out<span class="sc">$</span>n.avg.ci[<span class="dv">2</span>]),</span>
+<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a>  <span class="at">p_value           =</span> <span class="fu">c</span>(med.out<span class="sc">$</span>d.avg.p,  med.out<span class="sc">$</span>z.avg.p,</span>
+<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a>                        med.out<span class="sc">$</span>tau.p,    med.out<span class="sc">$</span>n.avg.p)</span>
+<span id="cb20-13"><a href="#cb20-13" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-14"><a href="#cb20-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span><span class="fu">round</span>(.x, <span class="dv">4</span>)))</span>
+<span id="cb20-15"><a href="#cb20-15" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" tabindex="-1"></a>med_summary</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Effect"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Estimate"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["CI_Lower"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["CI_Upper"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["p_value"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"Indirect (ACME)","2":"0.0063","3":"0.0052","4":"0.0074","5":"0.000"},{"1":"Direct (ADE)","2":"0.0029","3":"0.0013","4":"0.0047","5":"0.002"},{"1":"Total","2":"0.0092","3":"0.0078","4":"0.0108","5":"0.000"},{"1":"Proportion Mediated","2":"0.6832","3":"0.5382","4":"0.8541","5":"0.000"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<hr />
+</div>
+<div id="session-info" class="section level1">
+<h1>8. Session Info</h1>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co"># Always include session info in reproducible analyses so readers know</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="co"># exactly which versions of R and each package were used.</span></span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<pre><code>## R version 4.6.0 (2026-04-24)
+## Platform: aarch64-apple-darwin23
+## Running under: macOS Sequoia 15.7.4
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## time zone: America/Toronto
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] lubridate_1.9.5 forcats_1.0.1   stringr_1.6.0   dplyr_1.2.1    
+##  [5] purrr_1.2.2     readr_2.2.0     tidyr_1.3.2     tibble_3.3.1   
+##  [9] ggplot2_4.0.3   tidyverse_2.0.0 semPlot_1.1.8   mediation_4.5.1
+## [13] sandwich_3.1-1  mvtnorm_1.3-7   MASS_7.3-65     lme4_2.0-1     
+## [17] Matrix_1.7-5    lavaan_0.6-21  
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rdpack_2.6.6          mnormt_2.1.2          pbapply_1.7-4        
+##  [4] gridExtra_2.3         fdrtool_1.2.18        rlang_1.2.0          
+##  [7] magrittr_2.0.5        rockchalk_1.8.164     compiler_4.6.0       
+## [10] png_0.1-9             vctrs_0.7.3           reshape2_1.4.5       
+## [13] OpenMx_2.22.11        quadprog_1.5-8        pkgconfig_2.0.3      
+## [16] fastmap_1.2.0         arm_1.15-3            backports_1.5.1      
+## [19] labeling_0.4.3        pbivnorm_0.6.0        rmarkdown_2.31       
+## [22] tzdb_0.5.0            nloptr_2.2.1          xfun_0.57            
+## [25] cachem_1.1.0          kutils_1.73           jsonlite_2.0.0       
+## [28] jpeg_0.1-11           psych_2.6.5           parallel_4.6.0       
+## [31] cluster_2.1.8.2       R6_2.6.1              bslib_0.11.0         
+## [34] stringi_1.8.7         RColorBrewer_1.1-3    boot_1.3-32          
+## [37] rpart_4.1.27          jquerylib_0.1.4       Rcpp_1.1.1-1.1       
+## [40] knitr_1.51            zoo_1.8-15            base64enc_0.1-6      
+## [43] timechange_0.4.0      splines_4.6.0         nnet_7.3-20          
+## [46] igraph_2.3.1          tidyselect_1.2.1      rstudioapi_0.18.0    
+## [49] abind_1.4-8           yaml_2.3.12           qgraph_1.9.8         
+## [52] lattice_0.22-9        plyr_1.8.9            withr_3.0.2          
+## [55] S7_0.2.2              coda_0.19-4.1         evaluate_1.0.5       
+## [58] foreign_0.8-91        RcppParallel_5.1.11-2 zip_2.3.3            
+## [61] lpSolve_5.6.23        pillar_1.11.1         carData_3.0-6        
+## [64] checkmate_2.3.4       stats4_4.6.0          reformulas_0.4.4     
+## [67] generics_0.1.4        hms_1.1.4             scales_1.4.0         
+## [70] minqa_1.2.8           gtools_3.9.5          xtable_1.8-8         
+## [73] glue_1.8.1            mi_1.2                Hmisc_5.2-5          
+## [76] tools_4.6.0           data.table_1.18.4     openxlsx_4.2.8.1     
+## [79] XML_3.99-0.23         grid_4.6.0            sem_3.1-16           
+## [82] rbibutils_2.4.1       colorspace_2.1-2      nlme_3.1-169         
+## [85] htmlTable_2.5.0       Formula_1.2-5         cli_3.6.6            
+## [88] corpcor_1.6.10        glasso_1.11           gtable_0.3.6         
+## [91] sass_0.4.10           digest_0.6.39         htmlwidgets_1.6.4    
+## [94] farver_2.1.2          htmltools_0.5.9       lifecycle_1.0.5      
+## [97] lisrelToR_0.3</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

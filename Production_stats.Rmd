@@ -171,4 +171,25 @@ ggplot(production_plot, aes(x = vdur, y = vot, color = coda_vc_label)) +
   ) +
   scale_color_brewer(palette = "Set1")
 
+
+# VOT ratio
+
+model_votratio_lmer <- lmer(vot_ratio ~ ons_poa * coda_vc + (1|sub) + (1|word), 
+              data = production)
+
+# Print model summary
+summary(model_votratio_lmer)
+
+library(emmeans)
+
+emmeans(model_votratio_lmer, ~ coda_vc)
+
+# Full CV
+production$CV <- (data$vot)+(data$vdur)
+
+model_CV_lmer <- lmer(CV ~ ons_poa * coda_vc + (1|sub) + (1|word), 
+              data = production)
+summary(model_CV_lmer)
+emmeans(model_CV_lmer, ~ coda_vc)
+
 ```
