@@ -1,0 +1,518 @@
+---
+title: "Production Analysis"
+output: 
+  html_document:
+    includes:
+      in_header: "favicon.html"
+    theme: paper
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Data analysis
+
+## Setup and data preparation
+
+`ons_poa` is coded once here as a factor with levels/labels
+`c("p", "t", "k")`, and `coda_vc` once as a factor with levels
+`c(0, 1)`. Every plot, model, and prediction grid in the rest of this
+document inherits this coding and reference level (`/p/`), rather than
+each section re-deriving place-of-articulation labels independently.
+
+```{r libraries}
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(ggridges)
+library(lme4)
+library(brms)
+library(marginaleffects)
+```
+
+```{r data-prep}
+data <- read.csv("/Users/chandan/Desktop/GitHub/Burst_voice/Data/data_12-11-24.csv",
+                  header = TRUE)
+
+data <- data %>%
+  mutate(
+    ons_poa = factor(ons_poa, levels = c(1, 2, 3), labels = c("p", "t", "k")),
+    coda_vc = factor(coda_vc, levels = c(0, 1)),
+    vot_ratio = vot / vdur,
+    CVdur = vot + vdur
+  )
+
+# single data frame used throughout; kept as a separate name only
+# for readability in code carried over from earlier drafts
+data_mod <- data
+
+number_of_subs <- length(unique(data$sub))
+number_of_subs
+```
+
+## Preliminary plotting
+
+### By onset POA
+
+This is a first pass at looking at the data.
+
+```{r consistency-check}
+# Within-condition consistency (coefficient of variation) check
+consistency_stats <- data %>%
+  group_by(sub, ons_poa, coda_vc, vowel) %>%
+  summarise(
+    n_obs = n(),
+    mean_CVdur = mean(CVdur, na.rm = TRUE),
+    sd_CVdur = sd(CVdur, na.rm = TRUE),
+    cv = sd_CVdur / mean_CVdur * 100,
+    .groups = "drop"
+  ) %>%
+  filter(n_obs > 1)
+
+consistency_stats %>%
+  arrange(desc(cv)) %>%
+  head(20)
+```
+
+```{r summary-table}
+# Summary table of mean VOT by place and coda voicing
+summary_table <- data %>%
+  group_by(ons_poa, coda_vc) %>%
+  summarize(
+    mean_vot = mean(vot, na.rm = TRUE),
+    vot_range = paste0(min(vot, na.rm = TRUE), " to ", max(vot, na.rm = TRUE))
+  ) %>%
+  ungroup()
+
+print(summary_table)
+```
+
+```{r plot-overall, fig.width=8, fig.height=5}
+# Boxplot: VOT by onset POA and coda voicing
+plot_overall <- ggplot(data, aes(x = ons_poa, y = vot, fill = coda_vc)) +
+  geom_boxplot(notch = TRUE, outlier.shape = NA) +
+  theme(axis.text.x = element_blank()) +
+  labs(x = NULL, y = "CV duration (s)") +
+  facet_wrap(~ons_poa, scales = "free") +
+  scale_y_continuous(limits = c(0.015, 0.18)) +
+  scale_fill_discrete(name = "Coda voice", labels = c("-vc", "+vc"))
+
+print(plot_overall)
+```
+
+```{r plot-overall-by-sub, fig.width=10, fig.height=8}
+plot_overall + facet_wrap(~sub)
+```
+
+```{r plot-cvdur, fig.width=8, fig.height=5}
+# Boxplot: CV duration by onset POA and coda voicing
+plot_overall_CVdur <- ggplot(data, aes(x = ons_poa, y = CVdur, fill = coda_vc)) +
+  geom_boxplot(notch = TRUE, outlier.shape = NA) +
+  theme(axis.text.x = element_blank()) +
+  labs(x = NULL, y = "CV duration (s)") +
+  facet_wrap(~ons_poa, scales = "free") +
+  scale_fill_discrete(name = "Coda voice", labels = c("-vc", "+vc"))
+
+print(plot_overall_CVdur)
+```
+
+```{r plot-vot-poa, fig.width=10, fig.height=8}
+# Boxplot: VOT by onset POA, faceted by subject
+plot_vot_poa <- ggplot(data, aes(x = vot, y = ons_poa, fill = coda_vc)) +
+  geom_boxplot(notch = TRUE, outlier.shape = NA, width = 0.5) +
+  theme_minimal() +
+  labs(x = "VOT(s)", y = "Onset POA", fill = "Coda voice") +
+  scale_fill_discrete(labels = c("[-vc]", "[+vc]"))
+
+print(plot_vot_poa + facet_wrap(~sub))
+```
+
+```{r plot-vdur-poa, fig.width=8, fig.height=5}
+# Boxplot: vowel duration by onset POA, faceted by subject
+plot_vdur_poa <- ggplot(data, aes(x = vdur, y = ons_poa, fill = coda_vc)) +
+  geom_boxplot(notch = TRUE, outlier.shape = NA, width = 0.5) +
+  theme_minimal() +
+  labs(x = "Vdur(s)", y = "Onset POA", fill = "Coda voice") +
+  scale_x_continuous(limits = c(0, 0.3), expand = c(0, 0)) +
+  scale_fill_discrete(labels = c("[-vc]", "[+vc]"))
+
+plot_vdur_poa
+```
+
+```{r plot-vdur-poa-by-sub, fig.width=10, fig.height=8}
+plot_vdur_poa + facet_wrap(~sub)
+```
+
+### By onset POA and vowel
+
+Ridge plots (stacked density plots) for voiceless and voiced coda
+tokens by POA and vowel.
+
+```{r plot-vowel-boxplot, fig.width=9, fig.height=6}
+plot_vowel <- ggplot(data, aes(x = vowel, y = vot, fill = coda_vc)) +
+  geom_boxplot(notch = TRUE) +
+  labs(y = "VOT(s)", x = "Vowel", fill = "Coda voicing") +
+  facet_wrap(~ons_poa, scale = "free")
+plot_vowel
+```
+
+```{r ridge-labels}
+# ons_poa is already factor-coded p/t/k, so these labellers map from
+# that coding to display symbols only
+poa_labels <- c("p" = "[p\u02b0]", "t" = "[t\u02b0]", "k" = "[k\u02b0]")
+vowel_labels <- c("ae" = "\u00e6", "aw" = "\u0254", "eh" = "\u025b",
+                   "ih" = "\u026a", "uh" = "\u028c")
+```
+
+```{r ridge-by-vowel, fig.width=12, fig.height=6}
+plot_vowel_ridges <- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) +
+  geom_density_ridges(alpha = 0.7) +
+  scale_x_continuous(breaks = c(0, 0.1, 0.2), limits = c(0, NA)) +
+  scale_y_discrete(labels = c("0" = "Voiceless", "1" = "Voiced")) +
+  scale_fill_manual(
+    name = "Coda",
+    values = c("0" = "#F8766D", "1" = "#00BFC4"),
+    labels = c("0" = "Voiceless", "1" = "Voiced")
+  ) +
+  labs(x = "VOT(s)", y = "") +
+  facet_grid(vowel ~ ons_poa, scales = "free_x",
+             labeller = labeller(ons_poa = poa_labels, vowel = vowel_labels)) +
+  theme_ridges() +
+  theme(axis.text.y = element_blank(),
+        axis.title.x = element_text(hjust = 0.5),
+        strip.text = element_text(margin = margin(t = 4, b = 4)),
+        strip.text.x = element_text(margin = margin(t = 3, b = 4)),
+        strip.text.y = element_text(margin = margin(l = 3, r = 3)),
+        panel.spacing = unit(0.3, "cm"))
+
+print(plot_vowel_ridges)
+ggsave("plot_ridges.png", plot = plot_vowel_ridges, width = 12, height = 6, dpi = 300)
+```
+
+```{r ridge-collapsed, fig.width=9, fig.height=6}
+# Same ridge plot, collapsed across vowel
+plot_ridges <- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) +
+  geom_density_ridges(alpha = 0.7) +
+  scale_x_continuous(breaks = c(0, 0.05, 0.1, 0.15, 0.2), limits = c(0, NA)) +
+  scale_y_discrete(labels = c("0" = "Voiceless", "1" = "Voiced"), expand = c(0, 0)) +
+  scale_fill_manual(
+    name = "Coda",
+    values = c("0" = "#F8766D", "1" = "#00BFC4"),
+    labels = c("0" = "Voiceless", "1" = "Voiced")
+  ) +
+  labs(x = "VOT(s)", y = "") +
+  facet_wrap(~ons_poa, scales = "free_x",
+             labeller = labeller(ons_poa = poa_labels)) +
+  theme_ridges() +
+  theme(axis.text.y = element_blank(),
+        axis.title.x = element_text(hjust = 0.5),
+        strip.text = element_text(margin = margin(t = 4, b = 4)),
+        strip.text.x = element_text(margin = margin(t = 3, b = 4)),
+        panel.spacing = unit(0.3, "cm"),
+        legend.position = c(0.85, 0.85),
+        legend.background = element_rect(fill = "white", color = "black", linewidth = 0.3),
+        legend.margin = margin(t = 5, r = 5, b = 5, l = 5),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+
+plot_ridges
+```
+
+```{r density-by-poa-vowel, fig.width=12, fig.height=9}
+# Overlapping density plots by POA and vowel
+plot_vowel_density <- ggplot(data, aes(x = vot, fill = coda_vc)) +
+  geom_density(alpha = 0.6) +
+  labs(x = "VOT(s)", y = "Density", fill = "Coda voicing") +
+  facet_wrap(~ons_poa + vowel, scales = "free")
+plot_vowel_density
+```
+
+It looks like there is a clear effect of coda voicing on voiceless
+onset VOT.
+
+## Basic models
+
+```{r lmer-full}
+model_full <- lmer(vot ~ ons_poa * coda_vc * vowel + (1 | sub), data = data_mod)
+summary(model_full)
+```
+
+Removing the vowel term (reference level `/p/`, matching the
+`ons_poa` factor coding set above -- no re-recoding needed here):
+
+```{r lmer-reduced}
+model <- lmer(vot ~ ons_poa * coda_vc + (1 | sub), data = data_mod)
+summary(model)
+```
+
+### Plot of the model
+
+```{r plot-model, fig.width=9, fig.height=5}
+p_lmer <- ggplot(data_mod, aes(x = vdur, y = vot, color = coda_vc)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  xlab("Vowel dur (ms)") + ylab("VOT (ms)")
+p_lmer + facet_wrap(~ons_poa)
+```
+
+### GLMM: predicting coda voicing from onset VOT and POA
+
+```{r glmm}
+model_coda <- glmer(
+  coda_vc ~ vot * ons_poa + (1 | sub),
+  data = data,
+  family = binomial(link = "logit")
+)
+
+summary(model_coda)
+```
+
+```{r glmm-predictions, fig.width=8, fig.height=5}
+# Predictions across a range of VOT values, for each POA
+vot_range <- seq(from = 0, to = 0.25, by = 0.005)
+sub_ref <- unique(data$sub)[1]
+
+plot_data <- expand_grid(
+  vot = vot_range,
+  ons_poa = levels(data$ons_poa),   # already "p", "t", "k", in that order
+  sub = sub_ref
+)
+plot_data$ons_poa <- factor(plot_data$ons_poa, levels = levels(data$ons_poa))
+plot_data$coda_vc <- NA
+
+plot_data$predicted_prob <- predict(model_coda, newdata = plot_data,
+                                     type = "response", re.form = ~(1 | sub))
+
+vc_pred <- ggplot(plot_data, aes(x = vot, y = predicted_prob, color = ons_poa)) +
+  geom_line(linewidth = 2) +
+  labs(
+    title = "",
+    x = "VOT (s)",
+    y = "Predicted Probability of Voiced Coda",
+    color = "Onset POA"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16),
+    axis.title = element_text(size = 14),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  )
+
+vc_pred
+ggsave("vc_pred.png", plot = vc_pred, bg = "white", width = 7, height = 4, dpi = 300)
+```
+
+# Bayesian mixed-effects model of VOT ~ coda voicing
+
+Reference level for `ons_poa` is `/p/`, set once in the data
+preparation section above.
+
+```{r bayes-prior-check}
+# Confirm reference level / contrast coding before fitting
+contrasts(data_mod$ons_poa)
+get_prior(vot ~ ons_poa * coda_vc + (1 | sub), data = data_mod, family = gaussian())
+```
+
+## Default (weakly informative) prior model
+
+```{r bayes-default, results='hide'}
+bayes_model_default <- brm(
+  vot ~ ons_poa * coda_vc + (1 | sub),
+  data   = data_mod,
+  family = gaussian(),
+  chains = 4,
+  iter   = 2000,
+  cores  = 4,
+  seed   = 123
+)
+```
+
+```{r bayes-default-summary, fig.width=9, fig.height=7}
+summary(bayes_model_default)
+plot(bayes_model_default)
+```
+
+## Informed prior model
+
+Priors are split by epistemic status: place-of-articulation effects
+are strongly informed by the established cross-linguistic VOT
+literature, while the coda-voicing effect (the focal, untested
+hypothesis) is given a weakly informative, zero-centered prior rather
+than a value read off this dataset's own `lmer` estimate (~12ms), to
+avoid double-dipping / circularity.
+
+```{r bayes-informed-priors}
+informed_priors <- c(
+  # Strongly informed: established literature on POA and VOT
+  prior(normal(30, 10), class = Intercept),              # /p/ baseline
+  prior(normal(15, 8),  class = b, coef = ons_poat),      # /t/ effect
+  prior(normal(30, 12), class = b, coef = ons_poak),      # /k/ effect
+
+  # Weakly informed / regularizing: the focal, untested hypothesis
+  prior(normal(0, 20), class = b, coef = "coda_vc1"),
+  prior(normal(0, 15), class = b, coef = "ons_poat:coda_vc1"),
+  prior(normal(0, 15), class = b, coef = "ons_poak:coda_vc1"),
+
+  # Standard weakly informative priors for variance components
+  prior(normal(0, 20), class = sd),
+  prior(normal(0, 25), class = sigma)
+)
+```
+
+```{r bayes-informed-fit, results='hide'}
+bayes_model_informed <- brm(
+  vot ~ ons_poa * coda_vc + (1 | sub),
+  data   = data_mod,
+  family = gaussian(),
+  prior  = informed_priors,
+  chains = 4,
+  iter   = 2000,
+  cores  = 4,
+  seed   = 123
+)
+```
+
+```{r bayes-informed-summary}
+prior_summary(bayes_model_informed)
+summary(bayes_model_informed)
+```
+
+```{r bayes-informed-ppcheck, fig.width=7, fig.height=5}
+pp_check(bayes_model_informed, type = "hist", ndraws = 100) +
+  ggtitle("Prior Predictive Check: Do simulated VOTs look reasonable?")
+```
+
+## Model comparison
+
+```{r bayes-loo}
+loo_default  <- loo(bayes_model_default)
+loo_informed <- loo(bayes_model_informed)
+loo_compare(loo_default, loo_informed)
+```
+
+Direct posterior comparison for the focal coefficient, now directly
+comparable since both models share the `/p/` reference level:
+
+```{r bayes-posterior-compare}
+posterior_summary(bayes_model_default,  variable = "b_coda_vc1")
+posterior_summary(bayes_model_informed, variable = "b_coda_vc1")
+```
+
+# Ridge plots with posterior predictions
+
+Ridge plots with posterior predictions overlaid, for both Bayesian
+models, on the shared `/p/` reference level.
+
+```{r ridge-pred-setup}
+data_mod$poa_coda <- factor(
+  interaction(data_mod$coda_vc, data_mod$ons_poa),
+  levels = c("0.p", "1.p", "0.t", "1.t", "0.k", "1.k")
+)
+
+data_mod$coda_vc_factor <- factor(
+  data_mod$coda_vc,
+  levels = c("1", "0"),
+  labels = c("Voiced", "Voiceless")
+)
+
+make_ridge_plot <- function(model, plot_title = "") {
+
+  newdata <- expand_grid(
+    ons_poa = c("p", "t", "k"),
+    coda_vc = c("0", "1")
+  )
+  newdata$ons_poa <- factor(newdata$ons_poa, levels = levels(data_mod$ons_poa))
+  newdata$coda_vc <- factor(newdata$coda_vc, levels = levels(data_mod$coda_vc))
+
+  preds <- posterior_epred(model, newdata = newdata,
+                            allow_new_levels = TRUE, re_formula = NA)
+
+  pred_summary <- newdata %>%
+    mutate(
+      estimate = apply(preds, 2, mean),
+      lower    = apply(preds, 2, quantile, 0.025),
+      upper    = apply(preds, 2, quantile, 0.975)
+    )
+
+  pred_summary$poa_coda <- factor(
+    interaction(pred_summary$coda_vc, pred_summary$ons_poa),
+    levels = c("0.p", "1.p", "0.t", "1.t", "0.k", "1.k")
+  )
+
+  ggplot() +
+    geom_density_ridges(
+      data = data_mod,
+      aes(x = vot, y = poa_coda, fill = poa_coda, linetype = coda_vc_factor),
+      alpha = 0.8, scale = 0.8
+    ) +
+    scale_linetype_manual(
+      name = "Coda voicing",
+      values = c("Voiceless" = "dashed", "Voiced" = "solid")
+    ) +
+    geom_point(
+      data = pred_summary,
+      aes(x = estimate, y = poa_coda, color = poa_coda),
+      size = 3, position = position_nudge(y = 0.2)
+    ) +
+    geom_errorbarh(
+      data = pred_summary,
+      aes(x = estimate, y = poa_coda, xmin = lower, xmax = upper, color = poa_coda),
+      height = 0.1, position = position_nudge(y = 0.2)
+    ) +
+    scale_fill_manual(values = c(
+      "0.p" = "#B71C1C", "1.p" = "#FFCDD2",
+      "0.t" = "#1B5E20", "1.t" = "#C8E6C9",
+      "0.k" = "#0D47A1", "1.k" = "#BBDEFB"
+    )) +
+    scale_color_manual(values = c(
+      "0.p" = "#67000D", "1.p" = "#A50F15",
+      "0.t" = "#00441B", "1.t" = "#006D2C",
+      "0.k" = "#08306B", "1.k" = "#08519C"
+    )) +
+    annotate("text", x = 0.01, y = 1.5, label = "p\u02b0", hjust = 1.2, vjust = 0.5,
+             size = 4, fontface = "bold") +
+    annotate("text", x = 0.01, y = 3.5, label = "t\u02b0", hjust = 1.2, vjust = 0.5,
+             size = 4, fontface = "bold") +
+    annotate("text", x = 0.01, y = 5.5, label = "k\u02b0", hjust = 1.2, vjust = 0.5,
+             size = 4, fontface = "bold") +
+    labs(x = "VOT (s)", y = "", title = plot_title) +
+    xlim(0, 0.2) +
+    coord_cartesian(ylim = c(0.5, 6.5)) +
+    theme_minimal() +
+    guides(fill = "none", color = "none",
+           linetype = guide_legend(title = "Coda voicing", direction = "vertical")) +
+    theme(
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      legend.position = c(0.85, 0.20),
+      legend.background = element_rect(fill = "white", color = "black", linewidth = 0.3),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      plot.margin = margin(t = 15, r = 5, b = 0, l = 5, unit = "pt")
+    ) +
+    scale_y_discrete(expand = expansion(mult = c(0.05, 0.15)))
+}
+```
+
+## Default-prior model
+
+```{r ridge-default, fig.width=7, fig.height=5}
+p_default <- make_ridge_plot(bayes_model_default, plot_title = "Default priors")
+print(p_default)
+ggsave("ridge_default.png", plot = p_default, bg = "white", width = 7, height = 5, dpi = 300)
+```
+
+## Informed-prior model
+
+```{r ridge-informed, fig.width=7, fig.height=5}
+p_informed <- make_ridge_plot(bayes_model_informed, plot_title = "Informed priors")
+print(p_informed)
+ggsave("ridge_informed.png", plot = p_informed, bg = "white", width = 7, height = 5, dpi = 300)
+```

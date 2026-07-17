@@ -755,30 +755,16 @@ contrasts(factor(data_mod$ons_poa))
 # Set /p/ as reference level to match your intuitions
 data_mod$ons_poa <- factor(data_mod$ons_poa, levels = c("p", "t", "k"))
 
-# Priors split by epistemic status:
-# - POA effects: strongly informed by direct, established cross-linguistic
-#   VOT literature (Lisker & Abramson 1964, Cho & Ladefoged 1999, etc.)
-# - Coda-voicing effects: the focal hypothesis of this study, derived by
-#   chaining two independently-established but distinct effects (vowel
-#   duration ~ coda voicing; VOT ~ vowel duration) rather than by direct
-#   prior measurement of coda-voicing's effect on onset VOT. Given weak,
-#   near-neutral priors so the data - not the hypothesis - determines
-#   the posterior.
-
+# Define informed priors based on your acoustic knowledge
 informed_priors <- c(
-  # --- Strongly informed: established literature on POA and VOT ---
-  prior(normal(30, 10), class = Intercept),              # /p/ baseline
-  prior(normal(15, 8),  class = b, coef = ons_poat),      # /t/ effect
-  prior(normal(30, 12), class = b, coef = ons_poak),      # /k/ effect
-
-  # --- Weakly informed / regularizing: the focal, untested hypothesis ---
-  prior(normal(0, 20), class = b, coef = "coda_vc1"),                 # voicing effect
-  prior(normal(0, 15), class = b, coef = "ons_poat:coda_vc1"),        # /t/ x voicing
-  prior(normal(0, 15), class = b, coef = "ons_poak:coda_vc1"),        # /k/ x voicing
-
-  # --- Standard weakly informative priors for variance components ---
-  prior(normal(0, 20), class = sd),
-  prior(normal(0, 25), class = sigma)
+  prior(normal(30, 10), class = Intercept),              # 20ms ± 10ms for /p/
+  prior(normal(15, 8), class = b, coef = ons_poat),      # /t/ effect
+  prior(normal(30, 12), class = b, coef = ons_poak),     # /k/ effect
+  prior(normal(10, 5), class = b, coef = coda_vc1),      # voicing effect (note: coda_vc1)
+  prior(normal(3, 5), class = b, coef = "ons_poat:coda_vc1"),  # /t/ × voicing interaction
+  prior(normal(5, 6), class = b, coef = "ons_poak:coda_vc1"),  # /k/ × voicing interaction
+  prior(normal(0, 20), class = sd),                      # random effects
+  prior(normal(0, 25), class = sigma)                    # residual
 )
 # Make sure coda_vc is properly factored
 data_mod$coda_vc <- factor(data_mod$coda_vc)
