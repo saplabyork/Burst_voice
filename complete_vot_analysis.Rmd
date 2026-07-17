@@ -442,6 +442,143 @@ fixef_comparison <- left_join(default_fx, informed_fx, by = "parameter") %>%
 fixef_comparison
 ```
 
+# Maximal random effects structure
+
+Because onset place of articulation and coda voicing are both
+within-subject manipulations, a random-intercept-only model assumes
+every participant shows the same coda-voicing effect (and the same
+place-of-articulation effects), differing only in their overall
+baseline VOT. Following Barr, Levy, Scheepers & Tily (2013), we also
+fit a "maximal" model with by-subject random slopes for place of
+articulation, coda voicing, and their interaction, plus the full
+correlation structure among all random effects. This guards against
+anti-conservative (too-narrow) intervals for the fixed effects if
+speakers actually differ in the size of the coda-voicing effect, not
+just their baseline VOT.
+
+```{r bayes-maximal-priors}
+# get_prior() on the maximal formula to check what needs specifying;
+# the existing sd-class prior applies to all random-slope SDs by
+# default, but the correlation matrix (class = cor) needs an explicit
+# prior of its own
+get_prior(vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
+          data = data_mod, family = gaussian())
+
+maximal_priors <- c(
+  # Same fixed-effect priors as the informed model above
+  prior(normal(30, 10), class = Intercept),
+  prior(normal(15, 8),  class = b, coef = ons_poat),
+  prior(normal(30, 12), class = b, coef = ons_poak),
+  prior(normal(0, 20),  class = b, coef = "coda_vc1"),
+  prior(normal(0, 15),  class = b, coef = "ons_poat:coda_vc1"),
+  prior(normal(0, 15),  class = b, coef = "ons_poak:coda_vc1"),
+
+  # Random-effect SDs (applies to intercept + all random slopes)
+  prior(normal(0, 20), class = sd),
+
+  # Residual SD
+  prior(normal(0, 25), class = sigma),
+
+  # Correlation matrix among random effects: lkj(2) mildly shrinks
+  # correlations toward zero relative to the lkj(1) (uniform) default,
+  # which helps stabilize estimation with only 20 subjects
+  prior(lkj(2), class = cor)
+)
+```
+
+```{r bayes-maximal-fit, results='hide'}
+# Maximal models are harder to sample; more iterations and a higher
+# adapt_delta reduce divergent transitions at the cost of runtime
+bayes_model_maximal <- brm(
+  vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
+  data    = data_mod,
+  family  = gaussian(),
+  prior   = maximal_priors,
+  chains  = 4,
+  iter    = 4000,
+  warmup  = 1500,
+  cores   = 4,
+  seed    = 123,
+  control = list(adapt_delta = 0.95)
+)
+```
+
+## Convergence diagnostics
+
+Before interpreting the maximal model, check for divergent
+transitions, $\hat{R}$, and effective sample size. A high divergence
+count, $\hat{R} > 1.02$, or very low ESS on the random-slope or
+correlation parameters indicates the data may not fully support this
+structure, in which case the simplified alternatives below should be
+preferred over forcing the maximal model.
+
+```{r bayes-maximal-diagnostics}
+print(summary(bayes_model_maximal), digits = 4)
+
+# Number of divergent transitions (should be 0, or a small fraction
+# of total post-warmup draws)
+sum(rstan::get_divergent_iterations(bayes_model_maximal$fit))
+
+# Visual check on chains and random-effect correlations
+plot(bayes_model_maximal, variable = "^sd_", regex = TRUE)
+plot(bayes_model_maximal, variable = "^cor_", regex = TRUE)
+```
+
+## Comparison to the random-intercept-only model
+
+```{r bayes-maximal-compare}
+loo_maximal <- loo(bayes_model_maximal)
+loo_compare(loo_informed, loo_maximal)
+
+# Direct comparison of the focal coefficient across random-effects
+# structures
+posterior_summary(bayes_model_informed, variable = "b_coda_vc1")
+posterior_summary(bayes_model_maximal,  variable = "b_coda_vc1")
+```
+
+## If the maximal model does not converge cleanly
+
+If `bayes_model_maximal` shows divergent transitions, elevated
+$\hat{R}$, or very low ESS on the random-effect correlations, simplify
+in this order before abandoning the random-slopes structure entirely:
+
+```{r bayes-maximal-simplify, eval=FALSE}
+# Step 1: drop correlations among random effects, keep all slopes
+# (equivalent to lme4's `||` syntax)
+bayes_model_zerocorr <- brm(
+  vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc || sub),
+  data    = data_mod,
+  family  = gaussian(),
+  prior   = maximal_priors[maximal_priors$class != "cor", ],
+  chains  = 4,
+  iter    = 4000,
+  warmup  = 1500,
+  cores   = 4,
+  seed    = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+# Step 2: if still problematic, drop the random slope for the
+# interaction term first (typically the hardest to estimate),
+# retaining random slopes for the main effects
+bayes_model_reduced <- brm(
+  vot ~ ons_poa * coda_vc + (1 + ons_poa + coda_vc || sub),
+  data    = data_mod,
+  family  = gaussian(),
+  prior   = maximal_priors[maximal_priors$class != "cor", ],
+  chains  = 4,
+  iter    = 4000,
+  warmup  = 1500,
+  cores   = 4,
+  seed    = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+# Compare whichever structures were fitted; report this comparison
+# alongside the final model choice
+loo_compare(loo_informed, loo(bayes_model_zerocorr), loo(bayes_model_reduced))
+```
+
 # Ridge plots with posterior predictions
 
 Ridge plots with posterior predictions overlaid, for both Bayesian

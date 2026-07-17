@@ -1034,6 +1034,246 @@ fixef_comparison</code></pre>
 </div>
 </div>
 </div>
+<div id="maximal-random-effects-structure" class="section level1">
+<h1>Maximal random effects structure</h1>
+<p>Because onset place of articulation and coda voicing are both
+within-subject manipulations, a random-intercept-only model assumes
+every participant shows the same coda-voicing effect (and the same
+place-of-articulation effects), differing only in their overall baseline
+VOT. Following Barr, Levy, Scheepers &amp; Tily (2013), we also fit a
+“maximal” model with by-subject random slopes for place of articulation,
+coda voicing, and their interaction, plus the full correlation structure
+among all random effects. This guards against anti-conservative
+(too-narrow) intervals for the fixed effects if speakers actually differ
+in the size of the coda-voicing effect, not just their baseline VOT.</p>
+<pre class="r"><code># get_prior() on the maximal formula to check what needs specifying;
+# the existing sd-class prior applies to all random-slope SDs by
+# default, but the correlation matrix (class = cor) needs an explicit
+# prior of its own
+get_prior(vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
+          data = data_mod, family = gaussian())</code></pre>
+<pre><code>##                   prior     class              coef group resp dpar nlpar lb ub
+##                  (flat)         b                                              
+##                  (flat)         b          coda_vc1                            
+##                  (flat)         b          ons_poak                            
+##                  (flat)         b ons_poak:coda_vc1                            
+##                  (flat)         b          ons_poat                            
+##                  (flat)         b ons_poat:coda_vc1                            
+##                  lkj(1)       cor                                              
+##                  lkj(1)       cor                     sub                      
+##  student_t(3, 0.1, 2.5) Intercept                                              
+##    student_t(3, 0, 2.5)        sd                                          0   
+##    student_t(3, 0, 2.5)        sd                     sub                  0   
+##    student_t(3, 0, 2.5)        sd          coda_vc1   sub                  0   
+##    student_t(3, 0, 2.5)        sd         Intercept   sub                  0   
+##    student_t(3, 0, 2.5)        sd          ons_poak   sub                  0   
+##    student_t(3, 0, 2.5)        sd ons_poak:coda_vc1   sub                  0   
+##    student_t(3, 0, 2.5)        sd          ons_poat   sub                  0   
+##    student_t(3, 0, 2.5)        sd ons_poat:coda_vc1   sub                  0   
+##    student_t(3, 0, 2.5)     sigma                                          0   
+##  tag       source
+##           default
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##           default
+##      (vectorized)
+##           default
+##           default
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##           default</code></pre>
+<pre class="r"><code>maximal_priors &lt;- c(
+  # Same fixed-effect priors as the informed model above
+  prior(normal(30, 10), class = Intercept),
+  prior(normal(15, 8),  class = b, coef = ons_poat),
+  prior(normal(30, 12), class = b, coef = ons_poak),
+  prior(normal(0, 20),  class = b, coef = &quot;coda_vc1&quot;),
+  prior(normal(0, 15),  class = b, coef = &quot;ons_poat:coda_vc1&quot;),
+  prior(normal(0, 15),  class = b, coef = &quot;ons_poak:coda_vc1&quot;),
+
+  # Random-effect SDs (applies to intercept + all random slopes)
+  prior(normal(0, 20), class = sd),
+
+  # Residual SD
+  prior(normal(0, 25), class = sigma),
+
+  # Correlation matrix among random effects: lkj(2) mildly shrinks
+  # correlations toward zero relative to the lkj(1) (uniform) default,
+  # which helps stabilize estimation with only 20 subjects
+  prior(lkj(2), class = cor)
+)</code></pre>
+<pre class="r"><code># Maximal models are harder to sample; more iterations and a higher
+# adapt_delta reduce divergent transitions at the cost of runtime
+bayes_model_maximal &lt;- brm(
+  vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
+  data    = data_mod,
+  family  = gaussian(),
+  prior   = maximal_priors,
+  chains  = 4,
+  iter    = 4000,
+  warmup  = 1500,
+  cores   = 4,
+  seed    = 123,
+  control = list(adapt_delta = 0.95)
+)</code></pre>
+<div id="convergence-diagnostics" class="section level2">
+<h2>Convergence diagnostics</h2>
+<p>Before interpreting the maximal model, check for divergent
+transitions, <span class="math inline">\(\hat{R}\)</span>, and effective
+sample size. A high divergence count, <span
+class="math inline">\(\hat{R} &gt; 1.02\)</span>, or very low ESS on the
+random-slope or correlation parameters indicates the data may not fully
+support this structure, in which case the simplified alternatives below
+should be preferred over forcing the maximal model.</p>
+<pre class="r"><code>print(summary(bayes_model_maximal), digits = 4)</code></pre>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity 
+## Formula: vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub) 
+##    Data: data_mod (Number of observations: 2369) 
+##   Draws: 4 chains, each with iter = 4000; warmup = 1500; thin = 1;
+##          total post-warmup draws = 10000
+## 
+## Multilevel Hyperparameters:
+## ~sub (Number of levels: 20) 
+##                                          Estimate Est.Error l-95% CI u-95% CI
+## sd(Intercept)                              0.0272    0.0051   0.0192   0.0389
+## sd(ons_poat)                               0.0058    0.0016   0.0031   0.0093
+## sd(ons_poak)                               0.0015    0.0011   0.0001   0.0042
+## sd(coda_vc1)                               0.0090    0.0019   0.0059   0.0135
+## sd(ons_poat:coda_vc1)                      0.0022    0.0017   0.0001   0.0062
+## sd(ons_poak:coda_vc1)                      0.0048    0.0023   0.0005   0.0096
+## cor(Intercept,ons_poat)                   -0.0775    0.2262  -0.5029   0.3659
+## cor(Intercept,ons_poak)                   -0.0741    0.3136  -0.6458   0.5365
+## cor(ons_poat,ons_poak)                     0.1002    0.3288  -0.5476   0.6882
+## cor(Intercept,coda_vc1)                   -0.0505    0.2092  -0.4480   0.3588
+## cor(ons_poat,coda_vc1)                    -0.0507    0.2390  -0.5101   0.4150
+## cor(ons_poak,coda_vc1)                    -0.0183    0.3242  -0.6262   0.6108
+## cor(Intercept,ons_poat:coda_vc1)           0.0096    0.3208  -0.6095   0.6074
+## cor(ons_poat,ons_poat:coda_vc1)           -0.0214    0.3280  -0.6339   0.6072
+## cor(ons_poak,ons_poat:coda_vc1)           -0.0525    0.3385  -0.6742   0.6028
+## cor(coda_vc1,ons_poat:coda_vc1)           -0.0047    0.3220  -0.6109   0.6103
+## cor(Intercept,ons_poak:coda_vc1)          -0.0302    0.2699  -0.5485   0.5037
+## cor(ons_poat,ons_poak:coda_vc1)            0.2669    0.2832  -0.3578   0.7433
+## cor(ons_poak,ons_poak:coda_vc1)           -0.0033    0.3302  -0.6232   0.6283
+## cor(coda_vc1,ons_poak:coda_vc1)           -0.1453    0.2770  -0.6349   0.4393
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1)  -0.0144    0.3297  -0.6311   0.6142
+##                                            Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)                            1.0006     2571     4567
+## sd(ons_poat)                             1.0019     3912     4080
+## sd(ons_poak)                             1.0011     5108     5766
+## sd(coda_vc1)                             1.0009     5209     6764
+## sd(ons_poat:coda_vc1)                    1.0011     4698     5395
+## sd(ons_poak:coda_vc1)                    1.0015     2177     2017
+## cor(Intercept,ons_poat)                  1.0002     9129     7017
+## cor(Intercept,ons_poak)                  1.0000    15222     7217
+## cor(ons_poat,ons_poak)                   1.0003    12683     7478
+## cor(Intercept,coda_vc1)                  1.0005     8119     7243
+## cor(ons_poat,coda_vc1)                   1.0005     4280     6101
+## cor(ons_poak,coda_vc1)                   1.0043     1646     3796
+## cor(Intercept,ons_poat:coda_vc1)         1.0006    16638     6082
+## cor(ons_poat,ons_poat:coda_vc1)          1.0001    13607     7485
+## cor(ons_poak,ons_poat:coda_vc1)          1.0003     8964     7137
+## cor(coda_vc1,ons_poat:coda_vc1)          1.0002    12574     7830
+## cor(Intercept,ons_poak:coda_vc1)         0.9999    13045     7117
+## cor(ons_poat,ons_poak:coda_vc1)          1.0002     8536     7117
+## cor(ons_poak,ons_poak:coda_vc1)          1.0000     5316     7293
+## cor(coda_vc1,ons_poak:coda_vc1)          0.9999     9149     7470
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1) 1.0006     5775     7787
+## 
+## Regression Coefficients:
+##                   Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
+## Intercept           0.0788    0.0061   0.0667   0.0911 1.0024     1067     1963
+## ons_poat            0.0108    0.0018   0.0072   0.0142 1.0009     7496     7395
+## ons_poak            0.0138    0.0013   0.0114   0.0164 1.0003    12612     8723
+## coda_vc1            0.0122    0.0025   0.0075   0.0172 1.0006     7087     7562
+## ons_poat:coda_vc1  -0.0045    0.0019  -0.0082  -0.0008 1.0001    15617     7944
+## ons_poak:coda_vc1  -0.0044    0.0022  -0.0088  -0.0000 1.0002    12486     7441
+## 
+## Further Distributional Parameters:
+##       Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
+## sigma   0.0177    0.0003   0.0172   0.0183 1.0004    15427     6588
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<pre class="r"><code># Number of divergent transitions (should be 0, or a small fraction
+# of total post-warmup draws)
+sum(rstan::get_divergent_iterations(bayes_model_maximal$fit))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code># Visual check on chains and random-effect correlations
+plot(bayes_model_maximal, variable = &quot;^sd_&quot;, regex = TRUE)</code></pre>
+<p><img src="complete_vot_analysis_files/figure-html/bayes-maximal-diagnostics-1.png" alt="" width="672" /><img src="complete_vot_analysis_files/figure-html/bayes-maximal-diagnostics-2.png" alt="" width="672" /></p>
+<pre class="r"><code>plot(bayes_model_maximal, variable = &quot;^cor_&quot;, regex = TRUE)</code></pre>
+<p><img src="complete_vot_analysis_files/figure-html/bayes-maximal-diagnostics-3.png" alt="" width="672" /><img src="complete_vot_analysis_files/figure-html/bayes-maximal-diagnostics-4.png" alt="" width="672" /><img src="complete_vot_analysis_files/figure-html/bayes-maximal-diagnostics-5.png" alt="" width="672" /></p>
+</div>
+<div id="comparison-to-the-random-intercept-only-model"
+class="section level2">
+<h2>Comparison to the random-intercept-only model</h2>
+<pre class="r"><code>loo_maximal &lt;- loo(bayes_model_maximal)
+loo_compare(loo_informed, loo_maximal)</code></pre>
+<pre><code>##                 model elpd_diff se_diff p_worse diag_diff diag_elpd
+##   bayes_model_maximal       0.0     0.0      NA                    
+##  bayes_model_informed     -54.3    12.1    1.00</code></pre>
+<pre class="r"><code># Direct comparison of the focal coefficient across random-effects
+# structures
+posterior_summary(bayes_model_informed, variable = &quot;b_coda_vc1&quot;)</code></pre>
+<pre><code>##              Estimate   Est.Error        Q2.5      Q97.5
+## b_coda_vc1 0.01205801 0.001325356 0.009392996 0.01466453</code></pre>
+<pre class="r"><code>posterior_summary(bayes_model_maximal,  variable = &quot;b_coda_vc1&quot;)</code></pre>
+<pre><code>##            Estimate   Est.Error        Q2.5      Q97.5
+## b_coda_vc1 0.012242 0.002458842 0.007464115 0.01717714</code></pre>
+</div>
+<div id="if-the-maximal-model-does-not-converge-cleanly"
+class="section level2">
+<h2>If the maximal model does not converge cleanly</h2>
+<p>If <code>bayes_model_maximal</code> shows divergent transitions,
+elevated <span class="math inline">\(\hat{R}\)</span>, or very low ESS
+on the random-effect correlations, simplify in this order before
+abandoning the random-slopes structure entirely:</p>
+<pre class="r"><code># Step 1: drop correlations among random effects, keep all slopes
+# (equivalent to lme4&#39;s `||` syntax)
+bayes_model_zerocorr &lt;- brm(
+  vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc || sub),
+  data    = data_mod,
+  family  = gaussian(),
+  prior   = maximal_priors[maximal_priors$class != &quot;cor&quot;, ],
+  chains  = 4,
+  iter    = 4000,
+  warmup  = 1500,
+  cores   = 4,
+  seed    = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+# Step 2: if still problematic, drop the random slope for the
+# interaction term first (typically the hardest to estimate),
+# retaining random slopes for the main effects
+bayes_model_reduced &lt;- brm(
+  vot ~ ons_poa * coda_vc + (1 + ons_poa + coda_vc || sub),
+  data    = data_mod,
+  family  = gaussian(),
+  prior   = maximal_priors[maximal_priors$class != &quot;cor&quot;, ],
+  chains  = 4,
+  iter    = 4000,
+  warmup  = 1500,
+  cores   = 4,
+  seed    = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+# Compare whichever structures were fitted; report this comparison
+# alongside the final model choice
+loo_compare(loo_informed, loo(bayes_model_zerocorr), loo(bayes_model_reduced))</code></pre>
+</div>
+</div>
 <div id="ridge-plots-with-posterior-predictions" class="section level1">
 <h1>Ridge plots with posterior predictions</h1>
 <p>Ridge plots with posterior predictions overlaid, for both Bayesian
