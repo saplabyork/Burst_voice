@@ -11,12 +11,12 @@
 
 
 
-<title>Production Analysis</title>
+<title>Burst Voice: Onset VOT ~ Place of Articulation x Coda Voicing</title>
 
 <script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -35,7 +35,6 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link rel="shortcut icon" href="images/logo.jpeg">
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -329,7 +328,7 @@ div.tocify {
   <a href="Practice.html">Practice</a>
 </li>
 <li>
-  <a href="Production_data_anal_usethis.html">Data Production</a>
+  <a href="complete_vot_analysis.html">Data Production</a>
 </li>
 <li>
   <a href="single_stim_perception.html">Data Perception</a>
@@ -349,7 +348,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Production Analysis</h1>
+<h1 class="title toc-ignore">Burst Voice: Onset VOT ~ Place of
+Articulation x Coda Voicing</h1>
 
 </div>
 
@@ -802,7 +802,10 @@ contrasts(data_mod$ons_poa)</code></pre>
   cores  = 4,
   seed   = 123
 )</code></pre>
-<pre class="r"><code>summary(bayes_model_default)</code></pre>
+<pre class="r"><code># digits = 4 gives sub-millisecond precision (values are in seconds,
+# so 4 decimal places = 0.1 ms resolution), rather than the default
+# 2 decimal places (10 ms resolution)
+print(summary(bayes_model_default), digits = 4)</code></pre>
 <pre><code>##  Family: gaussian 
 ##   Links: mu = identity 
 ## Formula: vot ~ ons_poa * coda_vc + (1 | sub) 
@@ -812,27 +815,48 @@ contrasts(data_mod$ons_poa)</code></pre>
 ## 
 ## Multilevel Hyperparameters:
 ## ~sub (Number of levels: 20) 
-##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)     0.03      0.00     0.02     0.04 1.01      377      641
+##               Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)   0.0252    0.0045   0.0184   0.0362 1.0088      377      641
 ## 
 ## Regression Coefficients:
-##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept             0.08      0.01     0.07     0.09 1.01      291      386
-## ons_poat              0.01      0.00     0.01     0.01 1.00     3162     3229
-## ons_poak              0.01      0.00     0.01     0.02 1.00     2516     3045
-## coda_vc1              0.01      0.00     0.01     0.01 1.00     2011     2717
-## ons_poat:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     1993     2700
-## ons_poak:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     1912     2688
+##                   Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
+## Intercept           0.0791    0.0062   0.0667   0.0914 1.0112      291      386
+## ons_poat            0.0108    0.0012   0.0084   0.0132 1.0025     3162     3229
+## ons_poak            0.0138    0.0012   0.0114   0.0162 1.0038     2516     3045
+## coda_vc1            0.0121    0.0013   0.0095   0.0146 1.0024     2011     2717
+## ons_poat:coda_vc1  -0.0045    0.0019  -0.0080  -0.0009 1.0030     1993     2700
+## ons_poak:coda_vc1  -0.0043    0.0019  -0.0081  -0.0006 1.0030     1912     2688
 ## 
 ## Further Distributional Parameters:
-##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     0.02      0.00     0.02     0.02 1.00     1420     1820
+##       Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
+## sigma   0.0183    0.0003   0.0178   0.0188 1.0031     1420     1820
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
 ## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <pre class="r"><code>plot(bayes_model_default)</code></pre>
 <p><img src="complete_vot_analysis_files/figure-html/bayes-default-summary-1.png" alt="" width="864" /><img src="complete_vot_analysis_files/figure-html/bayes-default-summary-2.png" alt="" width="864" /></p>
+<pre class="r"><code># Programmatic access to full-precision estimates, useful for
+# generating tables directly rather than transcribing console output
+fixef(bayes_model_default, digits = 4)</code></pre>
+<pre><code>##                       Estimate   Est.Error         Q2.5         Q97.5
+## Intercept          0.079064419 0.006232837  0.066689190  0.0914285526
+## ons_poat           0.010775817 0.001182710  0.008442010  0.0131569770
+## ons_poak           0.013782291 0.001214324  0.011409704  0.0161867615
+## coda_vc1           0.012060886 0.001315883  0.009507995  0.0146423065
+## ons_poat:coda_vc1 -0.004464344 0.001852825 -0.008014556 -0.0008717013
+## ons_poak:coda_vc1 -0.004321869 0.001886764 -0.008078067 -0.0005525857</code></pre>
+<pre class="r"><code>VarCorr(bayes_model_default)</code></pre>
+<pre><code>## $sub
+## $sub$sd
+##             Estimate   Est.Error     Q2.5     Q97.5
+## Intercept 0.02516864 0.004508829 0.018438 0.0362163
+## 
+## 
+## $residual__
+## $residual__$sd
+##    Estimate    Est.Error       Q2.5      Q97.5
+##  0.01834388 0.0002715785 0.01780772 0.01884992</code></pre>
 </div>
 <div id="informed-prior-model" class="section level2">
 <h2>Informed prior model</h2>
@@ -892,7 +916,7 @@ than a value read off this dataset’s own <code>lmer</code> estimate
 ##  (vectorized)
 ##  (vectorized)
 ##          user</code></pre>
-<pre class="r"><code>summary(bayes_model_informed)</code></pre>
+<pre class="r"><code>print(summary(bayes_model_informed), digits = 4)</code></pre>
 <pre><code>##  Family: gaussian 
 ##   Links: mu = identity 
 ## Formula: vot ~ ons_poa * coda_vc + (1 | sub) 
@@ -902,25 +926,44 @@ than a value read off this dataset’s own <code>lmer</code> estimate
 ## 
 ## Multilevel Hyperparameters:
 ## ~sub (Number of levels: 20) 
-##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)     0.02      0.00     0.02     0.03 1.01      406      657
+##               Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)   0.0248    0.0043   0.0181   0.0347 1.0056      406      657
 ## 
 ## Regression Coefficients:
-##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept             0.08      0.01     0.07     0.09 1.02      241      340
-## ons_poat              0.01      0.00     0.01     0.01 1.00     2902     3120
-## ons_poak              0.01      0.00     0.01     0.02 1.00     2222     2958
-## coda_vc1              0.01      0.00     0.01     0.01 1.00     1814     2159
-## ons_poat:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     2041     2034
-## ons_poak:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     1716     2377
+##                   Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
+## Intercept           0.0783    0.0058   0.0670   0.0898 1.0190      241      340
+## ons_poat            0.0108    0.0012   0.0084   0.0131 1.0000     2902     3120
+## ons_poak            0.0138    0.0012   0.0113   0.0162 1.0007     2222     2958
+## coda_vc1            0.0121    0.0013   0.0094   0.0147 1.0006     1814     2159
+## ons_poat:coda_vc1  -0.0044    0.0019  -0.0081  -0.0007 1.0004     2041     2034
+## ons_poak:coda_vc1  -0.0043    0.0019  -0.0080  -0.0007 1.0005     1716     2377
 ## 
 ## Further Distributional Parameters:
-##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     0.02      0.00     0.02     0.02 1.00     1323     1738
+##       Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
+## sigma   0.0183    0.0003   0.0178   0.0189 1.0016     1323     1738
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
 ## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<pre class="r"><code>fixef(bayes_model_informed, digits = 4)</code></pre>
+<pre><code>##                       Estimate   Est.Error         Q2.5         Q97.5
+## Intercept          0.078342357 0.005762480  0.067018001  0.0898284263
+## ons_poat           0.010773299 0.001173680  0.008438066  0.0131279888
+## ons_poak           0.013774309 0.001219125  0.011343905  0.0162047592
+## coda_vc1           0.012058011 0.001325356  0.009392996  0.0146645292
+## ons_poat:coda_vc1 -0.004430786 0.001890908 -0.008128940 -0.0006662306
+## ons_poak:coda_vc1 -0.004325072 0.001876609 -0.008010615 -0.0006822570</code></pre>
+<pre class="r"><code>VarCorr(bayes_model_informed)</code></pre>
+<pre><code>## $sub
+## $sub$sd
+##             Estimate   Est.Error       Q2.5      Q97.5
+## Intercept 0.02482513 0.004308766 0.01805187 0.03465357
+## 
+## 
+## $residual__
+## $residual__$sd
+##    Estimate    Est.Error       Q2.5      Q97.5
+##  0.01834508 0.0002615617 0.01784335 0.01885586</code></pre>
 <pre class="r"><code>pp_check(bayes_model_informed, type = &quot;hist&quot;, ndraws = 100) +
   ggtitle(&quot;Prior Predictive Check: Do simulated VOTs look reasonable?&quot;)</code></pre>
 <p><img src="complete_vot_analysis_files/figure-html/bayes-informed-ppcheck-1.png" alt="" width="672" /></p>
@@ -942,6 +985,53 @@ level:</p>
 <pre class="r"><code>posterior_summary(bayes_model_informed, variable = &quot;b_coda_vc1&quot;)</code></pre>
 <pre><code>##              Estimate   Est.Error        Q2.5      Q97.5
 ## b_coda_vc1 0.01205801 0.001325356 0.009392996 0.01466453</code></pre>
+<div id="full-precision-estimates-for-all-fixed-effects"
+class="section level3">
+<h3>Full-precision estimates for all fixed effects</h3>
+<p><code>posterior_summary()</code> returns unrounded values for every
+parameter, not just <code>coda_vc1</code>. Extracting all of them at
+once, in milliseconds, gives a single unrounded source to draw on when
+building tables (e.g., for the manuscript), rather than reading rounded
+values off the default <code>summary()</code> printout.</p>
+<pre class="r"><code># Fixed effects, converted to ms, full precision, both models side by side
+default_fx  &lt;- as.data.frame(posterior_summary(bayes_model_default))  %&gt;%
+  rownames_to_column(&quot;parameter&quot;) %&gt;%
+  filter(str_starts(parameter, &quot;b_&quot;)) %&gt;%
+  mutate(across(where(is.numeric), ~ .x * 1000)) %&gt;%
+  rename_with(~ paste0(&quot;default_&quot;, .x), -parameter)
+
+informed_fx &lt;- as.data.frame(posterior_summary(bayes_model_informed)) %&gt;%
+  rownames_to_column(&quot;parameter&quot;) %&gt;%
+  filter(str_starts(parameter, &quot;b_&quot;)) %&gt;%
+  mutate(across(where(is.numeric), ~ .x * 1000)) %&gt;%
+  rename_with(~ paste0(&quot;informed_&quot;, .x), -parameter)
+
+fixef_comparison &lt;- left_join(default_fx, informed_fx, by = &quot;parameter&quot;) %&gt;%
+  mutate(across(where(is.numeric), ~ round(.x, 2)))
+
+fixef_comparison</code></pre>
+<pre><code>##             parameter default_Estimate default_Est.Error default_Q2.5
+## 1         b_Intercept            79.06              6.23        66.69
+## 2          b_ons_poat            10.78              1.18         8.44
+## 3          b_ons_poak            13.78              1.21        11.41
+## 4          b_coda_vc1            12.06              1.32         9.51
+## 5 b_ons_poat:coda_vc1            -4.46              1.85        -8.01
+## 6 b_ons_poak:coda_vc1            -4.32              1.89        -8.08
+##   default_Q97.5 informed_Estimate informed_Est.Error informed_Q2.5
+## 1         91.43             78.34               5.76         67.02
+## 2         13.16             10.77               1.17          8.44
+## 3         16.19             13.77               1.22         11.34
+## 4         14.64             12.06               1.33          9.39
+## 5         -0.87             -4.43               1.89         -8.13
+## 6         -0.55             -4.33               1.88         -8.01
+##   informed_Q97.5
+## 1          89.83
+## 2          13.13
+## 3          16.20
+## 4          14.66
+## 5          -0.67
+## 6          -0.68</code></pre>
+</div>
 </div>
 </div>
 <div id="ridge-plots-with-posterior-predictions" class="section level1">

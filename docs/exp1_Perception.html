@@ -329,7 +329,7 @@ div.tocify {
   <a href="Practice.html">Practice</a>
 </li>
 <li>
-  <a href="Production_data_anal_usethis.html">Data Production</a>
+  <a href="complete_vot_analysis.html">Data Production</a>
 </li>
 <li>
   <a href="single_stim_perception.html">Data Perception</a>
@@ -789,7 +789,7 @@ ggsave(&quot;perception_plot.png&quot;, dpi=300, width=7, height=5)
 install.packages(&quot;ggeffects&quot;)</code></pre>
 <pre><code>## 
 ## The downloaded binary packages are in
-##  /var/folders/qh/gx03dj_n5zggprvm5n2lcbnr0000gn/T//RtmpMEhR4L/downloaded_packages</code></pre>
+##  /var/folders/qh/gx03dj_n5zggprvm5n2lcbnr0000gn/T//RtmpN4Fqk4/downloaded_packages</code></pre>
 <pre class="r"><code># Load the package
 library(ggeffects)
 
@@ -823,27 +823,15 @@ plot(probabilities)</code></pre>
 
 # Trying out Bayes
 
-library(brms)</code></pre>
-<pre><code>## Loading required package: Rcpp</code></pre>
-<pre><code>## Loading &#39;brms&#39; package (version 2.23.0). Useful instructions
-## can be found by typing help(&#39;brms&#39;). A more detailed introduction
-## to the package is available through vignette(&#39;brms_overview&#39;).</code></pre>
-<pre><code>## 
-## Attaching package: &#39;brms&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:lme4&#39;:
-## 
-##     ngrps</code></pre>
-<pre><code>## The following object is masked from &#39;package:stats&#39;:
-## 
-##     ar</code></pre>
-<pre class="r"><code>exp1_model_bayes &lt;- brm(response_vc ~ stim_length * ons_con + (1 + stim_length | sub), 
+library(brms)
+
+exp1_model_bayes &lt;- brm(response_vc ~ stim_length * ons_con + (1 + stim_length | sub), 
                        data = exp1_data, 
                        family = bernoulli(),
                        chains = 4,
                        iter = 2000,
                        cores = 4)</code></pre>
 <pre><code>## Compiling Stan program...</code></pre>
-<pre><code>## Loading required namespace: lmerTest</code></pre>
 <pre><code>## Start sampling</code></pre>
 <pre class="r"><code># Check the model
 summary(exp1_model_bayes)
@@ -946,14 +934,13 @@ ggplot(plot_data, aes(x = factor(ons_con, levels = c(&quot;p&quot;, &quot;k&quot
 <pre><code>## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
 ## ℹ Please use `linewidth` instead.
 ## This warning is displayed once per session.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this
-## warning was generated.</code></pre>
-<pre><code>## Warning: The `size` argument of `element_line()` is deprecated as of ggplot2
-## 3.4.0.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
+<pre><code>## Warning: The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
 ## ℹ Please use the `linewidth` argument instead.
 ## This warning is displayed once per session.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this
-## warning was generated.</code></pre>
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
 <p><img src="exp1_Perception_files/figure-html/unnamed-chunk-2-3.png" alt="" width="672" /></p>
 <pre class="r"><code># Alternative version with different styling
 ggplot(plot_data, aes(x = factor(ons_con, levels = c(&quot;p&quot;, &quot;k&quot;)), y = estimate, color = factor(stim_length))) +
@@ -1178,16 +1165,15 @@ contrasts(factor(exp1_data$vowel))
 
 # Extract coefficients
 fixef(exp1_model_bayes)</code></pre>
-<pre><code>##   -0.8576139 0.4724470 -1.80378866  0.07466402
-## vowele                           -0.2076378 0.4525533 -1.09723436  0.67954730
-## voweli                           -0.6220140 0.4614466 -1.53951994  0.28984113
-## stim_lengthshort:ons_conp         1.1053367 0.6774453 -0.21573798  2.44721127
-## stim_lengthshort:vowele           0.2209341 0.6685230 -1.08131943  1.57655892
-## stim_lengthshort:voweli           0.9525533 0.7479161 -0.52890666  2.42012722
-## ons_conp:vowele                   1.8677413 0.6618042  0.60040695  3.19939621
-## ons_conp:voweli                   1.1792037 0.6474013 -0.07339209  2.49764548
-## stim_lengthshort:ons_conp:vowele -1.2464913 0.9440852 -3.11545767  0.53326036
-## stim_lengthshort:ons_conp:voweli -1.7051668 0.9806785 -3.64790234  0.23201084</code></pre>
+<pre><code>##                         -0.1903203 0.4356240 -1.06697150  0.6399875
+## voweli                           -0.6224808 0.4527220 -1.53360471  0.2795276
+## stim_lengthshort:ons_conp         1.0866323 0.6687200 -0.23844811  2.4222299
+## stim_lengthshort:vowele           0.1928489 0.6675836 -1.07357761  1.4836723
+## stim_lengthshort:voweli           0.9607281 0.7406598 -0.53075761  2.4318343
+## ons_conp:vowele                   1.8525518 0.6611698  0.59016441  3.1703542
+## ons_conp:voweli                   1.1748387 0.6531936 -0.07615482  2.4911600
+## stim_lengthshort:ons_conp:vowele -1.2131212 0.9525588 -3.03915655  0.6895591
+## stim_lengthshort:ons_conp:voweli -1.7006418 0.9616059 -3.55180569  0.1743347</code></pre>
 <pre class="r"><code># Create a comprehensive grid of predictor values
 stim_lengths &lt;- unique(exp1_data$stim_length)
 ons_cons &lt;- unique(exp1_data$ons_con)
@@ -1226,18 +1212,18 @@ print(&quot;Prediction grid and estimates for all conditions:&quot;)</code></pre
 <pre><code>## [1] &quot;Prediction grid and estimates for all conditions:&quot;</code></pre>
 <pre class="r"><code>print(plot_data)</code></pre>
 <pre><code>##    stim_length ons_con vowel  estimate      lower     upper
-## 1         long       k     e 0.4068749 0.22620346 0.5942371
-## 2        short       k     e 0.2055985 0.09005887 0.3567423
-## 3         long       p     e 0.6438754 0.44770737 0.8153012
-## 4        short       p     e 0.3736163 0.19940604 0.5650380
-## 5         long       k     a 0.4555974 0.27220126 0.6542022
-## 6        short       k     a 0.2038003 0.08978155 0.3655166
-## 7         long       p     a 0.2687936 0.12741530 0.4431747
-## 8        short       p     a 0.2451843 0.11135381 0.4138481
-## 9         long       k     i 0.3153383 0.16220685 0.5092804
-## 10       short       k     i 0.2650142 0.09714235 0.4849871
-## 11        long       p     i 0.3854432 0.21255122 0.5770398
-## 12       short       p     i 0.2099232 0.10267883 0.3441397</code></pre>
+## 1         long       k     e 0.4144734 0.23877459 0.6124241
+## 2        short       k     e 0.2067351 0.09074674 0.3728067
+## 3         long       p     e 0.6479945 0.45248439 0.8140974
+## 4        short       p     e 0.3742782 0.20587865 0.5690642
+## 5         long       k     a 0.4593888 0.26967012 0.6612189
+## 6        short       k     a 0.2058996 0.09208242 0.3620409
+## 7         long       p     a 0.2719045 0.13130827 0.4518923
+## 8        short       p     a 0.2441460 0.11425059 0.4119981
+## 9         long       k     i 0.3186579 0.16149036 0.5110200
+## 10       short       k     i 0.2687363 0.10076040 0.5005464
+## 11        long       p     i 0.3881396 0.21361801 0.5865848
+## 12       short       p     i 0.2107751 0.10208862 0.3502651</code></pre>
 <pre class="r"><code># Basic plot with faceting by vowel
 # Create custom labeller for vowel facets
 vowel_labels &lt;- c(&quot;a&quot; = &quot;æ&quot;, &quot;i&quot; = &quot;ɪ&quot;, &quot;e&quot; = &quot;ɛ&quot;)
@@ -1273,12 +1259,11 @@ p1 &lt;- ggplot(plot_data, aes(x = factor(ons_con, levels = c(&quot;p&quot;, &qu
     panel.grid.minor = element_line(color = &quot;grey95&quot;, size = 0.3)
   ) +
   scale_y_continuous(limits = c(0, 1), labels = scales::percent_format())</code></pre>
-<pre><code>## Warning: The `size` argument of `element_rect()` is deprecated as of ggplot2
-## 3.4.0.
+<pre><code>## Warning: The `size` argument of `element_rect()` is deprecated as of ggplot2 3.4.0.
 ## ℹ Please use the `linewidth` argument instead.
 ## This warning is displayed once per session.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this
-## warning was generated.</code></pre>
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
 <pre class="r"><code>print(p1)</code></pre>
 <p><img src="exp1_Perception_files/figure-html/unnamed-chunk-4-4.png" alt="" width="672" /></p>
 <pre class="r"><code># Alternative options for different background styles:
@@ -1410,11 +1395,11 @@ cat(&quot;SUBJECT CATEGORIZATION BY STIM_LENGTH EFFECT\n&quot;)</code></pre>
         arrange(estimate) %&gt;%
         select(subject, estimate, lower_ci, upper_ci))</code></pre>
 <pre><code>##           subject  estimate  lower_ci    upper_ci
-## 14070622 14070622 -4.822757 -7.750302 -2.40091327
-## 14090662 14090662 -4.784882 -7.887038 -2.40125282
-## 14085713 14085713 -2.409373 -4.290656 -0.64895648
-## 14566462 14566462 -2.341808 -4.403507 -0.50130472
-## 14555057 14555057 -1.794725 -3.673936 -0.06166106</code></pre>
+## 14090662 14090662 -4.810835 -7.771548 -2.46264930
+## 14070622 14070622 -4.808557 -7.858616 -2.39305236
+## 14085713 14085713 -2.396674 -4.307872 -0.63242417
+## 14566462 14566462 -2.352187 -4.586613 -0.43057809
+## 14555057 14555057 -1.803398 -3.597820 -0.07046807</code></pre>
 <pre class="r"><code>cat(&quot;\n\nSubjects with weak/uncertain effect:\n&quot;)</code></pre>
 <pre><code>## 
 ## 
@@ -1423,28 +1408,28 @@ cat(&quot;SUBJECT CATEGORIZATION BY STIM_LENGTH EFFECT\n&quot;)</code></pre>
         filter(effect_category == &quot;Weak/uncertain effect&quot;) %&gt;%
         arrange(desc(abs_effect)) %&gt;%
         select(subject, estimate, lower_ci, upper_ci))</code></pre>
-<pre><code>##           subject    estimate  lower_ci   upper_ci
-## 14543142 14543142 -2.05888276 -4.641324 0.05772418
-## 14123048 14123048 -1.72666670 -4.246156 0.55845904
-## 14615934 14615934 -1.49072041 -3.625500 0.45192411
-## 14616407 14616407 -1.33270043 -3.259901 0.50965108
-## 14533872 14533872 -1.22785613 -2.924942 0.46625367
-## 14177725 14177725 -1.21872996 -2.954222 0.43870875
-## 14556945 14556945 -0.94027138 -2.668880 0.79808887
-## 14504462 14504462 -0.93527991 -2.672198 0.77306365
-## 14412928 14412928 -0.79501933 -3.654632 1.88906878
-## 14092047 14092047 -0.74997555 -3.057640 1.46498574
-## 14141017 14141017 -0.69308145 -2.672042 1.30327942
-## 14566767 14566767 -0.67373766 -2.433561 1.09569460
-## 14213003 14213003 -0.65851818 -2.392917 1.00123176
-## 14542800 14542800 -0.38329830 -2.105126 1.37505658
-## 14615725 14615725 -0.37535926 -2.038667 1.34773949
-## 14555178 14555178 -0.35624389 -2.068757 1.43551006
-## 14156758 14156758 -0.34660230 -2.144661 1.39156701
-## 14090119 14090119 -0.34022907 -2.104494 1.54205154
-## 14566668 14566668 -0.08112321 -1.743558 1.64545256
-## 14171928 14171928 -0.03203044 -1.785053 1.74796610
-## 14533455 14533455  0.02245869 -1.788062 1.86884751</code></pre>
+<pre><code>##           subject    estimate  lower_ci  upper_ci
+## 14543142 14543142 -2.04897481 -4.564356 0.0864852
+## 14123048 14123048 -1.71944987 -4.366391 0.5210544
+## 14615934 14615934 -1.47365230 -3.582789 0.4613190
+## 14616407 14616407 -1.31152995 -3.233937 0.5182501
+## 14533872 14533872 -1.21204727 -2.926844 0.4796397
+## 14177725 14177725 -1.20696200 -2.941467 0.4580568
+## 14556945 14556945 -0.92345834 -2.616319 0.7809016
+## 14504462 14504462 -0.92191633 -2.703121 0.8193074
+## 14412928 14412928 -0.78753740 -3.343506 1.8323926
+## 14092047 14092047 -0.72065003 -2.987632 1.4680114
+## 14141017 14141017 -0.67126095 -2.719385 1.2675915
+## 14213003 14213003 -0.65457351 -2.334892 1.0402548
+## 14566767 14566767 -0.65020887 -2.378210 1.0952266
+## 14542800 14542800 -0.37442444 -2.046811 1.4168854
+## 14615725 14615725 -0.36556350 -2.102645 1.4670557
+## 14156758 14156758 -0.35638334 -2.133827 1.4424798
+## 14555178 14555178 -0.34758085 -2.026572 1.4099697
+## 14090119 14090119 -0.32028978 -2.081064 1.4566002
+## 14566668 14566668 -0.06046811 -1.826068 1.7480598
+## 14171928 14171928 -0.03057241 -1.742198 1.7738936
+## 14533455 14533455  0.01872803 -1.797595 1.9144753</code></pre>
 <pre class="r"><code># ============================================================================
 # 3. VISUALIZE SUBJECT-SPECIFIC EFFECTS
 # ============================================================================
@@ -1564,33 +1549,33 @@ cat(&quot;\n\nRANDOM EFFECT DEVIATIONS (from population mean):\n&quot;)</code></
 <pre class="r"><code>cat(&quot;=================================================\n&quot;)</code></pre>
 <pre><code>## =================================================</code></pre>
 <pre class="r"><code>print(random_slopes_only %&gt;% arrange(desc(abs(deviation))))</code></pre>
-<pre><code>##           subject    deviation   lower_ci   upper_ci
-## 14070622 14070622 -3.587161768 -6.3499644 -1.3867101
-## 14090662 14090662 -3.549286634 -6.5150914 -1.3649137
-## 14533455 14533455  1.258053621 -0.4514424  3.0988982
-## 14171928 14171928  1.203564492 -0.4025249  2.9591928
-## 14085713 14085713 -1.173778496 -2.9095319  0.5450510
-## 14566668 14566668  1.154471723 -0.4586752  2.8230136
-## 14566462 14566462 -1.106213059 -3.0060019  0.6178962
-## 14090119 14090119  0.895365865 -0.7497196  2.6662288
-## 14156758 14156758  0.888992631 -0.6998256  2.5121138
-## 14555178 14555178  0.879351044 -0.7337595  2.6061312
-## 14615725 14615725  0.860235677 -0.6992491  2.5309484
-## 14542800 14542800  0.852296629 -0.7548901  2.5100473
-## 14543142 14543142 -0.823287823 -3.0767474  1.1316628
-## 14213003 14213003  0.577076750 -0.9525020  2.1707422
-## 14566767 14566767  0.561857268 -1.0481400  2.2888928
-## 14555057 14555057 -0.559129774 -2.2679804  1.0695275
-## 14141017 14141017  0.542513484 -1.2249283  2.3897928
-## 14123048 14123048 -0.491071769 -2.8600157  1.5060101
-## 14092047 14092047  0.485619381 -1.6182180  2.5827600
-## 14412928 14412928  0.440575599 -2.1909919  2.9532683
-## 14504462 14504462  0.300315023 -1.3257516  1.9497497
-## 14556945 14556945  0.295323548 -1.3171094  1.9987053
-## 14615934 14615934 -0.255125482 -2.2403428  1.5102941
-## 14616407 14616407 -0.097105493 -1.9127890  1.6726686
-## 14177725 14177725  0.016864972 -1.6233703  1.6939380
-## 14533872 14533872  0.007738804 -1.5988929  1.6295471</code></pre>
+<pre><code>##           subject   deviation   lower_ci   upper_ci
+## 14090662 14090662 -3.57369994 -6.3870220 -1.4228280
+## 14070622 14070622 -3.57142218 -6.4572633 -1.3607058
+## 14533455 14533455  1.25586326 -0.3909219  3.0214340
+## 14171928 14171928  1.20656281 -0.3406853  2.9020226
+## 14566668 14566668  1.17666712 -0.4697475  2.8867262
+## 14085713 14085713 -1.15953901 -2.9551975  0.5021472
+## 14566462 14566462 -1.11505206 -3.1587121  0.6336469
+## 14090119 14090119  0.91684544 -0.6848198  2.6983731
+## 14555178 14555178  0.88955438 -0.6922100  2.5630110
+## 14156758 14156758  0.88075189 -0.7637386  2.5774665
+## 14615725 14615725  0.87157173 -0.7596603  2.6306227
+## 14542800 14542800  0.86271079 -0.7215138  2.5423535
+## 14543142 14543142 -0.81183958 -3.2317415  1.1743621
+## 14566767 14566767  0.58692636 -1.0037616  2.2120686
+## 14213003 14213003  0.58256172 -1.0327052  2.1875019
+## 14555057 14555057 -0.56626326 -2.2080005  1.0739384
+## 14141017 14141017  0.56587428 -1.2391035  2.4255326
+## 14092047 14092047  0.51648520 -1.6754154  2.6405106
+## 14123048 14123048 -0.48231464 -2.9309131  1.6199699
+## 14412928 14412928  0.44959782 -2.0041226  2.9994618
+## 14504462 14504462  0.31521890 -1.3713379  1.9514190
+## 14556945 14556945  0.31367689 -1.2771567  1.9149178
+## 14615934 14615934 -0.23651707 -2.1805940  1.6095097
+## 14616407 14616407 -0.07439472 -1.8593918  1.6470797
+## 14177725 14177725  0.03017323 -1.6360579  1.6645054
+## 14533872 14533872  0.02508796 -1.5777120  1.6689707</code></pre>
 <pre class="r"><code># ============================================================================
 # 7. CREATE SUBJECT SELECTION LISTS
 # ============================================================================

@@ -329,7 +329,7 @@ div.tocify {
   <a href="Practice.html">Practice</a>
 </li>
 <li>
-  <a href="Production_data_anal_usethis.html">Data Production</a>
+  <a href="complete_vot_analysis.html">Data Production</a>
 </li>
 <li>
   <a href="single_stim_perception.html">Data Perception</a>
@@ -1041,29 +1041,29 @@ bayes_model_vowel &lt;- brm(vot ~ ons_poa * coda_vc * vowel + (1 | sub),
                    iter = 2000,
                    cores = 4)
 summary(bayes_model_vowel)</code></pre>
-<pre><code>## 
+<pre><code>## 9
 ## ons_poap:voweleh                12
 ## ons_poat:voweleh                12
-## ons_poap:vowelih                79
-## ons_poat:vowelih                35
-## ons_poap:voweluh                73
-## ons_poat:voweluh                68
-## coda_vc1:vowelaw                16
-## coda_vc1:voweleh                34
-## coda_vc1:vowelih                38
-## coda_vc1:voweluh                56
-## ons_poap:coda_vc1:vowelaw       21
-## ons_poat:coda_vc1:vowelaw       17
-## ons_poap:coda_vc1:voweleh       34
-## ons_poat:coda_vc1:voweleh       34
-## ons_poap:coda_vc1:vowelih       64
-## ons_poat:coda_vc1:vowelih       38
-## ons_poap:coda_vc1:voweluh       74
-## ons_poat:coda_vc1:voweluh       42
+## ons_poap:vowelih               129
+## ons_poat:vowelih                36
+## ons_poap:voweluh                89
+## ons_poat:voweluh               155
+## coda_vc1:vowelaw               109
+## coda_vc1:voweleh                12
+## coda_vc1:vowelih               127
+## coda_vc1:voweluh                50
+## ons_poap:coda_vc1:vowelaw       81
+## ons_poat:coda_vc1:vowelaw       26
+## ons_poap:coda_vc1:voweleh       12
+## ons_poat:coda_vc1:voweleh       12
+## ons_poap:coda_vc1:vowelih       91
+## ons_poat:coda_vc1:vowelih       40
+## ons_poap:coda_vc1:voweluh       38
+## ons_poat:coda_vc1:voweluh       55
 ## 
 ## Further Distributional Parameters:
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     0.02      0.00     0.02     0.02 1.39        9       16
+## sigma     0.02      0.00     0.02     0.02 1.04       88      140
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -1080,20 +1080,20 @@ summary(bayes_model)</code></pre>
 ## Multilevel Hyperparameters:
 ## ~sub (Number of levels: 20) 
 ##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)     0.03      0.00     0.02     0.04 1.01      285      430
+## sd(Intercept)     0.03      0.00     0.02     0.04 1.02      327      693
 ## 
 ## Regression Coefficients:
 ##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept             0.09      0.01     0.08     0.10 1.02      321      442
-## ons_poap             -0.01      0.00    -0.02    -0.01 1.00     2633     2809
-## ons_poat             -0.00      0.00    -0.01    -0.00 1.00     2595     2885
-## coda_vc1              0.01      0.00     0.01     0.01 1.00     2056     2353
-## ons_poap:coda_vc1     0.00      0.00     0.00     0.01 1.00     2173     2363
-## ons_poat:coda_vc1    -0.00      0.00    -0.00     0.00 1.00     2060     2652
+## Intercept             0.09      0.01     0.08     0.10 1.04      163      302
+## ons_poap             -0.01      0.00    -0.02    -0.01 1.00     2465     2606
+## ons_poat             -0.00      0.00    -0.01    -0.00 1.00     2284     2865
+## coda_vc1              0.01      0.00     0.01     0.01 1.00     1920     2174
+## ons_poap:coda_vc1     0.00      0.00     0.00     0.01 1.00     1962     2374
+## ons_poat:coda_vc1    -0.00      0.00    -0.00     0.00 1.00     1802     2426
 ## 
 ## Further Distributional Parameters:
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     0.02      0.00     0.02     0.02 1.00     1222     1774
+## sigma     0.02      0.00     0.02     0.02 1.00     1184     1599
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -1347,30 +1347,16 @@ contrasts(factor(data_mod$ons_poa))</code></pre>
 # Set /p/ as reference level to match your intuitions
 data_mod$ons_poa &lt;- factor(data_mod$ons_poa, levels = c(&quot;p&quot;, &quot;t&quot;, &quot;k&quot;))
 
-# Priors split by epistemic status:
-# - POA effects: strongly informed by direct, established cross-linguistic
-#   VOT literature (Lisker &amp; Abramson 1964, Cho &amp; Ladefoged 1999, etc.)
-# - Coda-voicing effects: the focal hypothesis of this study, derived by
-#   chaining two independently-established but distinct effects (vowel
-#   duration ~ coda voicing; VOT ~ vowel duration) rather than by direct
-#   prior measurement of coda-voicing&#39;s effect on onset VOT. Given weak,
-#   near-neutral priors so the data - not the hypothesis - determines
-#   the posterior.
-
+# Define informed priors based on your acoustic knowledge
 informed_priors &lt;- c(
-  # --- Strongly informed: established literature on POA and VOT ---
-  prior(normal(30, 10), class = Intercept),              # /p/ baseline
-  prior(normal(15, 8),  class = b, coef = ons_poat),      # /t/ effect
-  prior(normal(30, 12), class = b, coef = ons_poak),      # /k/ effect
-
-  # --- Weakly informed / regularizing: the focal, untested hypothesis ---
-  prior(normal(0, 20), class = b, coef = &quot;coda_vc1&quot;),                 # voicing effect
-  prior(normal(0, 15), class = b, coef = &quot;ons_poat:coda_vc1&quot;),        # /t/ x voicing
-  prior(normal(0, 15), class = b, coef = &quot;ons_poak:coda_vc1&quot;),        # /k/ x voicing
-
-  # --- Standard weakly informative priors for variance components ---
-  prior(normal(0, 20), class = sd),
-  prior(normal(0, 25), class = sigma)
+  prior(normal(30, 10), class = Intercept),              # 20ms ± 10ms for /p/
+  prior(normal(15, 8), class = b, coef = ons_poat),      # /t/ effect
+  prior(normal(30, 12), class = b, coef = ons_poak),     # /k/ effect
+  prior(normal(10, 5), class = b, coef = coda_vc1),      # voicing effect (note: coda_vc1)
+  prior(normal(3, 5), class = b, coef = &quot;ons_poat:coda_vc1&quot;),  # /t/ × voicing interaction
+  prior(normal(5, 6), class = b, coef = &quot;ons_poak:coda_vc1&quot;),  # /k/ × voicing interaction
+  prior(normal(0, 20), class = sd),                      # random effects
+  prior(normal(0, 25), class = sigma)                    # residual
 )
 # Make sure coda_vc is properly factored
 data_mod$coda_vc &lt;- factor(data_mod$coda_vc)
@@ -1389,11 +1375,11 @@ bayes_model_informed &lt;- brm(vot ~ ons_poa * coda_vc + (ons_poa * coda_vc | su
 prior_summary(bayes_model_informed)</code></pre>
 <pre><code>##                 prior     class              coef group resp dpar nlpar lb ub
 ##                (flat)         b                                              
-##         normal(0, 20)         b          coda_vc1                            
+##         normal(10, 5)         b          coda_vc1                            
 ##        normal(30, 12)         b          ons_poak                            
-##         normal(0, 15)         b ons_poak:coda_vc1                            
+##          normal(5, 6)         b ons_poak:coda_vc1                            
 ##         normal(15, 8)         b          ons_poat                            
-##         normal(0, 15)         b ons_poat:coda_vc1                            
+##          normal(3, 5)         b ons_poat:coda_vc1                            
 ##        normal(30, 10) Intercept                                              
 ##  lkj_corr_cholesky(1)         L                                              
 ##  lkj_corr_cholesky(1)         L                     sub                      
@@ -1425,89 +1411,91 @@ prior_summary(bayes_model_informed)</code></pre>
 ##      (vectorized)
 ##      (vectorized)
 ##              user
-## eration: 1001 / 2000 [ 50%]  (Sampling)
-## Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## armup)
+## Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
 ## Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
 ## Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
 ## Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
-## Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
 ## Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
 ## Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
-## Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
 ## Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
 ## Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
-## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 ## Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
-## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
-## Chain 1: 
-## Chain 1:  Elapsed Time: 36.966 seconds (Warm-up)
-## Chain 1:                13.304 seconds (Sampling)
-## Chain 1:                50.27 seconds (Total)
-## Chain 1: 
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 35.961 seconds (Warm-up)
-## Chain 2:                17.805 seconds (Sampling)
-## Chain 2:                53.766 seconds (Total)
+## Chain 2:  Elapsed Time: 34.206 seconds (Warm-up)
+## Chain 2:                23.961 seconds (Sampling)
+## Chain 2:                58.167 seconds (Total)
 ## Chain 2: 
-## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 34.662 seconds (Warm-up)
-## Chain 3:                22.531 seconds (Sampling)
-## Chain 3:                57.193 seconds (Total)
+## Chain 3:  Elapsed Time: 34.066 seconds (Warm-up)
+## Chain 3:                26.441 seconds (Sampling)
+## Chain 3:                60.507 seconds (Total)
 ## Chain 3: 
+## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+## Chain 1: 
+## Chain 1:  Elapsed Time: 34.906 seconds (Warm-up)
+## Chain 1:                26.697 seconds (Sampling)
+## Chain 1:                61.603 seconds (Total)
+## Chain 1: 
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 36.637 seconds (Warm-up)
-## Chain 4:                22.509 seconds (Sampling)
-## Chain 4:                59.146 seconds (Total)
+## Chain 4:  Elapsed Time: 37.284 seconds (Warm-up)
+## Chain 4:                24.958 seconds (Sampling)
+## Chain 4:                62.242 seconds (Total)
 ## Chain 4:</code></pre>
 <pre class="r"><code># Compare with your original model
 summary(bayes_model_informed)</code></pre>
-<pre><code>## 
-## cor(ons_poat,ons_poak:coda_vc1)              0.31      0.31    -0.38     0.80
-## cor(ons_poak,ons_poak:coda_vc1)             -0.02      0.38    -0.71     0.68
-## cor(coda_vc1,ons_poak:coda_vc1)             -0.16      0.31    -0.70     0.49
-## cor(ons_poat:coda_vc1,ons_poak:coda_vc1)    -0.00      0.37    -0.69     0.70
+<pre><code>##  -0.71     0.50
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1)    -0.03      0.37    -0.71     0.68
 ##                                          Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)                            1.01      749     1134
-## sd(ons_poat)                             1.00     1241     1971
-## sd(ons_poak)                             1.00     1536     1939
-## sd(coda_vc1)                             1.00     1988     2929
-## sd(ons_poat:coda_vc1)                    1.00     1469     1389
-## sd(ons_poak:coda_vc1)                    1.00      957     1106
-## cor(Intercept,ons_poat)                  1.00     2562     2808
-## cor(Intercept,ons_poak)                  1.00     4526     2840
-## cor(ons_poat,ons_poak)                   1.00     3494     2819
-## cor(Intercept,coda_vc1)                  1.00     2529     2555
-## cor(ons_poat,coda_vc1)                   1.00     1583     2280
-## cor(ons_poak,coda_vc1)                   1.01      481     1209
-## cor(Intercept,ons_poat:coda_vc1)         1.00     3764     2676
-## cor(ons_poat,ons_poat:coda_vc1)          1.00     3562     3013
-## cor(ons_poak,ons_poat:coda_vc1)          1.00     2445     2813
-## cor(coda_vc1,ons_poat:coda_vc1)          1.00     4022     3522
-## cor(Intercept,ons_poak:coda_vc1)         1.00     3516     2209
-## cor(ons_poat,ons_poak:coda_vc1)          1.00     2470     2203
-## cor(ons_poak,ons_poak:coda_vc1)          1.00     1524     2432
-## cor(coda_vc1,ons_poak:coda_vc1)          1.00     2867     2742
-## cor(ons_poat:coda_vc1,ons_poak:coda_vc1) 1.00     1876     3270
+## sd(Intercept)                            1.00      993     1647
+## sd(ons_poat)                             1.00     1664     2293
+## sd(ons_poak)                             1.00     2042     1879
+## sd(coda_vc1)                             1.00     2220     2585
+## sd(ons_poat:coda_vc1)                    1.00     1723     1934
+## sd(ons_poak:coda_vc1)                    1.00     1082     1446
+## cor(Intercept,ons_poat)                  1.00     2696     2534
+## cor(Intercept,ons_poak)                  1.00     4896     3064
+## cor(ons_poat,ons_poak)                   1.00     4824     2868
+## cor(Intercept,coda_vc1)                  1.00     2833     2564
+## cor(ons_poat,coda_vc1)                   1.00     1935     2563
+## cor(ons_poak,coda_vc1)                   1.01      466     1448
+## cor(Intercept,ons_poat:coda_vc1)         1.00     6219     3072
+## cor(ons_poat,ons_poat:coda_vc1)          1.00     4453     3163
+## cor(ons_poak,ons_poat:coda_vc1)          1.00     2955     3451
+## cor(coda_vc1,ons_poat:coda_vc1)          1.00     3283     2832
+## cor(Intercept,ons_poak:coda_vc1)         1.00     4615     2867
+## cor(ons_poat,ons_poak:coda_vc1)          1.00     3016     2538
+## cor(ons_poak,ons_poak:coda_vc1)          1.00     1772     2094
+## cor(coda_vc1,ons_poak:coda_vc1)          1.00     2945     3019
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1) 1.00     2108     2880
 ## 
 ## Regression Coefficients:
 ##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept             0.08      0.01     0.07     0.09 1.01      364      689
-## ons_poat              0.01      0.00     0.01     0.01 1.00     2434     3111
-## ons_poak              0.01      0.00     0.01     0.02 1.00     4775     3569
-## coda_vc1              0.01      0.00     0.01     0.02 1.00     2485     2373
-## ons_poat:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     5031     2880
-## ons_poak:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     4164     3274
+## Intercept             0.08      0.01     0.07     0.09 1.01      551     1009
+## ons_poat              0.01      0.00     0.01     0.01 1.00     2998     3273
+## ons_poak              0.01      0.00     0.01     0.02 1.00     3879     3505
+## coda_vc1              0.01      0.00     0.01     0.02 1.00     3374     3175
+## ons_poat:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     5023     3267
+## ons_poak:coda_vc1    -0.00      0.00    -0.01    -0.00 1.00     4698     3152
 ## 
 ## Further Distributional Parameters:
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     0.02      0.00     0.02     0.02 1.00     4454     2938
+## sigma     0.02      0.00     0.02     0.02 1.00     5511     2894
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -1532,29 +1520,10 @@ loo_default &lt;- loo(bayes_model_default)
 loo_compare(loo_informed, loo_default)</code></pre>
 <pre><code>##                 model elpd_diff se_diff p_worse       diag_diff diag_elpd
 ##   bayes_model_default       0.0     0.0      NA                          
-##  bayes_model_informed      -0.3     0.2    0.96 |elpd_diff| &lt; 4          
-## valuation took 0.000408 seconds
-## Chain 3: Gradient evaluation took 0.000439 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 4.08 seconds.
-## Chain 1: Chain 3: Adjust your expectations accordingly!
-## Chain 1: 
-## Chain 1: 
-## 1000 transitions using 10 leapfrog steps per transition would take 4.39 seconds.
-## Chain 3: Adjust your expectations accordingly!
-## Chain 3: 
-## Chain Chain 4: 
-## 3: 
-## Chain 4: Gradient evaluation took 0.000398 seconds
-## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 3.98 seconds.
-## Chain 4: Adjust your expectations accordingly!
+##  bayes_model_informed      -0.4     0.2    0.98 |elpd_diff| &lt; 4          
+## pectations accordingly!
 ## Chain 4: 
 ## Chain 4: 
-## Chain 2: 
-## Chain 2: Gradient evaluation took 0.000379 seconds
-## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 3.79 seconds.
-## Chain 2: Adjust your expectations accordingly!
-## Chain 2: 
-## Chain 2: 
 ## Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
 ## Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
 ## Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
@@ -1590,38 +1559,38 @@ loo_compare(loo_informed, loo_default)</code></pre>
 ## Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
 ## Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
 ## Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
-## Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
 ## Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
-## Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 ## Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 ## Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 37.586 seconds (Warm-up)
-## Chain 4:                14.028 seconds (Sampling)
-## Chain 4:                51.614 seconds (Total)
+## Chain 4:  Elapsed Time: 37.936 seconds (Warm-up)
+## Chain 4:                14.145 seconds (Sampling)
+## Chain 4:                52.081 seconds (Total)
 ## Chain 4: 
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 38.622 seconds (Warm-up)
-## Chain 1:                17.556 seconds (Sampling)
-## Chain 1:                56.178 seconds (Total)
+## Chain 1:  Elapsed Time: 39.082 seconds (Warm-up)
+## Chain 1:                17.796 seconds (Sampling)
+## Chain 1:                56.878 seconds (Total)
 ## Chain 1: 
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 35.64 seconds (Warm-up)
-## Chain 3:                22.158 seconds (Sampling)
-## Chain 3:                57.798 seconds (Total)
+## Chain 3:  Elapsed Time: 36.017 seconds (Warm-up)
+## Chain 3:                22.444 seconds (Sampling)
+## Chain 3:                58.461 seconds (Total)
 ## Chain 3: 
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 34.612 seconds (Warm-up)
-## Chain 2:                23.844 seconds (Sampling)
-## Chain 2:                58.456 seconds (Total)
+## Chain 2:  Elapsed Time: 34.965 seconds (Warm-up)
+## Chain 2:                24.168 seconds (Sampling)
+## Chain 2:                59.133 seconds (Total)
 ## Chain 2:</code></pre>
 <pre class="r"><code># Plot the informed model over real values
 

@@ -1,15 +1,9 @@
 ---
-title: "Production Analysis"
-output: 
+title: "Burst Voice: Onset VOT ~ Place of Articulation x Coda Voicing"
+output:
   html_document:
-    includes:
-      in_header: "favicon.html"
-    theme: paper
     toc: true
     toc_float: true
-    collapsed: false
-    number_sections: false
-    toc_depth: 3
 ---
 
 ```{r setup, include=FALSE}
@@ -335,8 +329,18 @@ bayes_model_default <- brm(
 ```
 
 ```{r bayes-default-summary, fig.width=9, fig.height=7}
-summary(bayes_model_default)
+# digits = 4 gives sub-millisecond precision (values are in seconds,
+# so 4 decimal places = 0.1 ms resolution), rather than the default
+# 2 decimal places (10 ms resolution)
+print(summary(bayes_model_default), digits = 4)
 plot(bayes_model_default)
+```
+
+```{r bayes-default-fixef}
+# Programmatic access to full-precision estimates, useful for
+# generating tables directly rather than transcribing console output
+fixef(bayes_model_default, digits = 4)
+VarCorr(bayes_model_default)
 ```
 
 ## Informed prior model
@@ -381,7 +385,12 @@ bayes_model_informed <- brm(
 
 ```{r bayes-informed-summary}
 prior_summary(bayes_model_informed)
-summary(bayes_model_informed)
+print(summary(bayes_model_informed), digits = 4)
+```
+
+```{r bayes-informed-fixef}
+fixef(bayes_model_informed, digits = 4)
+VarCorr(bayes_model_informed)
 ```
 
 ```{r bayes-informed-ppcheck, fig.width=7, fig.height=5}
@@ -403,6 +412,34 @@ comparable since both models share the `/p/` reference level:
 ```{r bayes-posterior-compare}
 posterior_summary(bayes_model_default,  variable = "b_coda_vc1")
 posterior_summary(bayes_model_informed, variable = "b_coda_vc1")
+```
+
+### Full-precision estimates for all fixed effects
+
+`posterior_summary()` returns unrounded values for every parameter,
+not just `coda_vc1`. Extracting all of them at once, in milliseconds,
+gives a single unrounded source to draw on when building tables (e.g.,
+for the manuscript), rather than reading rounded values off the
+default `summary()` printout.
+
+```{r bayes-full-precision-ms}
+# Fixed effects, converted to ms, full precision, both models side by side
+default_fx  <- as.data.frame(posterior_summary(bayes_model_default))  %>%
+  rownames_to_column("parameter") %>%
+  filter(str_starts(parameter, "b_")) %>%
+  mutate(across(where(is.numeric), ~ .x * 1000)) %>%
+  rename_with(~ paste0("default_", .x), -parameter)
+
+informed_fx <- as.data.frame(posterior_summary(bayes_model_informed)) %>%
+  rownames_to_column("parameter") %>%
+  filter(str_starts(parameter, "b_")) %>%
+  mutate(across(where(is.numeric), ~ .x * 1000)) %>%
+  rename_with(~ paste0("informed_", .x), -parameter)
+
+fixef_comparison <- left_join(default_fx, informed_fx, by = "parameter") %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2)))
+
+fixef_comparison
 ```
 
 # Ridge plots with posterior predictions
