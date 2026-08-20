@@ -370,7 +370,8 @@ library(dplyr)
 library(ggridges)
 library(lme4)
 library(brms)
-library(marginaleffects)</code></pre>
+library(marginaleffects)
+library(knitr)</code></pre>
 <pre class="r"><code>data &lt;- read.csv(&quot;/Users/chandan/Desktop/GitHub/Burst_voice/Data/data_12-11-24.csv&quot;,
                   header = TRUE)
 
@@ -378,7 +379,19 @@ data &lt;- data %&gt;%
   mutate(
     ons_poa = factor(ons_poa, levels = c(1, 2, 3), labels = c(&quot;p&quot;, &quot;t&quot;, &quot;k&quot;)),
     coda_vc = factor(coda_vc, levels = c(0, 1)),
-    vot_ratio = vot / vdur,
+    # Convert VOT and vowel duration from seconds (as stored in the
+    # raw CSV) to milliseconds. This matters beyond readability: the
+    # informed priors specified later (e.g., normal(30, 10) for the
+    # /p/ intercept) were written assuming a millisecond-scale
+    # outcome, but were previously being applied to vot/vdur while
+    # still in seconds -- a units mismatch that made those priors
+    # far less informative than intended (a prior centered at &quot;30&quot;
+    # is only meaningfully informative if the outcome is actually on
+    # a scale where 30 is a plausible value). Converting here keeps
+    # the data and the priors on the same scale throughout.
+    vot  = vot * 1000,
+    vdur = vdur * 1000,
+    vot_ratio = vot / vdur,   # unitless; unaffected by the ms conversion
     CVdur = vot + vdur
   )
 
@@ -389,6 +402,758 @@ data_mod &lt;- data
 number_of_subs &lt;- length(unique(data$sub))
 number_of_subs</code></pre>
 <pre><code>## [1] 20</code></pre>
+</div>
+<div id="descriptive-statistics" class="section level2">
+<h2>Descriptive statistics</h2>
+<p>Basic descriptive statistics for onset VOT, vowel duration, the
+VOT/vowel-duration ratio, and combined CV duration, broken down by place
+of articulation and coda voicing (the two manipulated factors) and
+reported alongside the overall totals. <code>sd</code> is the standard
+deviation of individual tokens within each cell (not a standard error),
+so these numbers reflect the same raw variability visualized in the
+boxplots and ridge plots below, before any model-based smoothing.</p>
+<pre class="r"><code>descriptives_by_condition &lt;- data %&gt;%
+  group_by(ons_poa, coda_vc, vowel) %&gt;%
+  summarise(
+    n            = n(),
+    mean_vot     = mean(vot, na.rm = TRUE),
+    sd_vot       = sd(vot, na.rm = TRUE),
+    mean_vdur    = mean(vdur, na.rm = TRUE),
+    sd_vdur      = sd(vdur, na.rm = TRUE),
+    mean_ratio   = mean(vot_ratio, na.rm = TRUE),
+    sd_ratio     = sd(vot_ratio, na.rm = TRUE),
+    mean_CVdur   = mean(CVdur, na.rm = TRUE),
+    sd_CVdur     = sd(CVdur, na.rm = TRUE),
+    .groups = &quot;drop&quot;
+  ) %&gt;%
+  mutate(across(where(is.numeric), ~ round(.x, 2))) %&gt;%
+  arrange(ons_poa, coda_vc, vowel) %&gt;%
+  rename(
+    `Onset POA`   = ons_poa,
+    `Coda voice`  = coda_vc,
+    `Vowel`       = vowel,
+    `N`           = n,
+    `Mean VOT`    = mean_vot,
+    `SD VOT`      = sd_vot,
+    `Mean Vdur`   = mean_vdur,
+    `SD Vdur`     = sd_vdur,
+    `Mean ratio`  = mean_ratio,
+    `SD ratio`    = sd_ratio,
+    `Mean CVdur`  = mean_CVdur,
+    `SD CVdur`    = sd_CVdur
+  )
+
+kable(descriptives_by_condition,
+      caption = &quot;Descriptive statistics by onset place of articulation, coda voicing, and vowel identity. VOT, Vdur, and CVdur are in ms; ratio (VOT/Vdur) is unitless.&quot;)</code></pre>
+<table>
+<caption>Descriptive statistics by onset place of articulation, coda
+voicing, and vowel identity. VOT, Vdur, and CVdur are in ms; ratio
+(VOT/Vdur) is unitless.</caption>
+<colgroup>
+<col width="9%" />
+<col width="10%" />
+<col width="5%" />
+<col width="3%" />
+<col width="8%" />
+<col width="6%" />
+<col width="9%" />
+<col width="7%" />
+<col width="10%" />
+<col width="8%" />
+<col width="10%" />
+<col width="8%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Onset POA</th>
+<th align="left">Coda voice</th>
+<th align="left">Vowel</th>
+<th align="right">N</th>
+<th align="right">Mean VOT</th>
+<th align="right">SD VOT</th>
+<th align="right">Mean Vdur</th>
+<th align="right">SD Vdur</th>
+<th align="right">Mean ratio</th>
+<th align="right">SD ratio</th>
+<th align="right">Mean CVdur</th>
+<th align="right">SD CVdur</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">p</td>
+<td align="left">0</td>
+<td align="left">ae</td>
+<td align="right">117</td>
+<td align="right">86.71</td>
+<td align="right">27.42</td>
+<td align="right">133.22</td>
+<td align="right">25.44</td>
+<td align="right">0.67</td>
+<td align="right">0.24</td>
+<td align="right">219.93</td>
+<td align="right">40.07</td>
+</tr>
+<tr class="even">
+<td align="left">p</td>
+<td align="left">0</td>
+<td align="left">aw</td>
+<td align="right">117</td>
+<td align="right">86.52</td>
+<td align="right">28.49</td>
+<td align="right">125.98</td>
+<td align="right">24.93</td>
+<td align="right">0.70</td>
+<td align="right">0.25</td>
+<td align="right">212.50</td>
+<td align="right">43.51</td>
+</tr>
+<tr class="odd">
+<td align="left">p</td>
+<td align="left">0</td>
+<td align="left">eh</td>
+<td align="right">117</td>
+<td align="right">77.49</td>
+<td align="right">29.46</td>
+<td align="right">86.13</td>
+<td align="right">19.41</td>
+<td align="right">0.93</td>
+<td align="right">0.38</td>
+<td align="right">163.62</td>
+<td align="right">37.85</td>
+</tr>
+<tr class="even">
+<td align="left">p</td>
+<td align="left">0</td>
+<td align="left">ih</td>
+<td align="right">78</td>
+<td align="right">68.47</td>
+<td align="right">32.70</td>
+<td align="right">79.35</td>
+<td align="right">17.72</td>
+<td align="right">0.91</td>
+<td align="right">0.46</td>
+<td align="right">147.82</td>
+<td align="right">39.64</td>
+</tr>
+<tr class="odd">
+<td align="left">p</td>
+<td align="left">0</td>
+<td align="left">uh</td>
+<td align="right">117</td>
+<td align="right">71.03</td>
+<td align="right">28.55</td>
+<td align="right">86.81</td>
+<td align="right">21.54</td>
+<td align="right">0.86</td>
+<td align="right">0.38</td>
+<td align="right">157.84</td>
+<td align="right">38.83</td>
+</tr>
+<tr class="even">
+<td align="left">p</td>
+<td align="left">1</td>
+<td align="left">ae</td>
+<td align="right">39</td>
+<td align="right">92.97</td>
+<td align="right">22.32</td>
+<td align="right">190.31</td>
+<td align="right">42.45</td>
+<td align="right">0.50</td>
+<td align="right">0.15</td>
+<td align="right">283.28</td>
+<td align="right">55.95</td>
+</tr>
+<tr class="odd">
+<td align="left">p</td>
+<td align="left">1</td>
+<td align="left">aw</td>
+<td align="right">78</td>
+<td align="right">97.19</td>
+<td align="right">30.73</td>
+<td align="right">194.31</td>
+<td align="right">43.93</td>
+<td align="right">0.51</td>
+<td align="right">0.15</td>
+<td align="right">291.50</td>
+<td align="right">65.51</td>
+</tr>
+<tr class="even">
+<td align="left">p</td>
+<td align="left">1</td>
+<td align="left">eh</td>
+<td align="right">78</td>
+<td align="right">93.47</td>
+<td align="right">31.24</td>
+<td align="right">125.77</td>
+<td align="right">24.02</td>
+<td align="right">0.77</td>
+<td align="right">0.30</td>
+<td align="right">219.24</td>
+<td align="right">42.81</td>
+</tr>
+<tr class="odd">
+<td align="left">p</td>
+<td align="left">1</td>
+<td align="left">ih</td>
+<td align="right">39</td>
+<td align="right">78.05</td>
+<td align="right">26.68</td>
+<td align="right">120.95</td>
+<td align="right">24.25</td>
+<td align="right">0.67</td>
+<td align="right">0.26</td>
+<td align="right">199.00</td>
+<td align="right">41.39</td>
+</tr>
+<tr class="even">
+<td align="left">p</td>
+<td align="left">1</td>
+<td align="left">uh</td>
+<td align="right">78</td>
+<td align="right">86.82</td>
+<td align="right">33.03</td>
+<td align="right">120.49</td>
+<td align="right">27.55</td>
+<td align="right">0.74</td>
+<td align="right">0.30</td>
+<td align="right">207.31</td>
+<td align="right">48.26</td>
+</tr>
+<tr class="odd">
+<td align="left">t</td>
+<td align="left">0</td>
+<td align="left">ae</td>
+<td align="right">116</td>
+<td align="right">93.95</td>
+<td align="right">30.37</td>
+<td align="right">133.41</td>
+<td align="right">32.40</td>
+<td align="right">0.73</td>
+<td align="right">0.26</td>
+<td align="right">227.35</td>
+<td align="right">51.43</td>
+</tr>
+<tr class="even">
+<td align="left">t</td>
+<td align="left">0</td>
+<td align="left">aw</td>
+<td align="right">116</td>
+<td align="right">96.36</td>
+<td align="right">27.88</td>
+<td align="right">129.40</td>
+<td align="right">27.19</td>
+<td align="right">0.77</td>
+<td align="right">0.24</td>
+<td align="right">225.62</td>
+<td align="right">43.08</td>
+</tr>
+<tr class="odd">
+<td align="left">t</td>
+<td align="left">0</td>
+<td align="left">eh</td>
+<td align="right">39</td>
+<td align="right">89.74</td>
+<td align="right">30.47</td>
+<td align="right">88.00</td>
+<td align="right">19.30</td>
+<td align="right">1.09</td>
+<td align="right">0.46</td>
+<td align="right">178.00</td>
+<td align="right">34.04</td>
+</tr>
+<tr class="even">
+<td align="left">t</td>
+<td align="left">0</td>
+<td align="left">ih</td>
+<td align="right">39</td>
+<td align="right">77.59</td>
+<td align="right">27.72</td>
+<td align="right">74.69</td>
+<td align="right">19.15</td>
+<td align="right">1.14</td>
+<td align="right">0.57</td>
+<td align="right">152.28</td>
+<td align="right">33.49</td>
+</tr>
+<tr class="odd">
+<td align="left">t</td>
+<td align="left">0</td>
+<td align="left">uh</td>
+<td align="right">116</td>
+<td align="right">81.85</td>
+<td align="right">28.08</td>
+<td align="right">89.14</td>
+<td align="right">20.59</td>
+<td align="right">0.97</td>
+<td align="right">0.37</td>
+<td align="right">170.99</td>
+<td align="right">33.74</td>
+</tr>
+<tr class="even">
+<td align="left">t</td>
+<td align="left">1</td>
+<td align="left">ae</td>
+<td align="right">117</td>
+<td align="right">100.18</td>
+<td align="right">30.81</td>
+<td align="right">193.44</td>
+<td align="right">40.41</td>
+<td align="right">0.53</td>
+<td align="right">0.16</td>
+<td align="right">293.62</td>
+<td align="right">60.35</td>
+</tr>
+<tr class="odd">
+<td align="left">t</td>
+<td align="left">1</td>
+<td align="left">aw</td>
+<td align="right">78</td>
+<td align="right">102.95</td>
+<td align="right">30.68</td>
+<td align="right">193.92</td>
+<td align="right">40.11</td>
+<td align="right">0.54</td>
+<td align="right">0.14</td>
+<td align="right">296.87</td>
+<td align="right">63.10</td>
+</tr>
+<tr class="even">
+<td align="left">t</td>
+<td align="left">1</td>
+<td align="left">eh</td>
+<td align="right">39</td>
+<td align="right">96.13</td>
+<td align="right">29.55</td>
+<td align="right">129.90</td>
+<td align="right">23.87</td>
+<td align="right">0.76</td>
+<td align="right">0.27</td>
+<td align="right">226.03</td>
+<td align="right">41.35</td>
+</tr>
+<tr class="odd">
+<td align="left">t</td>
+<td align="left">1</td>
+<td align="left">ih</td>
+<td align="right">39</td>
+<td align="right">88.97</td>
+<td align="right">26.74</td>
+<td align="right">113.97</td>
+<td align="right">21.88</td>
+<td align="right">0.81</td>
+<td align="right">0.28</td>
+<td align="right">202.95</td>
+<td align="right">37.09</td>
+</tr>
+<tr class="even">
+<td align="left">t</td>
+<td align="left">1</td>
+<td align="left">uh</td>
+<td align="right">78</td>
+<td align="right">91.00</td>
+<td align="right">26.24</td>
+<td align="right">130.46</td>
+<td align="right">27.34</td>
+<td align="right">0.72</td>
+<td align="right">0.23</td>
+<td align="right">221.46</td>
+<td align="right">42.15</td>
+</tr>
+<tr class="odd">
+<td align="left">k</td>
+<td align="left">0</td>
+<td align="left">ae</td>
+<td align="right">117</td>
+<td align="right">96.33</td>
+<td align="right">30.31</td>
+<td align="right">135.29</td>
+<td align="right">28.95</td>
+<td align="right">0.74</td>
+<td align="right">0.26</td>
+<td align="right">231.64</td>
+<td align="right">45.90</td>
+</tr>
+<tr class="even">
+<td align="left">k</td>
+<td align="left">0</td>
+<td align="left">aw</td>
+<td align="right">78</td>
+<td align="right">98.53</td>
+<td align="right">27.37</td>
+<td align="right">125.63</td>
+<td align="right">29.76</td>
+<td align="right">0.80</td>
+<td align="right">0.20</td>
+<td align="right">224.15</td>
+<td align="right">49.99</td>
+</tr>
+<tr class="odd">
+<td align="left">k</td>
+<td align="left">0</td>
+<td align="left">ih</td>
+<td align="right">117</td>
+<td align="right">87.39</td>
+<td align="right">28.36</td>
+<td align="right">78.75</td>
+<td align="right">17.05</td>
+<td align="right">1.16</td>
+<td align="right">0.45</td>
+<td align="right">166.14</td>
+<td align="right">34.92</td>
+</tr>
+<tr class="even">
+<td align="left">k</td>
+<td align="left">0</td>
+<td align="left">uh</td>
+<td align="right">78</td>
+<td align="right">88.09</td>
+<td align="right">26.54</td>
+<td align="right">85.26</td>
+<td align="right">20.85</td>
+<td align="right">1.10</td>
+<td align="right">0.45</td>
+<td align="right">173.35</td>
+<td align="right">37.87</td>
+</tr>
+<tr class="odd">
+<td align="left">k</td>
+<td align="left">1</td>
+<td align="left">ae</td>
+<td align="right">78</td>
+<td align="right">104.50</td>
+<td align="right">30.84</td>
+<td align="right">191.71</td>
+<td align="right">45.07</td>
+<td align="right">0.56</td>
+<td align="right">0.17</td>
+<td align="right">296.21</td>
+<td align="right">65.94</td>
+</tr>
+<tr class="even">
+<td align="left">k</td>
+<td align="left">1</td>
+<td align="left">aw</td>
+<td align="right">117</td>
+<td align="right">101.84</td>
+<td align="right">28.34</td>
+<td align="right">186.75</td>
+<td align="right">43.91</td>
+<td align="right">0.56</td>
+<td align="right">0.15</td>
+<td align="right">288.59</td>
+<td align="right">63.28</td>
+</tr>
+<tr class="odd">
+<td align="left">k</td>
+<td align="left">1</td>
+<td align="left">eh</td>
+<td align="right">39</td>
+<td align="right">98.36</td>
+<td align="right">30.43</td>
+<td align="right">139.72</td>
+<td align="right">30.06</td>
+<td align="right">0.72</td>
+<td align="right">0.23</td>
+<td align="right">238.08</td>
+<td align="right">50.11</td>
+</tr>
+<tr class="even">
+<td align="left">k</td>
+<td align="left">1</td>
+<td align="left">ih</td>
+<td align="right">39</td>
+<td align="right">93.77</td>
+<td align="right">31.72</td>
+<td align="right">114.62</td>
+<td align="right">25.66</td>
+<td align="right">0.83</td>
+<td align="right">0.27</td>
+<td align="right">208.38</td>
+<td align="right">49.86</td>
+</tr>
+<tr class="odd">
+<td align="left">k</td>
+<td align="left">1</td>
+<td align="left">uh</td>
+<td align="right">78</td>
+<td align="right">97.69</td>
+<td align="right">26.76</td>
+<td align="right">127.97</td>
+<td align="right">28.48</td>
+<td align="right">0.79</td>
+<td align="right">0.24</td>
+<td align="right">225.66</td>
+<td align="right">46.88</td>
+</tr>
+</tbody>
+</table>
+<p>For reference, the same statistics collapsed across place of
+articulation and coda voicing (i.e., the marginal/overall values):</p>
+<pre class="r"><code>descriptives_overall &lt;- data %&gt;%
+  summarise(
+    n            = n(),
+    mean_vot     = mean(vot, na.rm = TRUE),
+    sd_vot       = sd(vot, na.rm = TRUE),
+    mean_vdur    = mean(vdur, na.rm = TRUE),
+    sd_vdur      = sd(vdur, na.rm = TRUE),
+    mean_ratio   = mean(vot_ratio, na.rm = TRUE),
+    sd_ratio     = sd(vot_ratio, na.rm = TRUE),
+    mean_CVdur   = mean(CVdur, na.rm = TRUE),
+    sd_CVdur     = sd(CVdur, na.rm = TRUE)
+  ) %&gt;%
+  mutate(across(everything(), ~ round(.x, 2))) %&gt;%
+  rename(
+    `N`           = n,
+    `Mean VOT`    = mean_vot,
+    `SD VOT`      = sd_vot,
+    `Mean Vdur`   = mean_vdur,
+    `SD Vdur`     = sd_vdur,
+    `Mean ratio`  = mean_ratio,
+    `SD ratio`    = sd_ratio,
+    `Mean CVdur`  = mean_CVdur,
+    `SD CVdur`    = sd_CVdur
+  )
+
+kable(descriptives_overall,
+      caption = &quot;Overall descriptive statistics, collapsed across place of articulation and coda voicing.&quot;)</code></pre>
+<table>
+<caption>Overall descriptive statistics, collapsed across place of
+articulation and coda voicing.</caption>
+<colgroup>
+<col width="6%" />
+<col width="11%" />
+<col width="8%" />
+<col width="12%" />
+<col width="10%" />
+<col width="13%" />
+<col width="11%" />
+<col width="13%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">N</th>
+<th align="right">Mean VOT</th>
+<th align="right">SD VOT</th>
+<th align="right">Mean Vdur</th>
+<th align="right">SD Vdur</th>
+<th align="right">Mean ratio</th>
+<th align="right">SD ratio</th>
+<th align="right">Mean CVdur</th>
+<th align="right">SD CVdur</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2376</td>
+<td align="right">90.37</td>
+<td align="right">30.44</td>
+<td align="right">128.86</td>
+<td align="right">48.13</td>
+<td align="right">0.77</td>
+<td align="right">0.35</td>
+<td align="right">219.22</td>
+<td align="right">65.83</td>
+</tr>
+</tbody>
+</table>
+<p>Descriptive statistics by subject (mean VOT and vowel duration per
+speaker, collapsed across condition), useful for spotting any speaker
+whose overall productions look unusually fast/slow or short/long
+relative to the group before interpreting the by-subject random effects
+in the Bayesian models below:</p>
+<pre class="r"><code>descriptives_by_subject &lt;- data %&gt;%
+  group_by(sub) %&gt;%
+  summarise(
+    n         = n(),
+    mean_vot  = mean(vot, na.rm = TRUE),
+    sd_vot    = sd(vot, na.rm = TRUE),
+    mean_vdur = mean(vdur, na.rm = TRUE),
+    sd_vdur   = sd(vdur, na.rm = TRUE),
+    .groups = &quot;drop&quot;
+  ) %&gt;%
+  mutate(across(where(is.numeric), ~ round(.x, 2))) %&gt;%
+  arrange(sub)
+
+kable(descriptives_by_subject,
+      caption = &quot;Descriptive statistics by subject, collapsed across condition.&quot;)</code></pre>
+<table>
+<caption>Descriptive statistics by subject, collapsed across
+condition.</caption>
+<thead>
+<tr class="header">
+<th align="right">sub</th>
+<th align="right">n</th>
+<th align="right">mean_vot</th>
+<th align="right">sd_vot</th>
+<th align="right">mean_vdur</th>
+<th align="right">sd_vdur</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">122</td>
+<td align="right">92.30</td>
+<td align="right">17.35</td>
+<td align="right">134.19</td>
+<td align="right">49.97</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">122</td>
+<td align="right">70.66</td>
+<td align="right">15.44</td>
+<td align="right">129.54</td>
+<td align="right">29.89</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">122</td>
+<td align="right">96.22</td>
+<td align="right">21.48</td>
+<td align="right">151.23</td>
+<td align="right">43.81</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">122</td>
+<td align="right">82.19</td>
+<td align="right">30.10</td>
+<td align="right">140.31</td>
+<td align="right">44.19</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="right">122</td>
+<td align="right">91.46</td>
+<td align="right">11.37</td>
+<td align="right">132.33</td>
+<td align="right">39.35</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="right">122</td>
+<td align="right">65.41</td>
+<td align="right">16.90</td>
+<td align="right">112.93</td>
+<td align="right">57.24</td>
+</tr>
+<tr class="odd">
+<td align="right">7</td>
+<td align="right">122</td>
+<td align="right">73.39</td>
+<td align="right">19.63</td>
+<td align="right">122.49</td>
+<td align="right">34.09</td>
+</tr>
+<tr class="even">
+<td align="right">8</td>
+<td align="right">122</td>
+<td align="right">74.61</td>
+<td align="right">13.48</td>
+<td align="right">114.80</td>
+<td align="right">33.44</td>
+</tr>
+<tr class="odd">
+<td align="right">9</td>
+<td align="right">122</td>
+<td align="right">63.14</td>
+<td align="right">12.29</td>
+<td align="right">100.58</td>
+<td align="right">32.54</td>
+</tr>
+<tr class="even">
+<td align="right">10</td>
+<td align="right">122</td>
+<td align="right">93.48</td>
+<td align="right">21.10</td>
+<td align="right">140.98</td>
+<td align="right">44.46</td>
+</tr>
+<tr class="odd">
+<td align="right">11</td>
+<td align="right">122</td>
+<td align="right">112.53</td>
+<td align="right">25.14</td>
+<td align="right">145.08</td>
+<td align="right">58.32</td>
+</tr>
+<tr class="even">
+<td align="right">12</td>
+<td align="right">122</td>
+<td align="right">79.26</td>
+<td align="right">19.37</td>
+<td align="right">120.84</td>
+<td align="right">41.24</td>
+</tr>
+<tr class="odd">
+<td align="right">13</td>
+<td align="right">122</td>
+<td align="right">79.80</td>
+<td align="right">21.02</td>
+<td align="right">145.04</td>
+<td align="right">42.94</td>
+</tr>
+<tr class="even">
+<td align="right">14</td>
+<td align="right">122</td>
+<td align="right">89.89</td>
+<td align="right">13.95</td>
+<td align="right">114.95</td>
+<td align="right">36.47</td>
+</tr>
+<tr class="odd">
+<td align="right">15</td>
+<td align="right">122</td>
+<td align="right">73.39</td>
+<td align="right">19.63</td>
+<td align="right">122.67</td>
+<td align="right">34.17</td>
+</tr>
+<tr class="even">
+<td align="right">16</td>
+<td align="right">122</td>
+<td align="right">130.51</td>
+<td align="right">23.65</td>
+<td align="right">115.76</td>
+<td align="right">45.07</td>
+</tr>
+<tr class="odd">
+<td align="right">17</td>
+<td align="right">122</td>
+<td align="right">80.52</td>
+<td align="right">20.22</td>
+<td align="right">130.40</td>
+<td align="right">41.18</td>
+</tr>
+<tr class="even">
+<td align="right">18</td>
+<td align="right">122</td>
+<td align="right">104.98</td>
+<td align="right">20.19</td>
+<td align="right">96.36</td>
+<td align="right">34.42</td>
+</tr>
+<tr class="odd">
+<td align="right">19</td>
+<td align="right">122</td>
+<td align="right">162.23</td>
+<td align="right">23.79</td>
+<td align="right">179.93</td>
+<td align="right">74.33</td>
+</tr>
+<tr class="even">
+<td align="right">20</td>
+<td align="right">58</td>
+<td align="right">92.02</td>
+<td align="right">15.86</td>
+<td align="right">125.98</td>
+<td align="right">52.92</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="preliminary-plotting" class="section level2">
 <h2>Preliminary plotting</h2>
@@ -413,26 +1178,26 @@ consistency_stats %&gt;%
 <pre><code>## # A tibble: 20 × 8
 ##      sub ons_poa coda_vc vowel n_obs mean_CVdur sd_CVdur    cv
 ##    &lt;int&gt; &lt;fct&gt;   &lt;fct&gt;   &lt;chr&gt; &lt;int&gt;      &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
-##  1    18 p       1       uh        4      0.192   0.0651  33.9
-##  2     6 p       1       aw        4      0.295   0.0881  29.9
-##  3     6 k       1       ae        4      0.258   0.0755  29.2
-##  4    10 p       1       ih        2      0.231   0.0672  29.0
-##  5    17 k       0       uh        4      0.181   0.0518  28.6
-##  6    16 p       1       eh        4      0.243   0.0681  28.0
-##  7    18 p       0       ih        4      0.147   0.0382  26.1
-##  8    11 p       0       ih        4      0.199   0.0505  25.4
-##  9     6 t       0       ih        2      0.101   0.0255  25.2
-## 10     6 k       0       ae        6      0.160   0.0395  24.7
-## 11    18 t       0       ih        2      0.127   0.0311  24.5
-## 12    19 p       0       uh        6      0.274   0.0650  23.7
-## 13     6 k       0       aw        4      0.151   0.0354  23.4
-## 14    10 p       0       ih        4      0.154   0.0360  23.4
-## 15    17 k       1       eh        2      0.207   0.0481  23.2
-## 16    11 t       0       aw        6      0.243   0.0560  23.0
-## 17    18 k       0       uh        4      0.176   0.0404  22.9
-## 18     1 t       0       ae        6      0.248   0.0542  21.9
-## 19     8 t       0       ih        2      0.140   0.0304  21.8
-## 20    18 t       0       uh        6      0.162   0.0346  21.4</code></pre>
+##  1    18 p       1       uh        4       192      65.1  33.9
+##  2     6 p       1       aw        4       295      88.1  29.9
+##  3     6 k       1       ae        4       258.     75.5  29.2
+##  4    10 p       1       ih        2       232.     67.2  29.0
+##  5    17 k       0       uh        4       181      51.8  28.6
+##  6    16 p       1       eh        4       243      68.1  28.0
+##  7    18 p       0       ih        4       146.     38.2  26.1
+##  8    11 p       0       ih        4       199.     50.5  25.4
+##  9     6 t       0       ih        2       101      25.5  25.2
+## 10     6 k       0       ae        6       160.     39.5  24.7
+## 11    18 t       0       ih        2       127      31.1  24.5
+## 12    19 p       0       uh        6       274.     65.0  23.7
+## 13     6 k       0       aw        4       151      35.4  23.4
+## 14    10 p       0       ih        4       154      36.0  23.4
+## 15    17 k       1       eh        2       207      48.1  23.2
+## 16    11 t       0       aw        6       243.     56.0  23.0
+## 17    18 k       0       uh        4       176.     40.4  22.9
+## 18     1 t       0       ae        6       248.     54.2  21.9
+## 19     8 t       0       ih        2       140.     30.4  21.8
+## 20    18 t       0       uh        6       162      34.6  21.4</code></pre>
 <pre class="r"><code># Summary table of mean VOT by place and coda voicing
 summary_table &lt;- data %&gt;%
   group_by(ons_poa, coda_vc) %&gt;%
@@ -444,21 +1209,21 @@ summary_table &lt;- data %&gt;%
 
 print(summary_table)</code></pre>
 <pre><code>## # A tibble: 6 × 4
-##   ons_poa coda_vc mean_vot vot_range     
-##   &lt;fct&gt;   &lt;fct&gt;      &lt;dbl&gt; &lt;chr&gt;         
-## 1 p       0         0.0787 0.024 to 0.199
-## 2 p       1         0.0908 0.034 to 0.234
-## 3 t       0         0.0894 0.031 to 0.21 
-## 4 t       1         0.0971 0.034 to 0.2  
-## 5 k       0         0.0925 0.045 to 0.219
-## 6 k       1         0.100  0.051 to 0.225</code></pre>
+##   ons_poa coda_vc mean_vot vot_range
+##   &lt;fct&gt;   &lt;fct&gt;      &lt;dbl&gt; &lt;chr&gt;    
+## 1 p       0           78.7 24 to 199
+## 2 p       1           90.8 34 to 234
+## 3 t       0           89.4 31 to 210
+## 4 t       1           97.1 34 to 200
+## 5 k       0           92.5 45 to 219
+## 6 k       1          100.  51 to 225</code></pre>
 <pre class="r"><code># Boxplot: VOT by onset POA and coda voicing
 plot_overall &lt;- ggplot(data, aes(x = ons_poa, y = vot, fill = coda_vc)) +
   geom_boxplot(notch = TRUE, outlier.shape = NA) +
   theme(axis.text.x = element_blank()) +
-  labs(x = NULL, y = &quot;CV duration (s)&quot;) +
+  labs(x = NULL, y = &quot;CV duration (ms)&quot;) +
   facet_wrap(~ons_poa, scales = &quot;free&quot;) +
-  scale_y_continuous(limits = c(0.015, 0.18)) +
+  scale_y_continuous(limits = c(15, 180)) +
   scale_fill_discrete(name = &quot;Coda voice&quot;, labels = c(&quot;-vc&quot;, &quot;+vc&quot;))
 
 print(plot_overall)</code></pre>
@@ -469,7 +1234,7 @@ print(plot_overall)</code></pre>
 plot_overall_CVdur &lt;- ggplot(data, aes(x = ons_poa, y = CVdur, fill = coda_vc)) +
   geom_boxplot(notch = TRUE, outlier.shape = NA) +
   theme(axis.text.x = element_blank()) +
-  labs(x = NULL, y = &quot;CV duration (s)&quot;) +
+  labs(x = NULL, y = &quot;CV duration (ms)&quot;) +
   facet_wrap(~ons_poa, scales = &quot;free&quot;) +
   scale_fill_discrete(name = &quot;Coda voice&quot;, labels = c(&quot;-vc&quot;, &quot;+vc&quot;))
 
@@ -479,7 +1244,7 @@ print(plot_overall_CVdur)</code></pre>
 plot_vot_poa &lt;- ggplot(data, aes(x = vot, y = ons_poa, fill = coda_vc)) +
   geom_boxplot(notch = TRUE, outlier.shape = NA, width = 0.5) +
   theme_minimal() +
-  labs(x = &quot;VOT(s)&quot;, y = &quot;Onset POA&quot;, fill = &quot;Coda voice&quot;) +
+  labs(x = &quot;VOT (ms)&quot;, y = &quot;Onset POA&quot;, fill = &quot;Coda voice&quot;) +
   scale_fill_discrete(labels = c(&quot;[-vc]&quot;, &quot;[+vc]&quot;))
 
 print(plot_vot_poa + facet_wrap(~sub))</code></pre>
@@ -488,8 +1253,8 @@ print(plot_vot_poa + facet_wrap(~sub))</code></pre>
 plot_vdur_poa &lt;- ggplot(data, aes(x = vdur, y = ons_poa, fill = coda_vc)) +
   geom_boxplot(notch = TRUE, outlier.shape = NA, width = 0.5) +
   theme_minimal() +
-  labs(x = &quot;Vdur(s)&quot;, y = &quot;Onset POA&quot;, fill = &quot;Coda voice&quot;) +
-  scale_x_continuous(limits = c(0, 0.3), expand = c(0, 0)) +
+  labs(x = &quot;Vdur (ms)&quot;, y = &quot;Onset POA&quot;, fill = &quot;Coda voice&quot;) +
+  scale_x_continuous(limits = c(0, 300), expand = c(0, 0)) +
   scale_fill_discrete(labels = c(&quot;[-vc]&quot;, &quot;[+vc]&quot;))
 
 plot_vdur_poa</code></pre>
@@ -503,25 +1268,25 @@ plot_vdur_poa</code></pre>
 tokens by POA and vowel.</p>
 <pre class="r"><code>plot_vowel &lt;- ggplot(data, aes(x = vowel, y = vot, fill = coda_vc)) +
   geom_boxplot(notch = TRUE) +
-  labs(y = &quot;VOT(s)&quot;, x = &quot;Vowel&quot;, fill = &quot;Coda voicing&quot;) +
+  labs(y = &quot;VOT (ms)&quot;, x = &quot;Vowel&quot;, fill = &quot;Coda voicing&quot;) +
   facet_wrap(~ons_poa, scale = &quot;free&quot;)
 plot_vowel</code></pre>
 <p><img src="complete_vot_analysis_files/figure-html/plot-vowel-boxplot-1.png" alt="" width="864" /></p>
 <pre class="r"><code># ons_poa is already factor-coded p/t/k, so these labellers map from
 # that coding to display symbols only
-poa_labels &lt;- c(&quot;p&quot; = &quot;[p\u02b0]&quot;, &quot;t&quot; = &quot;[t\u02b0]&quot;, &quot;k&quot; = &quot;[k\u02b0]&quot;)
+poa_labels &lt;- c(&quot;p&quot; = &quot;/p/&quot;, &quot;t&quot; = &quot;/t/&quot;, &quot;k&quot; = &quot;/k/&quot;)
 vowel_labels &lt;- c(&quot;ae&quot; = &quot;\u00e6&quot;, &quot;aw&quot; = &quot;\u0254&quot;, &quot;eh&quot; = &quot;\u025b&quot;,
                    &quot;ih&quot; = &quot;\u026a&quot;, &quot;uh&quot; = &quot;\u028c&quot;)</code></pre>
 <pre class="r"><code>plot_vowel_ridges &lt;- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) +
   geom_density_ridges(alpha = 0.7) +
-  scale_x_continuous(breaks = c(0, 0.1, 0.2), limits = c(0, NA)) +
+  scale_x_continuous(breaks = c(0, 100, 200), limits = c(0, NA)) +
   scale_y_discrete(labels = c(&quot;0&quot; = &quot;Voiceless&quot;, &quot;1&quot; = &quot;Voiced&quot;)) +
   scale_fill_manual(
     name = &quot;Coda&quot;,
     values = c(&quot;0&quot; = &quot;#F8766D&quot;, &quot;1&quot; = &quot;#00BFC4&quot;),
     labels = c(&quot;0&quot; = &quot;Voiceless&quot;, &quot;1&quot; = &quot;Voiced&quot;)
   ) +
-  labs(x = &quot;VOT(s)&quot;, y = &quot;&quot;) +
+  labs(x = &quot;VOT (ms)&quot;, y = &quot;&quot;) +
   facet_grid(vowel ~ ons_poa, scales = &quot;free_x&quot;,
              labeller = labeller(ons_poa = poa_labels, vowel = vowel_labels)) +
   theme_ridges() +
@@ -538,14 +1303,14 @@ print(plot_vowel_ridges)</code></pre>
 <pre class="r"><code># Same ridge plot, collapsed across vowel
 plot_ridges &lt;- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) +
   geom_density_ridges(alpha = 0.7) +
-  scale_x_continuous(breaks = c(0, 0.05, 0.1, 0.15, 0.2), limits = c(0, NA)) +
+  scale_x_continuous(breaks = c(0, 50, 100, 150, 200), limits = c(0, NA)) +
   scale_y_discrete(labels = c(&quot;0&quot; = &quot;Voiceless&quot;, &quot;1&quot; = &quot;Voiced&quot;), expand = c(0, 0)) +
   scale_fill_manual(
     name = &quot;Coda&quot;,
     values = c(&quot;0&quot; = &quot;#F8766D&quot;, &quot;1&quot; = &quot;#00BFC4&quot;),
     labels = c(&quot;0&quot; = &quot;Voiceless&quot;, &quot;1&quot; = &quot;Voiced&quot;)
   ) +
-  labs(x = &quot;VOT(s)&quot;, y = &quot;&quot;) +
+  labs(x = &quot;VOT (ms)&quot;, y = &quot;&quot;) +
   facet_wrap(~ons_poa, scales = &quot;free_x&quot;,
              labeller = labeller(ons_poa = poa_labels)) +
   theme_ridges() +
@@ -565,7 +1330,7 @@ plot_ridges</code></pre>
 <pre class="r"><code># Overlapping density plots by POA and vowel
 plot_vowel_density &lt;- ggplot(data, aes(x = vot, fill = coda_vc)) +
   geom_density(alpha = 0.6) +
-  labs(x = &quot;VOT(s)&quot;, y = &quot;Density&quot;, fill = &quot;Coda voicing&quot;) +
+  labs(x = &quot;VOT (ms)&quot;, y = &quot;Density&quot;, fill = &quot;Coda voicing&quot;) +
   facet_wrap(~ons_poa + vowel, scales = &quot;free&quot;)
 plot_vowel_density</code></pre>
 <p><img src="complete_vot_analysis_files/figure-html/density-by-poa-vowel-1.png" alt="" width="1152" /></p>
@@ -581,49 +1346,49 @@ summary(model_full)</code></pre>
 ## Formula: vot ~ ons_poa * coda_vc * vowel + (1 | sub)
 ##    Data: data_mod
 ## 
-## REML criterion at convergence: -12090.5
+## REML criterion at convergence: 20237.8
 ## 
 ## Scaled residuals: 
 ##     Min      1Q  Median      3Q     Max 
 ## -3.9687 -0.6449 -0.0587  0.5369  5.7763 
 ## 
 ## Random effects:
-##  Groups   Name        Variance  Std.Dev.
-##  sub      (Intercept) 0.0005508 0.02347 
-##  Residual             0.0003030 0.01741 
+##  Groups   Name        Variance Std.Dev.
+##  sub      (Intercept) 550.8    23.47   
+##  Residual             303.0    17.41   
 ## Number of obs: 2369, groups:  sub, 20
 ## 
 ## Fixed effects:
-##                             Estimate Std. Error t value
-## (Intercept)                0.0866983  0.0054935  15.782
-## ons_poat                   0.0073062  0.0022907   3.190
-## ons_poak                   0.0096769  0.0022857   4.234
-## coda_vc1                   0.0063179  0.0032255   1.959
-## vowelaw                   -0.0001351  0.0022857  -0.059
-## voweleh                   -0.0092376  0.0022906  -4.033
-## vowelih                   -0.0181821  0.0025533  -7.121
-## voweluh                   -0.0156945  0.0022906  -6.852
-## ons_poat:coda_vc1         -0.0001011  0.0039504  -0.026
-## ons_poak:coda_vc1          0.0018488  0.0041083   0.450
-## ons_poat:vowelaw           0.0025489  0.0032324   0.789
-## ons_poak:vowelaw           0.0023274  0.0034203   0.680
-## ons_poat:voweleh           0.0050185  0.0039532   1.269
-## ons_poak:voweleh          -0.0066410  0.0048277  -1.376
-## ons_poat:vowelih           0.0018091  0.0041110   0.440
-## ons_poak:vowelih           0.0092639  0.0034236   2.706
-## ons_poat:voweluh           0.0035997  0.0032358   1.112
-## ons_poak:voweluh           0.0074510  0.0034236   2.176
-## coda_vc1:vowelaw           0.0043530  0.0041083   1.060
-## coda_vc1:voweleh           0.0097376  0.0041110   2.369
-## coda_vc1:vowelih           0.0032590  0.0046965   0.694
-## coda_vc1:voweluh           0.0095407  0.0041110   2.321
-## ons_poat:coda_vc1:vowelaw -0.0039976  0.0053456  -0.748
-## ons_poak:coda_vc1:vowelaw -0.0093687  0.0054634  -1.715
-## ons_poat:coda_vc1:voweleh -0.0095698  0.0061351  -1.560
-## ons_poat:coda_vc1:vowelih  0.0019088  0.0065419   0.292
-## ons_poak:coda_vc1:vowelih -0.0050716  0.0062380  -0.813
-## ons_poat:coda_vc1:voweluh -0.0066254  0.0053477  -1.239
-## ons_poak:coda_vc1:voweluh -0.0080678  0.0055851  -1.445</code></pre>
+##                           Estimate Std. Error t value
+## (Intercept)                86.6983     5.4935  15.782
+## ons_poat                    7.3062     2.2907   3.190
+## ons_poak                    9.6769     2.2857   4.234
+## coda_vc1                    6.3179     3.2255   1.959
+## vowelaw                    -0.1351     2.2857  -0.059
+## voweleh                    -9.2376     2.2906  -4.033
+## vowelih                   -18.1821     2.5533  -7.121
+## voweluh                   -15.6945     2.2906  -6.852
+## ons_poat:coda_vc1          -0.1011     3.9504  -0.026
+## ons_poak:coda_vc1           1.8488     4.1083   0.450
+## ons_poat:vowelaw            2.5489     3.2324   0.789
+## ons_poak:vowelaw            2.3274     3.4203   0.680
+## ons_poat:voweleh            5.0185     3.9532   1.269
+## ons_poak:voweleh           -6.6410     4.8277  -1.376
+## ons_poat:vowelih            1.8091     4.1110   0.440
+## ons_poak:vowelih            9.2639     3.4236   2.706
+## ons_poat:voweluh            3.5997     3.2358   1.112
+## ons_poak:voweluh            7.4510     3.4236   2.176
+## coda_vc1:vowelaw            4.3530     4.1083   1.060
+## coda_vc1:voweleh            9.7376     4.1110   2.369
+## coda_vc1:vowelih            3.2590     4.6965   0.694
+## coda_vc1:voweluh            9.5407     4.1110   2.321
+## ons_poat:coda_vc1:vowelaw  -3.9976     5.3456  -0.748
+## ons_poak:coda_vc1:vowelaw  -9.3687     5.4634  -1.715
+## ons_poat:coda_vc1:voweleh  -9.5698     6.1351  -1.560
+## ons_poat:coda_vc1:vowelih   1.9088     6.5419   0.292
+## ons_poak:coda_vc1:vowelih  -5.0716     6.2380  -0.813
+## ons_poat:coda_vc1:voweluh  -6.6254     5.3477  -1.239
+## ons_poak:coda_vc1:voweluh  -8.0678     5.5851  -1.445</code></pre>
 <pre><code>## fit warnings:
 ## fixed-effect model matrix is rank deficient so dropping 1 column / coefficient</code></pre>
 <p>Removing the vowel term (reference level <code>/p/</code>, matching
@@ -635,26 +1400,26 @@ summary(model)</code></pre>
 ## Formula: vot ~ ons_poa * coda_vc + (1 | sub)
 ##    Data: data_mod
 ## 
-## REML criterion at convergence: -12060.8
+## REML criterion at convergence: 20585.2
 ## 
 ## Scaled residuals: 
 ##     Min      1Q  Median      3Q     Max 
 ## -3.5089 -0.6534 -0.0630  0.5446  5.6375 
 ## 
 ## Random effects:
-##  Groups   Name        Variance  Std.Dev.
-##  sub      (Intercept) 0.0005506 0.02346 
-##  Residual             0.0003357 0.01832 
+##  Groups   Name        Variance Std.Dev.
+##  sub      (Intercept) 550.6    23.46   
+##  Residual             335.7    18.32   
 ## Number of obs: 2369, groups:  sub, 20
 ## 
 ## Fixed effects:
-##                    Estimate Std. Error t value
-## (Intercept)        0.078715   0.005306  14.836
-## ons_poat           0.010766   0.001186   9.074
-## ons_poak           0.013786   0.001218  11.323
-## coda_vc1           0.012075   0.001302   9.274
-## ons_poat:coda_vc1 -0.004456   0.001855  -2.403
-## ons_poak:coda_vc1 -0.004354   0.001876  -2.320
+##                   Estimate Std. Error t value
+## (Intercept)         78.715      5.306  14.836
+## ons_poat            10.766      1.186   9.074
+## ons_poak            13.786      1.218  11.323
+## coda_vc1            12.075      1.302   9.274
+## ons_poat:coda_vc1   -4.456      1.855  -2.403
+## ons_poak:coda_vc1   -4.354      1.876  -2.320
 ## 
 ## Correlation of Fixed Effects:
 ##             (Intr) ons_pt ons_pk cd_vc1 ons_pt:_1
@@ -693,7 +1458,7 @@ summary(model_coda)</code></pre>
 ## 
 ## Scaled residuals: 
 ##     Min      1Q  Median      3Q     Max 
-## -2.3339 -0.8486 -0.6116  1.0500  2.0659 
+## -2.3338 -0.8486 -0.6116  1.0500  2.0659 
 ## 
 ## Random effects:
 ##  Groups Name        Variance Std.Dev.
@@ -701,25 +1466,30 @@ summary(model_coda)</code></pre>
 ## Number of obs: 2369, groups:  sub, 20
 ## 
 ## Fixed effects:
-##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)   -2.6659     0.3108  -8.577  &lt; 2e-16 ***
-## vot           25.0800     3.3078   7.582  3.4e-14 ***
-## ons_poat       0.4985     0.3325   1.499    0.134    
-## ons_poak       0.4242     0.3477   1.220    0.222    
-## vot:ons_poat  -3.8848     3.5206  -1.103    0.270    
-## vot:ons_poak  -2.8918     3.6124  -0.801    0.423    
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -2.665916   0.311568  -8.556  &lt; 2e-16 ***
+## vot           0.025080   0.003317   7.560 4.03e-14 ***
+## ons_poat      0.498476   0.332384   1.500    0.134    
+## ons_poak      0.424168   0.347983   1.219    0.223    
+## vot:ons_poat -0.003885   0.003520  -1.104    0.270    
+## vot:ons_poak -0.002892   0.003617  -0.800    0.424    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Correlation of Fixed Effects:
 ##             (Intr) vot    ons_pt ons_pk vt:ns_pt
 ## vot         -0.905                              
-## ons_poat    -0.428  0.414                       
-## ons_poak    -0.386  0.370  0.431                
-## vot:ons_pot  0.456 -0.503 -0.947 -0.419         
-## vot:ons_pok  0.432 -0.476 -0.428 -0.949  0.471</code></pre>
+## ons_poat    -0.429  0.415                       
+## ons_poak    -0.386  0.371  0.431                
+## vot:ons_pot  0.458 -0.504 -0.947 -0.419         
+## vot:ons_pok  0.434 -0.478 -0.428 -0.949  0.471  
+## optimizer (Nelder_Mead) convergence code: 0 (OK)
+## Model failed to converge with max|grad| = 0.00255993 (tol = 0.002, component 1)
+##   See ?lme4::convergence and ?lme4::troubleshooting.
+## Model is nearly unidentifiable: very large eigenvalue
+##  - Rescale variables?</code></pre>
 <pre class="r"><code># Predictions across a range of VOT values, for each POA
-vot_range &lt;- seq(from = 0, to = 0.25, by = 0.005)
+vot_range &lt;- seq(from = 0, to = 250, by = 5)
 sub_ref &lt;- unique(data$sub)[1]
 
 plot_data &lt;- expand_grid(
@@ -737,7 +1507,7 @@ vc_pred &lt;- ggplot(plot_data, aes(x = vot, y = predicted_prob, color = ons_poa
   geom_line(linewidth = 2) +
   labs(
     title = &quot;&quot;,
-    x = &quot;VOT (s)&quot;,
+    x = &quot;VOT (ms)&quot;,
     y = &quot;Predicted Probability of Voiced Coda&quot;,
     color = &quot;Onset POA&quot;
   ) +
@@ -766,291 +1536,7 @@ contrasts(data_mod$ons_poa)</code></pre>
 ## p 0 0
 ## t 1 0
 ## k 0 1</code></pre>
-<pre class="r"><code>get_prior(vot ~ ons_poa * coda_vc + (1 | sub), data = data_mod, family = gaussian())</code></pre>
-<pre><code>##                   prior     class              coef group resp dpar nlpar lb ub
-##                  (flat)         b                                              
-##                  (flat)         b          coda_vc1                            
-##                  (flat)         b          ons_poak                            
-##                  (flat)         b ons_poak:coda_vc1                            
-##                  (flat)         b          ons_poat                            
-##                  (flat)         b ons_poat:coda_vc1                            
-##  student_t(3, 0.1, 2.5) Intercept                                              
-##    student_t(3, 0, 2.5)        sd                                          0   
-##    student_t(3, 0, 2.5)        sd                     sub                  0   
-##    student_t(3, 0, 2.5)        sd         Intercept   sub                  0   
-##    student_t(3, 0, 2.5)     sigma                                          0   
-##  tag       source
-##           default
-##      (vectorized)
-##      (vectorized)
-##      (vectorized)
-##      (vectorized)
-##      (vectorized)
-##           default
-##           default
-##      (vectorized)
-##      (vectorized)
-##           default</code></pre>
-<div id="default-weakly-informative-prior-model" class="section level2">
-<h2>Default (weakly informative) prior model</h2>
-<pre class="r"><code>bayes_model_default &lt;- brm(
-  vot ~ ons_poa * coda_vc + (1 | sub),
-  data   = data_mod,
-  family = gaussian(),
-  chains = 4,
-  iter   = 2000,
-  cores  = 4,
-  seed   = 123
-)</code></pre>
-<pre class="r"><code># digits = 4 gives sub-millisecond precision (values are in seconds,
-# so 4 decimal places = 0.1 ms resolution), rather than the default
-# 2 decimal places (10 ms resolution)
-print(summary(bayes_model_default), digits = 4)</code></pre>
-<pre><code>##  Family: gaussian 
-##   Links: mu = identity 
-## Formula: vot ~ ons_poa * coda_vc + (1 | sub) 
-##    Data: data_mod (Number of observations: 2369) 
-##   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
-##          total post-warmup draws = 4000
-## 
-## Multilevel Hyperparameters:
-## ~sub (Number of levels: 20) 
-##               Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)   0.0252    0.0045   0.0184   0.0362 1.0088      377      641
-## 
-## Regression Coefficients:
-##                   Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
-## Intercept           0.0791    0.0062   0.0667   0.0914 1.0112      291      386
-## ons_poat            0.0108    0.0012   0.0084   0.0132 1.0025     3162     3229
-## ons_poak            0.0138    0.0012   0.0114   0.0162 1.0038     2516     3045
-## coda_vc1            0.0121    0.0013   0.0095   0.0146 1.0024     2011     2717
-## ons_poat:coda_vc1  -0.0045    0.0019  -0.0080  -0.0009 1.0030     1993     2700
-## ons_poak:coda_vc1  -0.0043    0.0019  -0.0081  -0.0006 1.0030     1912     2688
-## 
-## Further Distributional Parameters:
-##       Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
-## sigma   0.0183    0.0003   0.0178   0.0188 1.0031     1420     1820
-## 
-## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
-## and Tail_ESS are effective sample size measures, and Rhat is the potential
-## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
-<pre class="r"><code>plot(bayes_model_default)</code></pre>
-<p><img src="complete_vot_analysis_files/figure-html/bayes-default-summary-1.png" alt="" width="864" /><img src="complete_vot_analysis_files/figure-html/bayes-default-summary-2.png" alt="" width="864" /></p>
-<pre class="r"><code># Programmatic access to full-precision estimates, useful for
-# generating tables directly rather than transcribing console output
-fixef(bayes_model_default, digits = 4)</code></pre>
-<pre><code>##                       Estimate   Est.Error         Q2.5         Q97.5
-## Intercept          0.079064419 0.006232837  0.066689190  0.0914285526
-## ons_poat           0.010775817 0.001182710  0.008442010  0.0131569770
-## ons_poak           0.013782291 0.001214324  0.011409704  0.0161867615
-## coda_vc1           0.012060886 0.001315883  0.009507995  0.0146423065
-## ons_poat:coda_vc1 -0.004464344 0.001852825 -0.008014556 -0.0008717013
-## ons_poak:coda_vc1 -0.004321869 0.001886764 -0.008078067 -0.0005525857</code></pre>
-<pre class="r"><code>VarCorr(bayes_model_default)</code></pre>
-<pre><code>## $sub
-## $sub$sd
-##             Estimate   Est.Error     Q2.5     Q97.5
-## Intercept 0.02516864 0.004508829 0.018438 0.0362163
-## 
-## 
-## $residual__
-## $residual__$sd
-##    Estimate    Est.Error       Q2.5      Q97.5
-##  0.01834388 0.0002715785 0.01780772 0.01884992</code></pre>
-</div>
-<div id="informed-prior-model" class="section level2">
-<h2>Informed prior model</h2>
-<p>Priors are split by epistemic status: place-of-articulation effects
-are strongly informed by the established cross-linguistic VOT
-literature, while the coda-voicing effect (the focal, untested
-hypothesis) is given a weakly informative, zero-centered prior rather
-than a value read off this dataset’s own <code>lmer</code> estimate
-(~12ms), to avoid double-dipping / circularity.</p>
-<pre class="r"><code>informed_priors &lt;- c(
-  # Strongly informed: established literature on POA and VOT
-  prior(normal(30, 10), class = Intercept),              # /p/ baseline
-  prior(normal(15, 8),  class = b, coef = ons_poat),      # /t/ effect
-  prior(normal(30, 12), class = b, coef = ons_poak),      # /k/ effect
-
-  # Weakly informed / regularizing: the focal, untested hypothesis
-  prior(normal(0, 20), class = b, coef = &quot;coda_vc1&quot;),
-  prior(normal(0, 15), class = b, coef = &quot;ons_poat:coda_vc1&quot;),
-  prior(normal(0, 15), class = b, coef = &quot;ons_poak:coda_vc1&quot;),
-
-  # Standard weakly informative priors for variance components
-  prior(normal(0, 20), class = sd),
-  prior(normal(0, 25), class = sigma)
-)</code></pre>
-<pre class="r"><code>bayes_model_informed &lt;- brm(
-  vot ~ ons_poa * coda_vc + (1 | sub),
-  data   = data_mod,
-  family = gaussian(),
-  prior  = informed_priors,
-  chains = 4,
-  iter   = 2000,
-  cores  = 4,
-  seed   = 123
-)</code></pre>
-<pre class="r"><code>prior_summary(bayes_model_informed)</code></pre>
-<pre><code>##           prior     class              coef group resp dpar nlpar lb ub tag
-##          (flat)         b                                                  
-##   normal(0, 20)         b          coda_vc1                                
-##  normal(30, 12)         b          ons_poak                                
-##   normal(0, 15)         b ons_poak:coda_vc1                                
-##   normal(15, 8)         b          ons_poat                                
-##   normal(0, 15)         b ons_poat:coda_vc1                                
-##  normal(30, 10) Intercept                                                  
-##   normal(0, 20)        sd                                          0       
-##   normal(0, 20)        sd                     sub                  0       
-##   normal(0, 20)        sd         Intercept   sub                  0       
-##   normal(0, 25)     sigma                                          0       
-##        source
-##       default
-##          user
-##          user
-##          user
-##          user
-##          user
-##          user
-##          user
-##  (vectorized)
-##  (vectorized)
-##          user</code></pre>
-<pre class="r"><code>print(summary(bayes_model_informed), digits = 4)</code></pre>
-<pre><code>##  Family: gaussian 
-##   Links: mu = identity 
-## Formula: vot ~ ons_poa * coda_vc + (1 | sub) 
-##    Data: data_mod (Number of observations: 2369) 
-##   Draws: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
-##          total post-warmup draws = 4000
-## 
-## Multilevel Hyperparameters:
-## ~sub (Number of levels: 20) 
-##               Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)   0.0248    0.0043   0.0181   0.0347 1.0056      406      657
-## 
-## Regression Coefficients:
-##                   Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
-## Intercept           0.0783    0.0058   0.0670   0.0898 1.0190      241      340
-## ons_poat            0.0108    0.0012   0.0084   0.0131 1.0000     2902     3120
-## ons_poak            0.0138    0.0012   0.0113   0.0162 1.0007     2222     2958
-## coda_vc1            0.0121    0.0013   0.0094   0.0147 1.0006     1814     2159
-## ons_poat:coda_vc1  -0.0044    0.0019  -0.0081  -0.0007 1.0004     2041     2034
-## ons_poak:coda_vc1  -0.0043    0.0019  -0.0080  -0.0007 1.0005     1716     2377
-## 
-## Further Distributional Parameters:
-##       Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
-## sigma   0.0183    0.0003   0.0178   0.0189 1.0016     1323     1738
-## 
-## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
-## and Tail_ESS are effective sample size measures, and Rhat is the potential
-## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
-<pre class="r"><code>fixef(bayes_model_informed, digits = 4)</code></pre>
-<pre><code>##                       Estimate   Est.Error         Q2.5         Q97.5
-## Intercept          0.078342357 0.005762480  0.067018001  0.0898284263
-## ons_poat           0.010773299 0.001173680  0.008438066  0.0131279888
-## ons_poak           0.013774309 0.001219125  0.011343905  0.0162047592
-## coda_vc1           0.012058011 0.001325356  0.009392996  0.0146645292
-## ons_poat:coda_vc1 -0.004430786 0.001890908 -0.008128940 -0.0006662306
-## ons_poak:coda_vc1 -0.004325072 0.001876609 -0.008010615 -0.0006822570</code></pre>
-<pre class="r"><code>VarCorr(bayes_model_informed)</code></pre>
-<pre><code>## $sub
-## $sub$sd
-##             Estimate   Est.Error       Q2.5      Q97.5
-## Intercept 0.02482513 0.004308766 0.01805187 0.03465357
-## 
-## 
-## $residual__
-## $residual__$sd
-##    Estimate    Est.Error       Q2.5      Q97.5
-##  0.01834508 0.0002615617 0.01784335 0.01885586</code></pre>
-<pre class="r"><code>pp_check(bayes_model_informed, type = &quot;hist&quot;, ndraws = 100) +
-  ggtitle(&quot;Prior Predictive Check: Do simulated VOTs look reasonable?&quot;)</code></pre>
-<p><img src="complete_vot_analysis_files/figure-html/bayes-informed-ppcheck-1.png" alt="" width="672" /></p>
-</div>
-<div id="model-comparison" class="section level2">
-<h2>Model comparison</h2>
-<pre class="r"><code>loo_default  &lt;- loo(bayes_model_default)
-loo_informed &lt;- loo(bayes_model_informed)
-loo_compare(loo_default, loo_informed)</code></pre>
-<pre><code>##                 model elpd_diff se_diff p_worse       diag_diff diag_elpd
-##   bayes_model_default       0.0     0.0      NA                          
-##  bayes_model_informed      -0.3     0.1    1.00 |elpd_diff| &lt; 4</code></pre>
-<p>Direct posterior comparison for the focal coefficient, now directly
-comparable since both models share the <code>/p/</code> reference
-level:</p>
-<pre class="r"><code>posterior_summary(bayes_model_default,  variable = &quot;b_coda_vc1&quot;)</code></pre>
-<pre><code>##              Estimate   Est.Error        Q2.5      Q97.5
-## b_coda_vc1 0.01206089 0.001315883 0.009507995 0.01464231</code></pre>
-<pre class="r"><code>posterior_summary(bayes_model_informed, variable = &quot;b_coda_vc1&quot;)</code></pre>
-<pre><code>##              Estimate   Est.Error        Q2.5      Q97.5
-## b_coda_vc1 0.01205801 0.001325356 0.009392996 0.01466453</code></pre>
-<div id="full-precision-estimates-for-all-fixed-effects"
-class="section level3">
-<h3>Full-precision estimates for all fixed effects</h3>
-<p><code>posterior_summary()</code> returns unrounded values for every
-parameter, not just <code>coda_vc1</code>. Extracting all of them at
-once, in milliseconds, gives a single unrounded source to draw on when
-building tables (e.g., for the manuscript), rather than reading rounded
-values off the default <code>summary()</code> printout.</p>
-<pre class="r"><code># Fixed effects, converted to ms, full precision, both models side by side
-default_fx  &lt;- as.data.frame(posterior_summary(bayes_model_default))  %&gt;%
-  rownames_to_column(&quot;parameter&quot;) %&gt;%
-  filter(str_starts(parameter, &quot;b_&quot;)) %&gt;%
-  mutate(across(where(is.numeric), ~ .x * 1000)) %&gt;%
-  rename_with(~ paste0(&quot;default_&quot;, .x), -parameter)
-
-informed_fx &lt;- as.data.frame(posterior_summary(bayes_model_informed)) %&gt;%
-  rownames_to_column(&quot;parameter&quot;) %&gt;%
-  filter(str_starts(parameter, &quot;b_&quot;)) %&gt;%
-  mutate(across(where(is.numeric), ~ .x * 1000)) %&gt;%
-  rename_with(~ paste0(&quot;informed_&quot;, .x), -parameter)
-
-fixef_comparison &lt;- left_join(default_fx, informed_fx, by = &quot;parameter&quot;) %&gt;%
-  mutate(across(where(is.numeric), ~ round(.x, 2)))
-
-fixef_comparison</code></pre>
-<pre><code>##             parameter default_Estimate default_Est.Error default_Q2.5
-## 1         b_Intercept            79.06              6.23        66.69
-## 2          b_ons_poat            10.78              1.18         8.44
-## 3          b_ons_poak            13.78              1.21        11.41
-## 4          b_coda_vc1            12.06              1.32         9.51
-## 5 b_ons_poat:coda_vc1            -4.46              1.85        -8.01
-## 6 b_ons_poak:coda_vc1            -4.32              1.89        -8.08
-##   default_Q97.5 informed_Estimate informed_Est.Error informed_Q2.5
-## 1         91.43             78.34               5.76         67.02
-## 2         13.16             10.77               1.17          8.44
-## 3         16.19             13.77               1.22         11.34
-## 4         14.64             12.06               1.33          9.39
-## 5         -0.87             -4.43               1.89         -8.13
-## 6         -0.55             -4.33               1.88         -8.01
-##   informed_Q97.5
-## 1          89.83
-## 2          13.13
-## 3          16.20
-## 4          14.66
-## 5          -0.67
-## 6          -0.68</code></pre>
-</div>
-</div>
-</div>
-<div id="maximal-random-effects-structure" class="section level1">
-<h1>Maximal random effects structure</h1>
-<p>Because onset place of articulation and coda voicing are both
-within-subject manipulations, a random-intercept-only model assumes
-every participant shows the same coda-voicing effect (and the same
-place-of-articulation effects), differing only in their overall baseline
-VOT. Following Barr, Levy, Scheepers &amp; Tily (2013), we also fit a
-“maximal” model with by-subject random slopes for place of articulation,
-coda voicing, and their interaction, plus the full correlation structure
-among all random effects. This guards against anti-conservative
-(too-narrow) intervals for the fixed effects if speakers actually differ
-in the size of the coda-voicing effect, not just their baseline VOT.</p>
-<pre class="r"><code># get_prior() on the maximal formula to check what needs specifying;
-# the existing sd-class prior applies to all random-slope SDs by
-# default, but the correlation matrix (class = cor) needs an explicit
-# prior of its own
-get_prior(vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
+<pre class="r"><code>get_prior(vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
           data = data_mod, family = gaussian())</code></pre>
 <pre><code>##                   prior     class              coef group resp dpar nlpar lb ub
 ##                  (flat)         b                                              
@@ -1061,16 +1547,16 @@ get_prior(vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
 ##                  (flat)         b ons_poat:coda_vc1                            
 ##                  lkj(1)       cor                                              
 ##                  lkj(1)       cor                     sub                      
-##  student_t(3, 0.1, 2.5) Intercept                                              
-##    student_t(3, 0, 2.5)        sd                                          0   
-##    student_t(3, 0, 2.5)        sd                     sub                  0   
-##    student_t(3, 0, 2.5)        sd          coda_vc1   sub                  0   
-##    student_t(3, 0, 2.5)        sd         Intercept   sub                  0   
-##    student_t(3, 0, 2.5)        sd          ons_poak   sub                  0   
-##    student_t(3, 0, 2.5)        sd ons_poak:coda_vc1   sub                  0   
-##    student_t(3, 0, 2.5)        sd          ons_poat   sub                  0   
-##    student_t(3, 0, 2.5)        sd ons_poat:coda_vc1   sub                  0   
-##    student_t(3, 0, 2.5)     sigma                                          0   
+##  student_t(3, 86, 25.2) Intercept                                              
+##   student_t(3, 0, 25.2)        sd                                          0   
+##   student_t(3, 0, 25.2)        sd                     sub                  0   
+##   student_t(3, 0, 25.2)        sd          coda_vc1   sub                  0   
+##   student_t(3, 0, 25.2)        sd         Intercept   sub                  0   
+##   student_t(3, 0, 25.2)        sd          ons_poak   sub                  0   
+##   student_t(3, 0, 25.2)        sd ons_poak:coda_vc1   sub                  0   
+##   student_t(3, 0, 25.2)        sd          ons_poat   sub                  0   
+##   student_t(3, 0, 25.2)        sd ons_poat:coda_vc1   sub                  0   
+##   student_t(3, 0, 25.2)     sigma                                          0   
 ##  tag       source
 ##           default
 ##      (vectorized)
@@ -1090,11 +1576,59 @@ get_prior(vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
 ##      (vectorized)
 ##      (vectorized)
 ##           default</code></pre>
+<div id="maximal-random-effects-structure-primary-model"
+class="section level2">
+<h2>Maximal random effects structure (primary model)</h2>
+<p>Because onset place of articulation and coda voicing are both
+within-subject manipulations, a random-intercept-only model assumes
+every participant shows the same coda-voicing effect (and the same
+place-of-articulation effects), differing only in their overall baseline
+VOT. Following Barr, Levy, Scheepers &amp; Tily (2013), our primary
+model instead includes by-subject random slopes for place of
+articulation, coda voicing, and their interaction, plus the full
+correlation structure among all random effects, from the outset. This
+guards against anti-conservative (too-narrow) intervals for the fixed
+effects if speakers actually differ in the size of the coda-voicing
+effect, not just their baseline VOT. We fit this maximal structure
+first; a reduced structure is only considered as a fallback if the
+maximal model fails to converge (see below).</p>
+<p>We fit the maximal structure twice: once with <code>brms</code>’
+default weakly informative priors, and once with the literature-informed
+priors used throughout this document, so that the same
+default-vs-informed comparison we would otherwise have run on an
+intercept-only model is instead run on the model we actually report. The
+informed priors below encode only what the literature actually supports
+well: the <em>relative</em> place-of-articulation ordering and
+approximate contrast magnitudes (/p/ <span
+class="math inline">\(&lt;\)</span> /t/ <span
+class="math inline">\(&lt;\)</span> /k/), and non-negativity of the
+absolute /p/ baseline. They deliberately do not encode a specific
+absolute baseline value for /p/, since English VOT for a given place of
+articulation varies considerably across speech styles and elicitation
+methods, and we have no single well-calibrated value to anchor it
+to.</p>
 <pre class="r"><code>maximal_priors &lt;- c(
-  # Same fixed-effect priors as the informed model above
-  prior(normal(30, 10), class = Intercept),
+  # Intercept: no informative location prior. English /p/ VOT varies
+  # considerably across speech styles, elicitation methods, and
+  # corpora (careful/citation-form speech tends to run longer than
+  # casual speech), so we don&#39;t have a single well-calibrated
+  # absolute value to anchor the baseline to -- unlike the POA
+  # *contrasts* below, where the ordering and approximate relative
+  # magnitude are well established across studies regardless of
+  # absolute baseline. We only constrain the intercept to be
+  # non-negative (VOT cannot be negative for voiceless stops in this
+  # coding), via a wide, effectively flat prior over the plausible
+  # range combined with a lower bound at zero.
+  prior(normal(0, 100), class = Intercept, lb = 0),
+
+  # Strongly informed: established literature on the *relative*
+  # place-of-articulation ordering and approximate contrast
+  # magnitude (more posterior places of articulation associated with
+  # longer VOT), independent of the absolute baseline
   prior(normal(15, 8),  class = b, coef = ons_poat),
   prior(normal(30, 12), class = b, coef = ons_poak),
+
+  # Weakly informed / regularizing: the focal, untested hypothesis
   prior(normal(0, 20),  class = b, coef = &quot;coda_vc1&quot;),
   prior(normal(0, 15),  class = b, coef = &quot;ons_poat:coda_vc1&quot;),
   prior(normal(0, 15),  class = b, coef = &quot;ons_poak:coda_vc1&quot;),
@@ -1111,8 +1645,24 @@ get_prior(vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
   prior(lkj(2), class = cor)
 )</code></pre>
 <pre class="r"><code># Maximal models are harder to sample; more iterations and a higher
-# adapt_delta reduce divergent transitions at the cost of runtime
-bayes_model_maximal &lt;- brm(
+# adapt_delta reduce divergent transitions at the cost of runtime.
+# Both models share these settings so they&#39;re directly comparable.
+
+# Default (weakly informative) priors, maximal random-effects structure
+bayes_model_maximal_default &lt;- brm(
+  vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
+  data    = data_mod,
+  family  = gaussian(),
+  chains  = 4,
+  iter    = 4000,
+  warmup  = 1500,
+  cores   = 4,
+  seed    = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+# Literature-informed priors, maximal random-effects structure
+bayes_model_maximal_informed &lt;- brm(
   vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
   data    = data_mod,
   family  = gaussian(),
@@ -1124,16 +1674,17 @@ bayes_model_maximal &lt;- brm(
   seed    = 123,
   control = list(adapt_delta = 0.95)
 )</code></pre>
+</div>
 <div id="convergence-diagnostics" class="section level2">
 <h2>Convergence diagnostics</h2>
-<p>Before interpreting the maximal model, check for divergent
-transitions, <span class="math inline">\(\hat{R}\)</span>, and effective
-sample size. A high divergence count, <span
-class="math inline">\(\hat{R} &gt; 1.02\)</span>, or very low ESS on the
-random-slope or correlation parameters indicates the data may not fully
-support this structure, in which case the simplified alternatives below
-should be preferred over forcing the maximal model.</p>
-<pre class="r"><code>print(summary(bayes_model_maximal), digits = 4)</code></pre>
+<p>Before interpreting either model, check for divergent transitions,
+<span class="math inline">\(\hat{R}\)</span>, and effective sample size.
+A high divergence count, <span class="math inline">\(\hat{R}
+&gt; 1.02\)</span>, or very low ESS on the random-slope or correlation
+parameters would indicate the data do not fully support this structure,
+in which case the simplified alternatives below should be preferred over
+forcing the maximal model.</p>
+<pre class="r"><code>print(summary(bayes_model_maximal_default), digits = 2)</code></pre>
 <pre><code>##  Family: gaussian 
 ##   Links: mu = identity 
 ## Formula: vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub) 
@@ -1144,100 +1695,220 @@ should be preferred over forcing the maximal model.</p>
 ## Multilevel Hyperparameters:
 ## ~sub (Number of levels: 20) 
 ##                                          Estimate Est.Error l-95% CI u-95% CI
-## sd(Intercept)                              0.0272    0.0051   0.0192   0.0389
-## sd(ons_poat)                               0.0058    0.0016   0.0031   0.0093
-## sd(ons_poak)                               0.0015    0.0011   0.0001   0.0042
-## sd(coda_vc1)                               0.0090    0.0019   0.0059   0.0135
-## sd(ons_poat:coda_vc1)                      0.0022    0.0017   0.0001   0.0062
-## sd(ons_poak:coda_vc1)                      0.0048    0.0023   0.0005   0.0096
-## cor(Intercept,ons_poat)                   -0.0775    0.2262  -0.5029   0.3659
-## cor(Intercept,ons_poak)                   -0.0741    0.3136  -0.6458   0.5365
-## cor(ons_poat,ons_poak)                     0.1002    0.3288  -0.5476   0.6882
-## cor(Intercept,coda_vc1)                   -0.0505    0.2092  -0.4480   0.3588
-## cor(ons_poat,coda_vc1)                    -0.0507    0.2390  -0.5101   0.4150
-## cor(ons_poak,coda_vc1)                    -0.0183    0.3242  -0.6262   0.6108
-## cor(Intercept,ons_poat:coda_vc1)           0.0096    0.3208  -0.6095   0.6074
-## cor(ons_poat,ons_poat:coda_vc1)           -0.0214    0.3280  -0.6339   0.6072
-## cor(ons_poak,ons_poat:coda_vc1)           -0.0525    0.3385  -0.6742   0.6028
-## cor(coda_vc1,ons_poat:coda_vc1)           -0.0047    0.3220  -0.6109   0.6103
-## cor(Intercept,ons_poak:coda_vc1)          -0.0302    0.2699  -0.5485   0.5037
-## cor(ons_poat,ons_poak:coda_vc1)            0.2669    0.2832  -0.3578   0.7433
-## cor(ons_poak,ons_poak:coda_vc1)           -0.0033    0.3302  -0.6232   0.6283
-## cor(coda_vc1,ons_poak:coda_vc1)           -0.1453    0.2770  -0.6349   0.4393
-## cor(ons_poat:coda_vc1,ons_poak:coda_vc1)  -0.0144    0.3297  -0.6311   0.6142
-##                                            Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)                            1.0006     2571     4567
-## sd(ons_poat)                             1.0019     3912     4080
-## sd(ons_poak)                             1.0011     5108     5766
-## sd(coda_vc1)                             1.0009     5209     6764
-## sd(ons_poat:coda_vc1)                    1.0011     4698     5395
-## sd(ons_poak:coda_vc1)                    1.0015     2177     2017
-## cor(Intercept,ons_poat)                  1.0002     9129     7017
-## cor(Intercept,ons_poak)                  1.0000    15222     7217
-## cor(ons_poat,ons_poak)                   1.0003    12683     7478
-## cor(Intercept,coda_vc1)                  1.0005     8119     7243
-## cor(ons_poat,coda_vc1)                   1.0005     4280     6101
-## cor(ons_poak,coda_vc1)                   1.0043     1646     3796
-## cor(Intercept,ons_poat:coda_vc1)         1.0006    16638     6082
-## cor(ons_poat,ons_poat:coda_vc1)          1.0001    13607     7485
-## cor(ons_poak,ons_poat:coda_vc1)          1.0003     8964     7137
-## cor(coda_vc1,ons_poat:coda_vc1)          1.0002    12574     7830
-## cor(Intercept,ons_poak:coda_vc1)         0.9999    13045     7117
-## cor(ons_poat,ons_poak:coda_vc1)          1.0002     8536     7117
-## cor(ons_poak,ons_poak:coda_vc1)          1.0000     5316     7293
-## cor(coda_vc1,ons_poak:coda_vc1)          0.9999     9149     7470
-## cor(ons_poat:coda_vc1,ons_poak:coda_vc1) 1.0006     5775     7787
+## sd(Intercept)                               26.29      4.70    18.93    37.09
+## sd(ons_poat)                                 5.88      1.57     3.16     9.39
+## sd(ons_poak)                                 1.45      1.11     0.05     4.13
+## sd(coda_vc1)                                 8.99      1.92     5.87    13.29
+## sd(ons_poat:coda_vc1)                        2.20      1.66     0.09     6.18
+## sd(ons_poak:coda_vc1)                        4.67      2.37     0.38     9.57
+## cor(Intercept,ons_poat)                     -0.09      0.24    -0.53     0.39
+## cor(Intercept,ons_poak)                     -0.09      0.36    -0.73     0.64
+## cor(ons_poat,ons_poak)                       0.11      0.37    -0.63     0.76
+## cor(Intercept,coda_vc1)                     -0.06      0.22    -0.47     0.37
+## cor(ons_poat,coda_vc1)                      -0.05      0.25    -0.54     0.44
+## cor(ons_poak,coda_vc1)                      -0.02      0.36    -0.69     0.68
+## cor(Intercept,ons_poat:coda_vc1)             0.02      0.37    -0.68     0.70
+## cor(ons_poat,ons_poat:coda_vc1)             -0.02      0.37    -0.70     0.69
+## cor(ons_poak,ons_poat:coda_vc1)             -0.06      0.38    -0.74     0.67
+## cor(coda_vc1,ons_poat:coda_vc1)             -0.01      0.36    -0.69     0.67
+## cor(Intercept,ons_poak:coda_vc1)            -0.03      0.29    -0.58     0.55
+## cor(ons_poat,ons_poak:coda_vc1)              0.31      0.31    -0.40     0.81
+## cor(ons_poak,ons_poak:coda_vc1)             -0.00      0.38    -0.72     0.70
+## cor(coda_vc1,ons_poak:coda_vc1)             -0.15      0.31    -0.69     0.50
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1)    -0.02      0.37    -0.71     0.70
+##                                          Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)                            1.00     3335     4864
+## sd(ons_poat)                             1.00     4760     5772
+## sd(ons_poak)                             1.00     4702     5456
+## sd(coda_vc1)                             1.00     6528     7100
+## sd(ons_poat:coda_vc1)                    1.00     5037     5936
+## sd(ons_poak:coda_vc1)                    1.00     3422     3860
+## cor(Intercept,ons_poat)                  1.00    10614     7812
+## cor(Intercept,ons_poak)                  1.00    17812     7053
+## cor(ons_poat,ons_poak)                   1.00    13304     7622
+## cor(Intercept,coda_vc1)                  1.00     9625     7767
+## cor(ons_poat,coda_vc1)                   1.00     5221     6326
+## cor(ons_poak,coda_vc1)                   1.00     1354     3650
+## cor(Intercept,ons_poat:coda_vc1)         1.00    16096     6140
+## cor(ons_poat,ons_poat:coda_vc1)          1.00    15605     7536
+## cor(ons_poak,ons_poat:coda_vc1)          1.00     7643     7836
+## cor(coda_vc1,ons_poat:coda_vc1)          1.00    12153     8174
+## cor(Intercept,ons_poak:coda_vc1)         1.00    13573     7445
+## cor(ons_poat,ons_poak:coda_vc1)          1.00     9972     7092
+## cor(ons_poak,ons_poak:coda_vc1)          1.00     5226     7337
+## cor(coda_vc1,ons_poak:coda_vc1)          1.00     9092     7663
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1) 1.00     5580     8146
 ## 
 ## Regression Coefficients:
-##                   Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
-## Intercept           0.0788    0.0061   0.0667   0.0911 1.0024     1067     1963
-## ons_poat            0.0108    0.0018   0.0072   0.0142 1.0009     7496     7395
-## ons_poak            0.0138    0.0013   0.0114   0.0164 1.0003    12612     8723
-## coda_vc1            0.0122    0.0025   0.0075   0.0172 1.0006     7087     7562
-## ons_poat:coda_vc1  -0.0045    0.0019  -0.0082  -0.0008 1.0001    15617     7944
-## ons_poak:coda_vc1  -0.0044    0.0022  -0.0088  -0.0000 1.0002    12486     7441
+##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept            78.44      5.88    66.65    90.37 1.00     1423     2383
+## ons_poat             10.86      1.80     7.37    14.45 1.00     7317     6571
+## ons_poak             13.86      1.25    11.40    16.28 1.00    13523     8368
+## coda_vc1             12.27      2.41     7.53    17.01 1.00     7175     7614
+## ons_poat:coda_vc1    -4.52      1.90    -8.22    -0.79 1.00    13188     7601
+## ons_poak:coda_vc1    -4.39      2.18    -8.69    -0.07 1.00    10726     7382
 ## 
 ## Further Distributional Parameters:
-##       Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
-## sigma   0.0177    0.0003   0.0172   0.0183 1.0004    15427     6588
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma    17.75      0.27    17.24    18.28 1.00    19529     7035
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
 ## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
-<pre class="r"><code># Number of divergent transitions (should be 0, or a small fraction
-# of total post-warmup draws)
-sum(rstan::get_divergent_iterations(bayes_model_maximal$fit))</code></pre>
+<pre class="r"><code>sum(rstan::get_divergent_iterations(bayes_model_maximal_default$fit))</code></pre>
 <pre><code>## [1] 0</code></pre>
-<pre class="r"><code># Visual check on chains and random-effect correlations
-plot(bayes_model_maximal, variable = &quot;^sd_&quot;, regex = TRUE)</code></pre>
+<pre class="r"><code>print(summary(bayes_model_maximal_informed), digits = 2)</code></pre>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity 
+## Formula: vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub) 
+##    Data: data_mod (Number of observations: 2369) 
+##   Draws: 4 chains, each with iter = 4000; warmup = 1500; thin = 1;
+##          total post-warmup draws = 10000
+## 
+## Multilevel Hyperparameters:
+## ~sub (Number of levels: 20) 
+##                                          Estimate Est.Error l-95% CI u-95% CI
+## sd(Intercept)                               25.57      4.18    18.84    35.24
+## sd(ons_poat)                                 5.76      1.57     3.00     9.17
+## sd(ons_poak)                                 1.48      1.12     0.05     4.10
+## sd(coda_vc1)                                 8.88      1.91     5.79    13.19
+## sd(ons_poat:coda_vc1)                        2.20      1.69     0.08     6.28
+## sd(ons_poak:coda_vc1)                        4.63      2.29     0.42     9.30
+## cor(Intercept,ons_poat)                     -0.07      0.22    -0.48     0.36
+## cor(Intercept,ons_poak)                     -0.07      0.31    -0.65     0.54
+## cor(ons_poat,ons_poak)                       0.09      0.33    -0.56     0.69
+## cor(Intercept,coda_vc1)                     -0.05      0.20    -0.44     0.35
+## cor(ons_poat,coda_vc1)                      -0.05      0.24    -0.50     0.42
+## cor(ons_poak,coda_vc1)                      -0.01      0.32    -0.63     0.60
+## cor(Intercept,ons_poat:coda_vc1)             0.01      0.32    -0.59     0.60
+## cor(ons_poat,ons_poat:coda_vc1)             -0.02      0.33    -0.63     0.60
+## cor(ons_poak,ons_poat:coda_vc1)             -0.05      0.34    -0.67     0.60
+## cor(coda_vc1,ons_poat:coda_vc1)             -0.01      0.32    -0.61     0.61
+## cor(Intercept,ons_poak:coda_vc1)            -0.03      0.26    -0.53     0.49
+## cor(ons_poat,ons_poak:coda_vc1)              0.26      0.29    -0.37     0.74
+## cor(ons_poak,ons_poak:coda_vc1)             -0.00      0.33    -0.63     0.63
+## cor(coda_vc1,ons_poak:coda_vc1)             -0.14      0.28    -0.63     0.44
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1)    -0.01      0.33    -0.64     0.62
+##                                          Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)                            1.00     3079     5162
+## sd(ons_poat)                             1.00     4242     4682
+## sd(ons_poak)                             1.00     4000     4716
+## sd(coda_vc1)                             1.00     4826     5873
+## sd(ons_poat:coda_vc1)                    1.00     4222     5000
+## sd(ons_poak:coda_vc1)                    1.00     2862     2958
+## cor(Intercept,ons_poat)                  1.00     7551     6817
+## cor(Intercept,ons_poak)                  1.00    14007     7435
+## cor(ons_poat,ons_poak)                   1.00    10893     7421
+## cor(Intercept,coda_vc1)                  1.00     6764     6528
+## cor(ons_poat,coda_vc1)                   1.00     4193     5861
+## cor(ons_poak,coda_vc1)                   1.01     1442     3497
+## cor(Intercept,ons_poat:coda_vc1)         1.00    12367     7404
+## cor(ons_poat,ons_poat:coda_vc1)          1.00    12933     8397
+## cor(ons_poak,ons_poat:coda_vc1)          1.00     8306     7543
+## cor(coda_vc1,ons_poat:coda_vc1)          1.00    11526     8582
+## cor(Intercept,ons_poak:coda_vc1)         1.00    11843     7326
+## cor(ons_poat,ons_poak:coda_vc1)          1.00     7935     6682
+## cor(ons_poak,ons_poak:coda_vc1)          1.00     5301     6055
+## cor(coda_vc1,ons_poak:coda_vc1)          1.00     8498     7654
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1) 1.00     5624     8082
+## 
+## Regression Coefficients:
+##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept            78.25      5.68    66.83    89.60 1.00     1138     2145
+## ons_poat             11.11      1.72     7.80    14.52 1.00     5487     6728
+## ons_poak             14.03      1.25    11.61    16.45 1.00     8954     7083
+## coda_vc1             12.10      2.32     7.45    16.67 1.00     4773     6324
+## ons_poat:coda_vc1    -4.48      1.88    -8.22    -0.77 1.00     9645     7118
+## ons_poak:coda_vc1    -4.37      2.13    -8.60    -0.17 1.00     7707     7192
+## 
+## Further Distributional Parameters:
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma    17.75      0.27    17.23    18.27 1.00    16018     6887
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<pre class="r"><code>sum(rstan::get_divergent_iterations(bayes_model_maximal_informed$fit))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code># Visual check on chains and random-effect correlations (informed model)
+plot(bayes_model_maximal_informed, variable = &quot;^sd_&quot;, regex = TRUE)</code></pre>
 <p><img src="complete_vot_analysis_files/figure-html/bayes-maximal-diagnostics-1.png" alt="" width="672" /><img src="complete_vot_analysis_files/figure-html/bayes-maximal-diagnostics-2.png" alt="" width="672" /></p>
-<pre class="r"><code>plot(bayes_model_maximal, variable = &quot;^cor_&quot;, regex = TRUE)</code></pre>
+<pre class="r"><code>plot(bayes_model_maximal_informed, variable = &quot;^cor_&quot;, regex = TRUE)</code></pre>
 <p><img src="complete_vot_analysis_files/figure-html/bayes-maximal-diagnostics-3.png" alt="" width="672" /><img src="complete_vot_analysis_files/figure-html/bayes-maximal-diagnostics-4.png" alt="" width="672" /><img src="complete_vot_analysis_files/figure-html/bayes-maximal-diagnostics-5.png" alt="" width="672" /></p>
 </div>
-<div id="comparison-to-the-random-intercept-only-model"
+<div id="default-vs.-informed-priors-on-the-maximal-structure"
 class="section level2">
-<h2>Comparison to the random-intercept-only model</h2>
-<pre class="r"><code>loo_maximal &lt;- loo(bayes_model_maximal)
-loo_compare(loo_informed, loo_maximal)</code></pre>
-<pre><code>##                 model elpd_diff se_diff p_worse diag_diff diag_elpd
-##   bayes_model_maximal       0.0     0.0      NA                    
-##  bayes_model_informed     -54.3    12.1    1.00</code></pre>
-<pre class="r"><code># Direct comparison of the focal coefficient across random-effects
-# structures
-posterior_summary(bayes_model_informed, variable = &quot;b_coda_vc1&quot;)</code></pre>
-<pre><code>##              Estimate   Est.Error        Q2.5      Q97.5
-## b_coda_vc1 0.01205801 0.001325356 0.009392996 0.01466453</code></pre>
-<pre class="r"><code>posterior_summary(bayes_model_maximal,  variable = &quot;b_coda_vc1&quot;)</code></pre>
-<pre><code>##            Estimate   Est.Error        Q2.5      Q97.5
-## b_coda_vc1 0.012242 0.002458842 0.007464115 0.01717714</code></pre>
+<h2>Default vs. informed priors, on the maximal structure</h2>
+<pre class="r"><code>loo_maximal_default  &lt;- loo(bayes_model_maximal_default)
+loo_maximal_informed &lt;- loo(bayes_model_maximal_informed)
+loo_compare(loo_maximal_default, loo_maximal_informed)</code></pre>
+<pre><code>##                         model elpd_diff se_diff p_worse       diag_diff
+##  bayes_model_maximal_informed       0.0     0.0      NA                
+##   bayes_model_maximal_default      -0.5     0.3    0.97 |elpd_diff| &lt; 4
+##  diag_elpd
+##           
+## </code></pre>
+<p>Direct posterior comparison for the focal coefficient:</p>
+<pre class="r"><code>posterior_summary(bayes_model_maximal_default,  variable = &quot;b_coda_vc1&quot;)</code></pre>
+<pre><code>##            Estimate Est.Error    Q2.5    Q97.5
+## b_coda_vc1 12.26958  2.405759 7.53301 17.01492</code></pre>
+<pre class="r"><code>posterior_summary(bayes_model_maximal_informed, variable = &quot;b_coda_vc1&quot;)</code></pre>
+<pre><code>##            Estimate Est.Error     Q2.5    Q97.5
+## b_coda_vc1 12.10239  2.317953 7.448575 16.66984</code></pre>
+<pre class="r"><code>pp_check(bayes_model_maximal_informed, type = &quot;hist&quot;, ndraws = 100) +
+  ggtitle(&quot;Prior Predictive Check: Do simulated VOTs look reasonable?&quot;)</code></pre>
+<p><img src="complete_vot_analysis_files/figure-html/bayes-maximal-ppcheck-1.png" alt="" width="672" /></p>
+<div id="full-precision-estimates-for-all-fixed-effects"
+class="section level3">
+<h3>Full-precision estimates for all fixed effects</h3>
+<pre class="r"><code>maximal_default_fx  &lt;- as.data.frame(posterior_summary(bayes_model_maximal_default))  %&gt;%
+  rownames_to_column(&quot;parameter&quot;) %&gt;%
+  filter(str_starts(parameter, &quot;b_&quot;)) %&gt;%
+  rename_with(~ paste0(&quot;default_&quot;, .x), -parameter)
+
+maximal_informed_fx &lt;- as.data.frame(posterior_summary(bayes_model_maximal_informed)) %&gt;%
+  rownames_to_column(&quot;parameter&quot;) %&gt;%
+  filter(str_starts(parameter, &quot;b_&quot;)) %&gt;%
+  rename_with(~ paste0(&quot;informed_&quot;, .x), -parameter)
+
+maximal_fixef_comparison &lt;- left_join(maximal_default_fx, maximal_informed_fx, by = &quot;parameter&quot;) %&gt;%
+  mutate(across(where(is.numeric), ~ round(.x, 2)))
+
+maximal_fixef_comparison</code></pre>
+<pre><code>##             parameter default_Estimate default_Est.Error default_Q2.5
+## 1         b_Intercept            78.44              5.88        66.65
+## 2          b_ons_poat            10.86              1.80         7.37
+## 3          b_ons_poak            13.86              1.25        11.40
+## 4          b_coda_vc1            12.27              2.41         7.53
+## 5 b_ons_poat:coda_vc1            -4.52              1.90        -8.22
+## 6 b_ons_poak:coda_vc1            -4.39              2.18        -8.69
+##   default_Q97.5 informed_Estimate informed_Est.Error informed_Q2.5
+## 1         90.37             78.25               5.68         66.83
+## 2         14.45             11.11               1.72          7.80
+## 3         16.28             14.03               1.25         11.61
+## 4         17.01             12.10               2.32          7.45
+## 5         -0.79             -4.48               1.88         -8.22
+## 6         -0.07             -4.37               2.13         -8.60
+##   informed_Q97.5
+## 1          89.60
+## 2          14.52
+## 3          16.45
+## 4          16.67
+## 5          -0.77
+## 6          -0.17</code></pre>
+</div>
 </div>
 <div id="if-the-maximal-model-does-not-converge-cleanly"
 class="section level2">
 <h2>If the maximal model does not converge cleanly</h2>
-<p>If <code>bayes_model_maximal</code> shows divergent transitions,
-elevated <span class="math inline">\(\hat{R}\)</span>, or very low ESS
-on the random-effect correlations, simplify in this order before
-abandoning the random-slopes structure entirely:</p>
+<p>Both maximal models above converged cleanly in our run (zero
+divergent transitions, <span class="math inline">\(\hat{R} \leq
+1.00\)</span> throughout), so no simplification was necessary. If a
+future re-fit (e.g., after adding trials, changing priors, or modifying
+the formula) shows divergent transitions, elevated <span
+class="math inline">\(\hat{R}\)</span>, or very low ESS on the
+random-effect correlations, simplify in this order before abandoning the
+random-slopes structure entirely:</p>
 <pre class="r"><code># Step 1: drop correlations among random effects, keep all slopes
 # (equivalent to lme4&#39;s `||` syntax)
 bayes_model_zerocorr &lt;- brm(
@@ -1271,13 +1942,181 @@ bayes_model_reduced &lt;- brm(
 
 # Compare whichever structures were fitted; report this comparison
 # alongside the final model choice
-loo_compare(loo_informed, loo(bayes_model_zerocorr), loo(bayes_model_reduced))</code></pre>
+loo_compare(loo_maximal_informed, loo(bayes_model_zerocorr), loo(bayes_model_reduced))</code></pre>
+</div>
+<div id="random-intercept-only-models-for-comparison-only"
+class="section level2">
+<h2>Random-intercept-only models (for comparison only)</h2>
+<p>The models below are <strong>not</strong> the primary reported
+analysis. They are included only to document why the maximal structure
+above was adopted: comparing a simpler, random-intercept-only structure
+against the maximal one lets us confirm that the extra complexity is
+actually supported by the data, and to show explicitly how much the
+intercept-only structure understates uncertainty in the coda-voicing
+effect. If you are only interested in the primary results, skip to the
+Ridge Plots section.</p>
+<pre class="r"><code>bayes_model_default &lt;- brm(
+  vot ~ ons_poa * coda_vc + (1 | sub),
+  data   = data_mod,
+  family = gaussian(),
+  chains = 4,
+  iter   = 2000,
+  cores  = 4,
+  seed   = 123
+)
+
+bayes_model_informed &lt;- brm(
+  vot ~ ons_poa * coda_vc + (1 | sub),
+  data   = data_mod,
+  family = gaussian(),
+  prior  = maximal_priors[maximal_priors$class != &quot;cor&quot;, ],
+  chains = 4,
+  iter   = 2000,
+  cores  = 4,
+  seed   = 123
+)</code></pre>
+<pre class="r"><code># Does adding random slopes actually improve predictive fit?
+loo_default  &lt;- loo(bayes_model_default)
+loo_informed &lt;- loo(bayes_model_informed)
+loo_compare(loo_informed, loo_maximal_informed)</code></pre>
+<pre><code>##                         model elpd_diff se_diff p_worse diag_diff diag_elpd
+##  bayes_model_maximal_informed       0.0     0.0      NA                    
+##          bayes_model_informed     -54.4    12.0    1.00</code></pre>
+<pre class="r"><code># How much narrower (anti-conservative) is the intercept-only
+# interval for the focal coefficient, relative to the maximal model?
+posterior_summary(bayes_model_informed,          variable = &quot;b_coda_vc1&quot;)</code></pre>
+<pre><code>##            Estimate Est.Error     Q2.5    Q97.5
+## b_coda_vc1 12.05858  1.274259 9.499654 14.57924</code></pre>
+<pre class="r"><code>posterior_summary(bayes_model_maximal_informed,  variable = &quot;b_coda_vc1&quot;)</code></pre>
+<pre><code>##            Estimate Est.Error     Q2.5    Q97.5
+## b_coda_vc1 12.10239  2.317953 7.448575 16.66984</code></pre>
+</div>
+<div id="does-the-votvowel-duration-ratio-differ-by-coda-voicing"
+class="section level2">
+<h2>Does the VOT/vowel-duration ratio differ by coda voicing?</h2>
+<p>If onset VOT and vowel duration both lengthen together under a shared
+word-level timing mechanism, the <em>ratio</em> of VOT to vowel duration
+(<code>vot_ratio</code>, computed in the data-preparation step above)
+might stay roughly constant across coda-voicing contexts even though the
+raw VOT differs. Testing whether <code>vot_ratio</code> itself varies by
+coda voicing is therefore a useful check: a credible coda-voicing effect
+on the ratio would suggest VOT and vowel duration are <em>not</em>
+simply scaling together proportionally, while a ratio effect
+indistinguishable from zero would be consistent with proportional
+scaling. For consistency with the primary VOT model above, this is fit
+with the same maximal random-effects structure (by-subject random slopes
+for place of articulation, coda voicing, and their interaction, plus
+their correlations).</p>
+<pre class="r"><code># Maximal random-effects structure, matching the main VOT model above
+# for consistency. We do NOT reuse maximal_priors here: those priors
+# (e.g., the POA contrast priors of normal(15,8)/normal(30,12) ms,
+# the coda-voicing prior of normal(0,20) ms) are scaled for a
+# millisecond-scale outcome, but vot_ratio is a unitless quantity
+# with a very different scale (~0.8, roughly 0-1.5 range). Applying
+# ms-scale priors here would be exactly the kind of units mismatch
+# we corrected earlier for vot/vdur. brms&#39; default priors are scaled
+# automatically from the data, so we rely on those instead, with the
+# same sampler settings (iterations, warmup, adapt_delta) as the main
+# maximal model for consistency and comparable convergence behavior.
+bayes_model_ratio &lt;- brm(
+  vot_ratio ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
+  data    = data_mod,
+  family  = gaussian(),
+  chains  = 4,
+  iter    = 4000,
+  warmup  = 1500,
+  cores   = 4,
+  seed    = 123,
+  control = list(adapt_delta = 0.95)
+)</code></pre>
+<pre class="r"><code>print(summary(bayes_model_ratio), digits = 4)</code></pre>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity 
+## Formula: vot_ratio ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub) 
+##    Data: data_mod (Number of observations: 2366) 
+##   Draws: 4 chains, each with iter = 4000; warmup = 1500; thin = 1;
+##          total post-warmup draws = 10000
+## 
+## Multilevel Hyperparameters:
+## ~sub (Number of levels: 20) 
+##                                          Estimate Est.Error l-95% CI u-95% CI
+## sd(Intercept)                              0.2482    0.0407   0.1831   0.3416
+## sd(ons_poat)                               0.0270    0.0177   0.0015   0.0665
+## sd(ons_poak)                               0.0382    0.0227   0.0023   0.0875
+## sd(coda_vc1)                               0.1404    0.0276   0.0960   0.2035
+## sd(ons_poat:coda_vc1)                      0.0245    0.0187   0.0009   0.0700
+## sd(ons_poak:coda_vc1)                      0.0359    0.0247   0.0019   0.0922
+## cor(Intercept,ons_poat)                   -0.2049    0.3291  -0.7674   0.5031
+## cor(Intercept,ons_poak)                   -0.1868    0.3015  -0.7168   0.4397
+## cor(ons_poat,ons_poak)                     0.1671    0.3731  -0.6094   0.7989
+## cor(Intercept,coda_vc1)                   -0.6393    0.1450  -0.8586  -0.2984
+## cor(ons_poat,coda_vc1)                    -0.0889    0.3334  -0.6993   0.5781
+## cor(ons_poak,coda_vc1)                    -0.0181    0.3164  -0.6149   0.5973
+## cor(Intercept,ons_poat:coda_vc1)          -0.0797    0.3703  -0.7429   0.6487
+## cor(ons_poat,ons_poat:coda_vc1)           -0.0341    0.3725  -0.7075   0.6790
+## cor(ons_poak,ons_poat:coda_vc1)            0.0412    0.3731  -0.6702   0.7340
+## cor(coda_vc1,ons_poat:coda_vc1)           -0.1116    0.3728  -0.7621   0.6389
+## cor(Intercept,ons_poak:coda_vc1)          -0.2586    0.3472  -0.8181   0.5087
+## cor(ons_poat,ons_poak:coda_vc1)            0.0341    0.3671  -0.6674   0.7013
+## cor(ons_poak,ons_poak:coda_vc1)           -0.1553    0.3782  -0.7911   0.6178
+## cor(coda_vc1,ons_poak:coda_vc1)            0.2267    0.3474  -0.5053   0.7998
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1)   0.0629    0.3835  -0.6718   0.7508
+##                                            Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)                            1.0001     2521     4391
+## sd(ons_poat)                             1.0004     3706     5008
+## sd(ons_poak)                             1.0005     3146     3583
+## sd(coda_vc1)                             1.0001     4261     6126
+## sd(ons_poat:coda_vc1)                    1.0007     6132     5101
+## sd(ons_poak:coda_vc1)                    1.0005     5112     5287
+## cor(Intercept,ons_poat)                  1.0001    13021     7327
+## cor(Intercept,ons_poak)                  1.0004    11071     7625
+## cor(ons_poat,ons_poak)                   1.0002     6098     7693
+## cor(Intercept,coda_vc1)                  0.9998     6693     7413
+## cor(ons_poat,coda_vc1)                   1.0007     3397     4873
+## cor(ons_poak,coda_vc1)                   1.0013     3705     5267
+## cor(Intercept,ons_poat:coda_vc1)         1.0000    17153     7192
+## cor(ons_poat,ons_poat:coda_vc1)          1.0003    12053     8154
+## cor(ons_poak,ons_poat:coda_vc1)          1.0009    10312     8246
+## cor(coda_vc1,ons_poat:coda_vc1)          1.0001    12986     8347
+## cor(Intercept,ons_poak:coda_vc1)         1.0001    12458     7349
+## cor(ons_poat,ons_poak:coda_vc1)          1.0000    10512     8253
+## cor(ons_poak,ons_poak:coda_vc1)          1.0001     8820     8088
+## cor(coda_vc1,ons_poak:coda_vc1)          1.0001    11418     8376
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1) 1.0000     7636     8786
+## 
+## Regression Coefficients:
+##                   Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
+## Intercept           0.8103    0.0570   0.6975   0.9216 1.0023     1054     2605
+## ons_poat            0.0683    0.0181   0.0325   0.1033 1.0000     9245     8235
+## ons_poak            0.1422    0.0198   0.1038   0.1811 1.0001     9250     8111
+## coda_vc1           -0.1596    0.0369  -0.2320  -0.0860 1.0007     2373     5241
+## ons_poat:coda_vc1  -0.0887    0.0270  -0.1411  -0.0352 1.0007    10070     7850
+## ons_poak:coda_vc1  -0.1359    0.0283  -0.1920  -0.0807 1.0004     9781     7746
+## 
+## Further Distributional Parameters:
+##       Estimate Est.Error l-95% CI u-95% CI   Rhat Bulk_ESS Tail_ESS
+## sigma   0.2576    0.0038   0.2503   0.2653 1.0003    22769     7339
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<pre class="r"><code># Convergence check, mirroring the main maximal model&#39;s diagnostics
+sum(rstan::get_divergent_iterations(bayes_model_ratio$fit))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code># Focal test: does the coda-voicing coefficient&#39;s 95% CrI exclude
+# zero? If yes, the VOT/Vdur ratio differs credibly by coda voicing
+# context; if the CrI spans zero, the ratio is not credibly different
+# between voiced- and voiceless-coda contexts.
+posterior_summary(bayes_model_ratio, variable = &quot;b_coda_vc1&quot;)</code></pre>
+<pre><code>##              Estimate  Est.Error       Q2.5      Q97.5
+## b_coda_vc1 -0.1596349 0.03694017 -0.2320154 -0.0859961</code></pre>
 </div>
 </div>
 <div id="ridge-plots-with-posterior-predictions" class="section level1">
 <h1>Ridge plots with posterior predictions</h1>
-<p>Ridge plots with posterior predictions overlaid, for both Bayesian
-models, on the shared <code>/p/</code> reference level.</p>
+<p>Ridge plots with posterior predictions overlaid, for the primary
+maximal-random-effects models (default and informed priors), on the
+shared <code>/p/</code> reference level.</p>
 <pre class="r"><code>data_mod$poa_coda &lt;- factor(
   interaction(data_mod$coda_vc, data_mod$ons_poa),
   levels = c(&quot;0.p&quot;, &quot;1.p&quot;, &quot;0.t&quot;, &quot;1.t&quot;, &quot;0.k&quot;, &quot;1.k&quot;)
@@ -1343,14 +2182,14 @@ make_ridge_plot &lt;- function(model, plot_title = &quot;&quot;) {
       &quot;0.t&quot; = &quot;#00441B&quot;, &quot;1.t&quot; = &quot;#006D2C&quot;,
       &quot;0.k&quot; = &quot;#08306B&quot;, &quot;1.k&quot; = &quot;#08519C&quot;
     )) +
-    annotate(&quot;text&quot;, x = 0.01, y = 1.5, label = &quot;p\u02b0&quot;, hjust = 1.2, vjust = 0.5,
+    annotate(&quot;text&quot;, x = 10, y = 1.5, label = &quot;/p/&quot;, hjust = 1.2, vjust = 0.5,
              size = 4, fontface = &quot;bold&quot;) +
-    annotate(&quot;text&quot;, x = 0.01, y = 3.5, label = &quot;t\u02b0&quot;, hjust = 1.2, vjust = 0.5,
+    annotate(&quot;text&quot;, x = 10, y = 3.5, label = &quot;/t/&quot;, hjust = 1.2, vjust = 0.5,
              size = 4, fontface = &quot;bold&quot;) +
-    annotate(&quot;text&quot;, x = 0.01, y = 5.5, label = &quot;k\u02b0&quot;, hjust = 1.2, vjust = 0.5,
+    annotate(&quot;text&quot;, x = 10, y = 5.5, label = &quot;/k/&quot;, hjust = 1.2, vjust = 0.5,
              size = 4, fontface = &quot;bold&quot;) +
-    labs(x = &quot;VOT (s)&quot;, y = &quot;&quot;, title = plot_title) +
-    xlim(0, 0.2) +
+    labs(x = &quot;VOT (ms)&quot;, y = &quot;&quot;, title = plot_title) +
+    xlim(0, 200) +
     coord_cartesian(ylim = c(0.5, 6.5)) +
     theme_minimal() +
     guides(fill = &quot;none&quot;, color = &quot;none&quot;,
@@ -1368,14 +2207,14 @@ make_ridge_plot &lt;- function(model, plot_title = &quot;&quot;) {
 }</code></pre>
 <div id="default-prior-model" class="section level2">
 <h2>Default-prior model</h2>
-<pre class="r"><code>p_default &lt;- make_ridge_plot(bayes_model_default, plot_title = &quot;Default priors&quot;)
+<pre class="r"><code>p_default &lt;- make_ridge_plot(bayes_model_maximal_default, plot_title = &quot;Default priors&quot;)
 print(p_default)</code></pre>
 <p><img src="complete_vot_analysis_files/figure-html/ridge-default-1.png" alt="" width="672" /></p>
 <pre class="r"><code>ggsave(&quot;ridge_default.png&quot;, plot = p_default, bg = &quot;white&quot;, width = 7, height = 5, dpi = 300)</code></pre>
 </div>
-<div id="informed-prior-model-1" class="section level2">
+<div id="informed-prior-model" class="section level2">
 <h2>Informed-prior model</h2>
-<pre class="r"><code>p_informed &lt;- make_ridge_plot(bayes_model_informed, plot_title = &quot;Informed priors&quot;)
+<pre class="r"><code>p_informed &lt;- make_ridge_plot(bayes_model_maximal_informed, plot_title = &quot;&quot;)
 print(p_informed)</code></pre>
 <p><img src="complete_vot_analysis_files/figure-html/ridge-informed-1.png" alt="" width="672" /></p>
 <pre class="r"><code>ggsave(&quot;ridge_informed.png&quot;, plot = p_informed, bg = &quot;white&quot;, width = 7, height = 5, dpi = 300)</code></pre>

@@ -28,6 +28,7 @@ library(ggridges)
 library(lme4)
 library(brms)
 library(marginaleffects)
+library(knitr)
 ```
 
 ```{r data-prep}
@@ -38,7 +39,19 @@ data <- data %>%
   mutate(
     ons_poa = factor(ons_poa, levels = c(1, 2, 3), labels = c("p", "t", "k")),
     coda_vc = factor(coda_vc, levels = c(0, 1)),
-    vot_ratio = vot / vdur,
+    # Convert VOT and vowel duration from seconds (as stored in the
+    # raw CSV) to milliseconds. This matters beyond readability: the
+    # informed priors specified later (e.g., normal(30, 10) for the
+    # /p/ intercept) were written assuming a millisecond-scale
+    # outcome, but were previously being applied to vot/vdur while
+    # still in seconds -- a units mismatch that made those priors
+    # far less informative than intended (a prior centered at "30"
+    # is only meaningfully informative if the outcome is actually on
+    # a scale where 30 is a plausible value). Converting here keeps
+    # the data and the priors on the same scale throughout.
+    vot  = vot * 1000,
+    vdur = vdur * 1000,
+    vot_ratio = vot / vdur,   # unitless; unaffected by the ms conversion
     CVdur = vot + vdur
   )
 
@@ -48,6 +61,110 @@ data_mod <- data
 
 number_of_subs <- length(unique(data$sub))
 number_of_subs
+```
+
+## Descriptive statistics
+
+Basic descriptive statistics for onset VOT, vowel duration, the
+VOT/vowel-duration ratio, and combined CV duration, broken down by
+place of articulation and coda voicing (the two manipulated factors)
+and reported alongside the overall totals. `sd` is the standard
+deviation of individual tokens within each cell (not a standard
+error), so these numbers reflect the same raw variability visualized
+in the boxplots and ridge plots below, before any model-based
+smoothing.
+
+```{r descriptive-stats-by-condition}
+descriptives_by_condition <- data %>%
+  group_by(ons_poa, coda_vc, vowel) %>%
+  summarise(
+    n            = n(),
+    mean_vot     = mean(vot, na.rm = TRUE),
+    sd_vot       = sd(vot, na.rm = TRUE),
+    mean_vdur    = mean(vdur, na.rm = TRUE),
+    sd_vdur      = sd(vdur, na.rm = TRUE),
+    mean_ratio   = mean(vot_ratio, na.rm = TRUE),
+    sd_ratio     = sd(vot_ratio, na.rm = TRUE),
+    mean_CVdur   = mean(CVdur, na.rm = TRUE),
+    sd_CVdur     = sd(CVdur, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2))) %>%
+  arrange(ons_poa, coda_vc, vowel) %>%
+  rename(
+    `Onset POA`   = ons_poa,
+    `Coda voice`  = coda_vc,
+    `Vowel`       = vowel,
+    `N`           = n,
+    `Mean VOT`    = mean_vot,
+    `SD VOT`      = sd_vot,
+    `Mean Vdur`   = mean_vdur,
+    `SD Vdur`     = sd_vdur,
+    `Mean ratio`  = mean_ratio,
+    `SD ratio`    = sd_ratio,
+    `Mean CVdur`  = mean_CVdur,
+    `SD CVdur`    = sd_CVdur
+  )
+
+kable(descriptives_by_condition,
+      caption = "Descriptive statistics by onset place of articulation, coda voicing, and vowel identity. VOT, Vdur, and CVdur are in ms; ratio (VOT/Vdur) is unitless.")
+```
+
+For reference, the same statistics collapsed across place of
+articulation and coda voicing (i.e., the marginal/overall values):
+
+```{r descriptive-stats-overall}
+descriptives_overall <- data %>%
+  summarise(
+    n            = n(),
+    mean_vot     = mean(vot, na.rm = TRUE),
+    sd_vot       = sd(vot, na.rm = TRUE),
+    mean_vdur    = mean(vdur, na.rm = TRUE),
+    sd_vdur      = sd(vdur, na.rm = TRUE),
+    mean_ratio   = mean(vot_ratio, na.rm = TRUE),
+    sd_ratio     = sd(vot_ratio, na.rm = TRUE),
+    mean_CVdur   = mean(CVdur, na.rm = TRUE),
+    sd_CVdur     = sd(CVdur, na.rm = TRUE)
+  ) %>%
+  mutate(across(everything(), ~ round(.x, 2))) %>%
+  rename(
+    `N`           = n,
+    `Mean VOT`    = mean_vot,
+    `SD VOT`      = sd_vot,
+    `Mean Vdur`   = mean_vdur,
+    `SD Vdur`     = sd_vdur,
+    `Mean ratio`  = mean_ratio,
+    `SD ratio`    = sd_ratio,
+    `Mean CVdur`  = mean_CVdur,
+    `SD CVdur`    = sd_CVdur
+  )
+
+kable(descriptives_overall,
+      caption = "Overall descriptive statistics, collapsed across place of articulation and coda voicing.")
+```
+
+Descriptive statistics by subject (mean VOT and vowel duration per
+speaker, collapsed across condition), useful for spotting any speaker
+whose overall productions look unusually fast/slow or short/long
+relative to the group before interpreting the by-subject random
+effects in the Bayesian models below:
+
+```{r descriptive-stats-by-subject}
+descriptives_by_subject <- data %>%
+  group_by(sub) %>%
+  summarise(
+    n         = n(),
+    mean_vot  = mean(vot, na.rm = TRUE),
+    sd_vot    = sd(vot, na.rm = TRUE),
+    mean_vdur = mean(vdur, na.rm = TRUE),
+    sd_vdur   = sd(vdur, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2))) %>%
+  arrange(sub)
+
+kable(descriptives_by_subject,
+      caption = "Descriptive statistics by subject, collapsed across condition.")
 ```
 
 ## Preliminary plotting
@@ -92,9 +209,9 @@ print(summary_table)
 plot_overall <- ggplot(data, aes(x = ons_poa, y = vot, fill = coda_vc)) +
   geom_boxplot(notch = TRUE, outlier.shape = NA) +
   theme(axis.text.x = element_blank()) +
-  labs(x = NULL, y = "CV duration (s)") +
+  labs(x = NULL, y = "CV duration (ms)") +
   facet_wrap(~ons_poa, scales = "free") +
-  scale_y_continuous(limits = c(0.015, 0.18)) +
+  scale_y_continuous(limits = c(15, 180)) +
   scale_fill_discrete(name = "Coda voice", labels = c("-vc", "+vc"))
 
 print(plot_overall)
@@ -109,7 +226,7 @@ plot_overall + facet_wrap(~sub)
 plot_overall_CVdur <- ggplot(data, aes(x = ons_poa, y = CVdur, fill = coda_vc)) +
   geom_boxplot(notch = TRUE, outlier.shape = NA) +
   theme(axis.text.x = element_blank()) +
-  labs(x = NULL, y = "CV duration (s)") +
+  labs(x = NULL, y = "CV duration (ms)") +
   facet_wrap(~ons_poa, scales = "free") +
   scale_fill_discrete(name = "Coda voice", labels = c("-vc", "+vc"))
 
@@ -121,7 +238,7 @@ print(plot_overall_CVdur)
 plot_vot_poa <- ggplot(data, aes(x = vot, y = ons_poa, fill = coda_vc)) +
   geom_boxplot(notch = TRUE, outlier.shape = NA, width = 0.5) +
   theme_minimal() +
-  labs(x = "VOT(s)", y = "Onset POA", fill = "Coda voice") +
+  labs(x = "VOT (ms)", y = "Onset POA", fill = "Coda voice") +
   scale_fill_discrete(labels = c("[-vc]", "[+vc]"))
 
 print(plot_vot_poa + facet_wrap(~sub))
@@ -132,8 +249,8 @@ print(plot_vot_poa + facet_wrap(~sub))
 plot_vdur_poa <- ggplot(data, aes(x = vdur, y = ons_poa, fill = coda_vc)) +
   geom_boxplot(notch = TRUE, outlier.shape = NA, width = 0.5) +
   theme_minimal() +
-  labs(x = "Vdur(s)", y = "Onset POA", fill = "Coda voice") +
-  scale_x_continuous(limits = c(0, 0.3), expand = c(0, 0)) +
+  labs(x = "Vdur (ms)", y = "Onset POA", fill = "Coda voice") +
+  scale_x_continuous(limits = c(0, 300), expand = c(0, 0)) +
   scale_fill_discrete(labels = c("[-vc]", "[+vc]"))
 
 plot_vdur_poa
@@ -151,7 +268,7 @@ tokens by POA and vowel.
 ```{r plot-vowel-boxplot, fig.width=9, fig.height=6}
 plot_vowel <- ggplot(data, aes(x = vowel, y = vot, fill = coda_vc)) +
   geom_boxplot(notch = TRUE) +
-  labs(y = "VOT(s)", x = "Vowel", fill = "Coda voicing") +
+  labs(y = "VOT (ms)", x = "Vowel", fill = "Coda voicing") +
   facet_wrap(~ons_poa, scale = "free")
 plot_vowel
 ```
@@ -159,7 +276,7 @@ plot_vowel
 ```{r ridge-labels}
 # ons_poa is already factor-coded p/t/k, so these labellers map from
 # that coding to display symbols only
-poa_labels <- c("p" = "[p\u02b0]", "t" = "[t\u02b0]", "k" = "[k\u02b0]")
+poa_labels <- c("p" = "/p/", "t" = "/t/", "k" = "/k/")
 vowel_labels <- c("ae" = "\u00e6", "aw" = "\u0254", "eh" = "\u025b",
                    "ih" = "\u026a", "uh" = "\u028c")
 ```
@@ -167,14 +284,14 @@ vowel_labels <- c("ae" = "\u00e6", "aw" = "\u0254", "eh" = "\u025b",
 ```{r ridge-by-vowel, fig.width=12, fig.height=6}
 plot_vowel_ridges <- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) +
   geom_density_ridges(alpha = 0.7) +
-  scale_x_continuous(breaks = c(0, 0.1, 0.2), limits = c(0, NA)) +
+  scale_x_continuous(breaks = c(0, 100, 200), limits = c(0, NA)) +
   scale_y_discrete(labels = c("0" = "Voiceless", "1" = "Voiced")) +
   scale_fill_manual(
     name = "Coda",
     values = c("0" = "#F8766D", "1" = "#00BFC4"),
     labels = c("0" = "Voiceless", "1" = "Voiced")
   ) +
-  labs(x = "VOT(s)", y = "") +
+  labs(x = "VOT (ms)", y = "") +
   facet_grid(vowel ~ ons_poa, scales = "free_x",
              labeller = labeller(ons_poa = poa_labels, vowel = vowel_labels)) +
   theme_ridges() +
@@ -193,14 +310,14 @@ ggsave("plot_ridges.png", plot = plot_vowel_ridges, width = 12, height = 6, dpi 
 # Same ridge plot, collapsed across vowel
 plot_ridges <- ggplot(data, aes(x = vot, y = coda_vc, fill = coda_vc)) +
   geom_density_ridges(alpha = 0.7) +
-  scale_x_continuous(breaks = c(0, 0.05, 0.1, 0.15, 0.2), limits = c(0, NA)) +
+  scale_x_continuous(breaks = c(0, 50, 100, 150, 200), limits = c(0, NA)) +
   scale_y_discrete(labels = c("0" = "Voiceless", "1" = "Voiced"), expand = c(0, 0)) +
   scale_fill_manual(
     name = "Coda",
     values = c("0" = "#F8766D", "1" = "#00BFC4"),
     labels = c("0" = "Voiceless", "1" = "Voiced")
   ) +
-  labs(x = "VOT(s)", y = "") +
+  labs(x = "VOT (ms)", y = "") +
   facet_wrap(~ons_poa, scales = "free_x",
              labeller = labeller(ons_poa = poa_labels)) +
   theme_ridges() +
@@ -222,7 +339,7 @@ plot_ridges
 # Overlapping density plots by POA and vowel
 plot_vowel_density <- ggplot(data, aes(x = vot, fill = coda_vc)) +
   geom_density(alpha = 0.6) +
-  labs(x = "VOT(s)", y = "Density", fill = "Coda voicing") +
+  labs(x = "VOT (ms)", y = "Density", fill = "Coda voicing") +
   facet_wrap(~ons_poa + vowel, scales = "free")
 plot_vowel_density
 ```
@@ -269,7 +386,7 @@ summary(model_coda)
 
 ```{r glmm-predictions, fig.width=8, fig.height=5}
 # Predictions across a range of VOT values, for each POA
-vot_range <- seq(from = 0, to = 0.25, by = 0.005)
+vot_range <- seq(from = 0, to = 250, by = 5)
 sub_ref <- unique(data$sub)[1]
 
 plot_data <- expand_grid(
@@ -287,7 +404,7 @@ vc_pred <- ggplot(plot_data, aes(x = vot, y = predicted_prob, color = ons_poa)) 
   geom_line(linewidth = 2) +
   labs(
     title = "",
-    x = "VOT (s)",
+    x = "VOT (ms)",
     y = "Predicted Probability of Voiced Coda",
     color = "Onset POA"
   ) +
@@ -311,164 +428,62 @@ preparation section above.
 ```{r bayes-prior-check}
 # Confirm reference level / contrast coding before fitting
 contrasts(data_mod$ons_poa)
-get_prior(vot ~ ons_poa * coda_vc + (1 | sub), data = data_mod, family = gaussian())
+get_prior(vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
+          data = data_mod, family = gaussian())
 ```
 
-## Default (weakly informative) prior model
-
-```{r bayes-default, results='hide'}
-bayes_model_default <- brm(
-  vot ~ ons_poa * coda_vc + (1 | sub),
-  data   = data_mod,
-  family = gaussian(),
-  chains = 4,
-  iter   = 2000,
-  cores  = 4,
-  seed   = 123
-)
-```
-
-```{r bayes-default-summary, fig.width=9, fig.height=7}
-# digits = 4 gives sub-millisecond precision (values are in seconds,
-# so 4 decimal places = 0.1 ms resolution), rather than the default
-# 2 decimal places (10 ms resolution)
-print(summary(bayes_model_default), digits = 4)
-plot(bayes_model_default)
-```
-
-```{r bayes-default-fixef}
-# Programmatic access to full-precision estimates, useful for
-# generating tables directly rather than transcribing console output
-fixef(bayes_model_default, digits = 4)
-VarCorr(bayes_model_default)
-```
-
-## Informed prior model
-
-Priors are split by epistemic status: place-of-articulation effects
-are strongly informed by the established cross-linguistic VOT
-literature, while the coda-voicing effect (the focal, untested
-hypothesis) is given a weakly informative, zero-centered prior rather
-than a value read off this dataset's own `lmer` estimate (~12ms), to
-avoid double-dipping / circularity.
-
-```{r bayes-informed-priors}
-informed_priors <- c(
-  # Strongly informed: established literature on POA and VOT
-  prior(normal(30, 10), class = Intercept),              # /p/ baseline
-  prior(normal(15, 8),  class = b, coef = ons_poat),      # /t/ effect
-  prior(normal(30, 12), class = b, coef = ons_poak),      # /k/ effect
-
-  # Weakly informed / regularizing: the focal, untested hypothesis
-  prior(normal(0, 20), class = b, coef = "coda_vc1"),
-  prior(normal(0, 15), class = b, coef = "ons_poat:coda_vc1"),
-  prior(normal(0, 15), class = b, coef = "ons_poak:coda_vc1"),
-
-  # Standard weakly informative priors for variance components
-  prior(normal(0, 20), class = sd),
-  prior(normal(0, 25), class = sigma)
-)
-```
-
-```{r bayes-informed-fit, results='hide'}
-bayes_model_informed <- brm(
-  vot ~ ons_poa * coda_vc + (1 | sub),
-  data   = data_mod,
-  family = gaussian(),
-  prior  = informed_priors,
-  chains = 4,
-  iter   = 2000,
-  cores  = 4,
-  seed   = 123
-)
-```
-
-```{r bayes-informed-summary}
-prior_summary(bayes_model_informed)
-print(summary(bayes_model_informed), digits = 4)
-```
-
-```{r bayes-informed-fixef}
-fixef(bayes_model_informed, digits = 4)
-VarCorr(bayes_model_informed)
-```
-
-```{r bayes-informed-ppcheck, fig.width=7, fig.height=5}
-pp_check(bayes_model_informed, type = "hist", ndraws = 100) +
-  ggtitle("Prior Predictive Check: Do simulated VOTs look reasonable?")
-```
-
-## Model comparison
-
-```{r bayes-loo}
-loo_default  <- loo(bayes_model_default)
-loo_informed <- loo(bayes_model_informed)
-loo_compare(loo_default, loo_informed)
-```
-
-Direct posterior comparison for the focal coefficient, now directly
-comparable since both models share the `/p/` reference level:
-
-```{r bayes-posterior-compare}
-posterior_summary(bayes_model_default,  variable = "b_coda_vc1")
-posterior_summary(bayes_model_informed, variable = "b_coda_vc1")
-```
-
-### Full-precision estimates for all fixed effects
-
-`posterior_summary()` returns unrounded values for every parameter,
-not just `coda_vc1`. Extracting all of them at once, in milliseconds,
-gives a single unrounded source to draw on when building tables (e.g.,
-for the manuscript), rather than reading rounded values off the
-default `summary()` printout.
-
-```{r bayes-full-precision-ms}
-# Fixed effects, converted to ms, full precision, both models side by side
-default_fx  <- as.data.frame(posterior_summary(bayes_model_default))  %>%
-  rownames_to_column("parameter") %>%
-  filter(str_starts(parameter, "b_")) %>%
-  mutate(across(where(is.numeric), ~ .x * 1000)) %>%
-  rename_with(~ paste0("default_", .x), -parameter)
-
-informed_fx <- as.data.frame(posterior_summary(bayes_model_informed)) %>%
-  rownames_to_column("parameter") %>%
-  filter(str_starts(parameter, "b_")) %>%
-  mutate(across(where(is.numeric), ~ .x * 1000)) %>%
-  rename_with(~ paste0("informed_", .x), -parameter)
-
-fixef_comparison <- left_join(default_fx, informed_fx, by = "parameter") %>%
-  mutate(across(where(is.numeric), ~ round(.x, 2)))
-
-fixef_comparison
-```
-
-# Maximal random effects structure
+## Maximal random effects structure (primary model)
 
 Because onset place of articulation and coda voicing are both
 within-subject manipulations, a random-intercept-only model assumes
 every participant shows the same coda-voicing effect (and the same
 place-of-articulation effects), differing only in their overall
-baseline VOT. Following Barr, Levy, Scheepers & Tily (2013), we also
-fit a "maximal" model with by-subject random slopes for place of
+baseline VOT. Following Barr, Levy, Scheepers & Tily (2013), our
+primary model instead includes by-subject random slopes for place of
 articulation, coda voicing, and their interaction, plus the full
-correlation structure among all random effects. This guards against
-anti-conservative (too-narrow) intervals for the fixed effects if
-speakers actually differ in the size of the coda-voicing effect, not
-just their baseline VOT.
+correlation structure among all random effects, from the outset. This
+guards against anti-conservative (too-narrow) intervals for the fixed
+effects if speakers actually differ in the size of the coda-voicing
+effect, not just their baseline VOT. We fit this maximal structure
+first; a reduced structure is only considered as a fallback if the
+maximal model fails to converge (see below).
+
+We fit the maximal structure twice: once with `brms`' default weakly
+informative priors, and once with the literature-informed priors used
+throughout this document, so that the same default-vs-informed
+comparison we would otherwise have run on an intercept-only model is
+instead run on the model we actually report. The informed priors
+below encode only what the literature actually supports well: the
+*relative* place-of-articulation ordering and approximate contrast
+magnitudes (/p/ $<$ /t/ $<$ /k/), and non-negativity of the absolute
+/p/ baseline. They deliberately do not encode a specific absolute
+baseline value for /p/, since English VOT for a given place of
+articulation varies considerably across speech styles and elicitation
+methods, and we have no single well-calibrated value to anchor it to.
 
 ```{r bayes-maximal-priors}
-# get_prior() on the maximal formula to check what needs specifying;
-# the existing sd-class prior applies to all random-slope SDs by
-# default, but the correlation matrix (class = cor) needs an explicit
-# prior of its own
-get_prior(vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
-          data = data_mod, family = gaussian())
-
 maximal_priors <- c(
-  # Same fixed-effect priors as the informed model above
-  prior(normal(30, 10), class = Intercept),
+  # Intercept: no informative location prior. English /p/ VOT varies
+  # considerably across speech styles, elicitation methods, and
+  # corpora (careful/citation-form speech tends to run longer than
+  # casual speech), so we don't have a single well-calibrated
+  # absolute value to anchor the baseline to -- unlike the POA
+  # *contrasts* below, where the ordering and approximate relative
+  # magnitude are well established across studies regardless of
+  # absolute baseline. We only constrain the intercept to be
+  # non-negative (VOT cannot be negative for voiceless stops in this
+  # coding), via a wide, effectively flat prior over the plausible
+  # range combined with a lower bound at zero.
+  prior(normal(0, 100), class = Intercept, lb = 0),
+
+  # Strongly informed: established literature on the *relative*
+  # place-of-articulation ordering and approximate contrast
+  # magnitude (more posterior places of articulation associated with
+  # longer VOT), independent of the absolute baseline
   prior(normal(15, 8),  class = b, coef = ons_poat),
   prior(normal(30, 12), class = b, coef = ons_poak),
+
+  # Weakly informed / regularizing: the focal, untested hypothesis
   prior(normal(0, 20),  class = b, coef = "coda_vc1"),
   prior(normal(0, 15),  class = b, coef = "ons_poat:coda_vc1"),
   prior(normal(0, 15),  class = b, coef = "ons_poak:coda_vc1"),
@@ -488,8 +503,24 @@ maximal_priors <- c(
 
 ```{r bayes-maximal-fit, results='hide'}
 # Maximal models are harder to sample; more iterations and a higher
-# adapt_delta reduce divergent transitions at the cost of runtime
-bayes_model_maximal <- brm(
+# adapt_delta reduce divergent transitions at the cost of runtime.
+# Both models share these settings so they're directly comparable.
+
+# Default (weakly informative) priors, maximal random-effects structure
+bayes_model_maximal_default <- brm(
+  vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
+  data    = data_mod,
+  family  = gaussian(),
+  chains  = 4,
+  iter    = 4000,
+  warmup  = 1500,
+  cores   = 4,
+  seed    = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+# Literature-informed priors, maximal random-effects structure
+bayes_model_maximal_informed <- brm(
   vot ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
   data    = data_mod,
   family  = gaussian(),
@@ -505,40 +536,70 @@ bayes_model_maximal <- brm(
 
 ## Convergence diagnostics
 
-Before interpreting the maximal model, check for divergent
-transitions, $\hat{R}$, and effective sample size. A high divergence
-count, $\hat{R} > 1.02$, or very low ESS on the random-slope or
-correlation parameters indicates the data may not fully support this
-structure, in which case the simplified alternatives below should be
-preferred over forcing the maximal model.
+Before interpreting either model, check for divergent transitions,
+$\hat{R}$, and effective sample size. A high divergence count, $\hat{R}
+> 1.02$, or very low ESS on the random-slope or correlation parameters
+would indicate the data do not fully support this structure, in which
+case the simplified alternatives below should be preferred over
+forcing the maximal model.
 
 ```{r bayes-maximal-diagnostics}
-print(summary(bayes_model_maximal), digits = 4)
+print(summary(bayes_model_maximal_default), digits = 2)
+sum(rstan::get_divergent_iterations(bayes_model_maximal_default$fit))
 
-# Number of divergent transitions (should be 0, or a small fraction
-# of total post-warmup draws)
-sum(rstan::get_divergent_iterations(bayes_model_maximal$fit))
+print(summary(bayes_model_maximal_informed), digits = 2)
+sum(rstan::get_divergent_iterations(bayes_model_maximal_informed$fit))
 
-# Visual check on chains and random-effect correlations
-plot(bayes_model_maximal, variable = "^sd_", regex = TRUE)
-plot(bayes_model_maximal, variable = "^cor_", regex = TRUE)
+# Visual check on chains and random-effect correlations (informed model)
+plot(bayes_model_maximal_informed, variable = "^sd_", regex = TRUE)
+plot(bayes_model_maximal_informed, variable = "^cor_", regex = TRUE)
 ```
 
-## Comparison to the random-intercept-only model
+## Default vs. informed priors, on the maximal structure
 
-```{r bayes-maximal-compare}
-loo_maximal <- loo(bayes_model_maximal)
-loo_compare(loo_informed, loo_maximal)
+```{r bayes-maximal-loo}
+loo_maximal_default  <- loo(bayes_model_maximal_default)
+loo_maximal_informed <- loo(bayes_model_maximal_informed)
+loo_compare(loo_maximal_default, loo_maximal_informed)
+```
 
-# Direct comparison of the focal coefficient across random-effects
-# structures
-posterior_summary(bayes_model_informed, variable = "b_coda_vc1")
-posterior_summary(bayes_model_maximal,  variable = "b_coda_vc1")
+Direct posterior comparison for the focal coefficient:
+
+```{r bayes-maximal-posterior-compare}
+posterior_summary(bayes_model_maximal_default,  variable = "b_coda_vc1")
+posterior_summary(bayes_model_maximal_informed, variable = "b_coda_vc1")
+```
+
+```{r bayes-maximal-ppcheck, fig.width=7, fig.height=5}
+pp_check(bayes_model_maximal_informed, type = "hist", ndraws = 100) +
+  ggtitle("Prior Predictive Check: Do simulated VOTs look reasonable?")
+```
+
+### Full-precision estimates for all fixed effects
+
+```{r bayes-maximal-full-precision}
+maximal_default_fx  <- as.data.frame(posterior_summary(bayes_model_maximal_default))  %>%
+  rownames_to_column("parameter") %>%
+  filter(str_starts(parameter, "b_")) %>%
+  rename_with(~ paste0("default_", .x), -parameter)
+
+maximal_informed_fx <- as.data.frame(posterior_summary(bayes_model_maximal_informed)) %>%
+  rownames_to_column("parameter") %>%
+  filter(str_starts(parameter, "b_")) %>%
+  rename_with(~ paste0("informed_", .x), -parameter)
+
+maximal_fixef_comparison <- left_join(maximal_default_fx, maximal_informed_fx, by = "parameter") %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2)))
+
+maximal_fixef_comparison
 ```
 
 ## If the maximal model does not converge cleanly
 
-If `bayes_model_maximal` shows divergent transitions, elevated
+Both maximal models above converged cleanly in our run (zero divergent
+transitions, $\hat{R} \leq 1.00$ throughout), so no simplification was
+necessary. If a future re-fit (e.g., after adding trials, changing
+priors, or modifying the formula) shows divergent transitions, elevated
 $\hat{R}$, or very low ESS on the random-effect correlations, simplify
 in this order before abandoning the random-slopes structure entirely:
 
@@ -576,13 +637,114 @@ bayes_model_reduced <- brm(
 
 # Compare whichever structures were fitted; report this comparison
 # alongside the final model choice
-loo_compare(loo_informed, loo(bayes_model_zerocorr), loo(bayes_model_reduced))
+loo_compare(loo_maximal_informed, loo(bayes_model_zerocorr), loo(bayes_model_reduced))
+```
+
+## Random-intercept-only models (for comparison only)
+
+The models below are **not** the primary reported analysis. They are
+included only to document why the maximal structure above was
+adopted: comparing a simpler, random-intercept-only structure against
+the maximal one lets us confirm that the extra complexity is actually
+supported by the data, and to show explicitly how much the
+intercept-only structure understates uncertainty in the coda-voicing
+effect. If you are only interested in the primary results, skip to
+the Ridge Plots section.
+
+```{r bayes-intercept-only, results='hide'}
+bayes_model_default <- brm(
+  vot ~ ons_poa * coda_vc + (1 | sub),
+  data   = data_mod,
+  family = gaussian(),
+  chains = 4,
+  iter   = 2000,
+  cores  = 4,
+  seed   = 123
+)
+
+bayes_model_informed <- brm(
+  vot ~ ons_poa * coda_vc + (1 | sub),
+  data   = data_mod,
+  family = gaussian(),
+  prior  = maximal_priors[maximal_priors$class != "cor", ],
+  chains = 4,
+  iter   = 2000,
+  cores  = 4,
+  seed   = 123
+)
+```
+
+```{r bayes-intercept-only-compare}
+# Does adding random slopes actually improve predictive fit?
+loo_default  <- loo(bayes_model_default)
+loo_informed <- loo(bayes_model_informed)
+loo_compare(loo_informed, loo_maximal_informed)
+
+# How much narrower (anti-conservative) is the intercept-only
+# interval for the focal coefficient, relative to the maximal model?
+posterior_summary(bayes_model_informed,          variable = "b_coda_vc1")
+posterior_summary(bayes_model_maximal_informed,  variable = "b_coda_vc1")
+```
+
+## Does the VOT/vowel-duration ratio differ by coda voicing?
+
+If onset VOT and vowel duration both lengthen together under a shared
+word-level timing mechanism, the *ratio* of VOT to vowel duration
+(`vot_ratio`, computed in the data-preparation step above) might stay
+roughly constant across coda-voicing contexts even though the raw VOT
+differs. Testing whether `vot_ratio` itself varies by coda voicing is
+therefore a useful check: a credible coda-voicing effect on the ratio
+would suggest VOT and vowel duration are *not* simply scaling together
+proportionally, while a ratio effect indistinguishable from zero would
+be consistent with proportional scaling. For consistency with the
+primary VOT model above, this is fit with the same maximal
+random-effects structure (by-subject random slopes for place of
+articulation, coda voicing, and their interaction, plus their
+correlations).
+
+```{r bayes-ratio-model, results='hide'}
+# Maximal random-effects structure, matching the main VOT model above
+# for consistency. We do NOT reuse maximal_priors here: those priors
+# (e.g., the POA contrast priors of normal(15,8)/normal(30,12) ms,
+# the coda-voicing prior of normal(0,20) ms) are scaled for a
+# millisecond-scale outcome, but vot_ratio is a unitless quantity
+# with a very different scale (~0.8, roughly 0-1.5 range). Applying
+# ms-scale priors here would be exactly the kind of units mismatch
+# we corrected earlier for vot/vdur. brms' default priors are scaled
+# automatically from the data, so we rely on those instead, with the
+# same sampler settings (iterations, warmup, adapt_delta) as the main
+# maximal model for consistency and comparable convergence behavior.
+bayes_model_ratio <- brm(
+  vot_ratio ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub),
+  data    = data_mod,
+  family  = gaussian(),
+  chains  = 4,
+  iter    = 4000,
+  warmup  = 1500,
+  cores   = 4,
+  seed    = 123,
+  control = list(adapt_delta = 0.95)
+)
+```
+
+```{r bayes-ratio-summary}
+print(summary(bayes_model_ratio), digits = 4)
+
+# Convergence check, mirroring the main maximal model's diagnostics
+sum(rstan::get_divergent_iterations(bayes_model_ratio$fit))
+
+# Focal test: does the coda-voicing coefficient's 95% CrI exclude
+# zero? If yes, the VOT/Vdur ratio differs credibly by coda voicing
+# context; if the CrI spans zero, the ratio is not credibly different
+# between voiced- and voiceless-coda contexts.
+posterior_summary(bayes_model_ratio, variable = "b_coda_vc1")
 ```
 
 # Ridge plots with posterior predictions
 
-Ridge plots with posterior predictions overlaid, for both Bayesian
-models, on the shared `/p/` reference level.
+Ridge plots with posterior predictions overlaid, for the primary
+maximal-random-effects models (default and informed priors), on the
+shared `/p/` reference level.
 
 ```{r ridge-pred-setup}
 data_mod$poa_coda <- factor(
@@ -650,14 +812,14 @@ make_ridge_plot <- function(model, plot_title = "") {
       "0.t" = "#00441B", "1.t" = "#006D2C",
       "0.k" = "#08306B", "1.k" = "#08519C"
     )) +
-    annotate("text", x = 0.01, y = 1.5, label = "p\u02b0", hjust = 1.2, vjust = 0.5,
+    annotate("text", x = 10, y = 1.5, label = "/p/", hjust = 1.2, vjust = 0.5,
              size = 4, fontface = "bold") +
-    annotate("text", x = 0.01, y = 3.5, label = "t\u02b0", hjust = 1.2, vjust = 0.5,
+    annotate("text", x = 10, y = 3.5, label = "/t/", hjust = 1.2, vjust = 0.5,
              size = 4, fontface = "bold") +
-    annotate("text", x = 0.01, y = 5.5, label = "k\u02b0", hjust = 1.2, vjust = 0.5,
+    annotate("text", x = 10, y = 5.5, label = "/k/", hjust = 1.2, vjust = 0.5,
              size = 4, fontface = "bold") +
-    labs(x = "VOT (s)", y = "", title = plot_title) +
-    xlim(0, 0.2) +
+    labs(x = "VOT (ms)", y = "", title = plot_title) +
+    xlim(0, 200) +
     coord_cartesian(ylim = c(0.5, 6.5)) +
     theme_minimal() +
     guides(fill = "none", color = "none",
@@ -678,7 +840,7 @@ make_ridge_plot <- function(model, plot_title = "") {
 ## Default-prior model
 
 ```{r ridge-default, fig.width=7, fig.height=5}
-p_default <- make_ridge_plot(bayes_model_default, plot_title = "Default priors")
+p_default <- make_ridge_plot(bayes_model_maximal_default, plot_title = "Default priors")
 print(p_default)
 ggsave("ridge_default.png", plot = p_default, bg = "white", width = 7, height = 5, dpi = 300)
 ```
@@ -686,7 +848,7 @@ ggsave("ridge_default.png", plot = p_default, bg = "white", width = 7, height = 
 ## Informed-prior model
 
 ```{r ridge-informed, fig.width=7, fig.height=5}
-p_informed <- make_ridge_plot(bayes_model_informed, plot_title = "Informed priors")
+p_informed <- make_ridge_plot(bayes_model_maximal_informed, plot_title = "")
 print(p_informed)
 ggsave("ridge_informed.png", plot = p_informed, bg = "white", width = 7, height = 5, dpi = 300)
 ```

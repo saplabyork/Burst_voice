@@ -1,0 +1,488 @@
+---
+title: "Direct and Indirect Effects of Coda Voicing on Onset VOT: A Bayesian Mediation Analysis"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Overview
+
+This analysis tests whether coda voicing exerts an *indirect* effect
+on onset voice onset time (VOT), mediated by vowel duration:
+
+$$\text{Coda Voicing} \xrightarrow{a} \text{Vowel Duration}
+\xrightarrow{b} \text{VOT}$$
+
+This document supersedes an earlier draft that used frequentist SEM
+(`lavaan`) and a random-intercept-only mediation approach
+(`mediation` + `lme4`). It is rewritten here to be consistent with the
+primary VOT analysis in every respect that matters for comparability:
+
+- **Units**: `vot` and `vdur` are in milliseconds throughout (the
+  earlier draft used seconds).
+- **Random-effects structure**: mediation is estimated from two
+  separate **Bayesian maximal-structure models** (mediator equation
+  and outcome equation), each fit with `brms` using by-subject random
+  slopes for place of articulation, coda voicing, and their
+  interaction — the same maximal logic used for the primary VOT
+  model, applied consistently to both mediation equations. A fully
+  joint multivariate version, which links the two equations' random
+  effects into one shared correlation matrix, was attempted first but
+  proved computationally impractical (78 correlation terms from 20
+  subjects); that attempt and the reasoning for stepping back from it
+  are documented in Section 5.
+- **Priors**: informed priors are used only where independent
+  literature genuinely supports a specific magnitude, following the
+  same tiered logic used for the primary VOT model's priors (strong
+  literature support vs. directional-but-uncertain support vs. no
+  informative prior at all for the focal, untested quantity).
+- **Inference**: indirect, direct, and total effects are computed by
+  multiplying posterior draws from the two separately-fit models. This
+  is an approximation — it treats the two equations' random effects as
+  independent across equations, when in reality a given speaker's
+  mediator-equation and outcome-equation random effects are likely
+  correlated. This is a smaller and more defensible simplification
+  than the random-intercept-only assumption of the original
+  `mediation`/`lme4` approach, and is standard practice when a fully
+  joint model is not tractable.
+
+A frequentist comparison (the original `lavaan`/`mediation` approach)
+is retained at the end as an optional robustness check, not as the
+primary analysis.
+
+---
+
+# 1. Load Packages
+
+```{r libraries}
+library(brms)
+library(tidyverse)
+library(posterior)
+```
+
+---
+
+# 2. Prepare the Data
+
+Data preparation matches the primary VOT analysis exactly: `ons_poa`
+coded once as a `p`/`t`/`k` factor (reference level `/p/`), `coda_vc`
+as a 0/1 factor, and `vot`/`vdur` converted from seconds to
+milliseconds.
+
+```{r data-prep}
+data <- read.csv("/Users/chandan/Desktop/GitHub/Burst_voice/Data/data_12-11-24.csv",
+                  header = TRUE)
+
+data <- data %>%
+  mutate(
+    ons_poa = factor(ons_poa, levels = c(1, 2, 3), labels = c("p", "t", "k")),
+    coda_vc = factor(coda_vc, levels = c(0, 1)),
+    vot  = vot  * 1000,
+    vdur = vdur * 1000
+  )
+
+data_mod <- data %>% filter(!is.na(vot), !is.na(vdur))
+
+number_of_subs <- length(unique(data_mod$sub))
+number_of_subs
+```
+
+---
+
+# 3. Descriptive Statistics
+
+```{r descriptives}
+data_mod %>%
+  group_by(ons_poa, coda_vc) %>%
+  summarise(
+    n         = n(),
+    mean_vot  = round(mean(vot),  1),
+    mean_vdur = round(mean(vdur), 1),
+    .groups   = "drop"
+  )
+```
+
+```{r plot-descriptives, fig.width=10, fig.height=5}
+p1 <- ggplot(data_mod, aes(x = coda_vc, y = vdur, fill = coda_vc)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  facet_wrap(~ons_poa) +
+  labs(title = "Vowel Duration by Coda Voicing and Onset Place",
+       x = "Coda Voicing", y = "Vowel Duration (ms)") +
+  scale_x_discrete(labels = c("Voiceless", "Voiced")) +
+  theme_minimal() + theme(legend.position = "none")
+
+p2 <- ggplot(data_mod, aes(x = coda_vc, y = vot, fill = coda_vc)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  facet_wrap(~ons_poa) +
+  labs(title = "VOT by Coda Voicing and Onset Place",
+       x = "Coda Voicing", y = "VOT (ms)") +
+  scale_x_discrete(labels = c("Voiceless", "Voiced")) +
+  theme_minimal() + theme(legend.position = "none")
+
+gridExtra::grid.arrange(p1, p2, ncol = 2)
+```
+
+---
+
+# 4. Bayesian Mediation Model (primary analysis)
+
+## 4.1 Model structure
+
+The mediator equation (`vdur ~ ons_poa * coda_vc`) and outcome
+equation (`vot ~ vdur + ons_poa * coda_vc`) are fit as two **separate**
+maximal-structure `brms` models, each with by-subject random slopes
+for place of articulation, coda voicing, and their interaction (plus,
+in the outcome equation, a random slope for vowel duration itself).
+This mirrors exactly the random-effects structure of the primary VOT
+model, applied to each mediation path individually.
+
+```{r mediation-formulas}
+bf_vdur <- bf(vdur ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub))
+bf_vot  <- bf(vot  ~ vdur + ons_poa * coda_vc + (1 + vdur + ons_poa * coda_vc | sub))
+```
+
+**Why not fit these jointly?** A fully joint multivariate model
+(linking both equations' random effects into one shared correlation
+matrix via `brms`' `|q|` syntax) would be the more complete approach,
+since it would capture any correlation between a speaker's
+mediator-equation and outcome-equation random effects. We attempted
+this first; combining both equations' random effects yields 13
+correlated by-subject terms (78 unique correlations) from only 20
+subjects, and in practice this model did not sample in a practical
+amount of time even with an increased `adapt_delta` and
+`max_treedepth`. Fitting the two equations separately is a
+well-established, more tractable approximation, at the cost of
+treating the two equations' random effects as independent across
+equations. See Section 5 for the joint model specification and a
+discussion of when it might be worth revisiting.
+
+## 4.2 Priors
+
+Priors are tiered by epistemic status, extending the same logic used
+for the primary VOT model's priors:
+
+1. **Strong literature support, specific expected magnitude**:
+   - Place-of-articulation contrasts on VOT (as in the primary model):
+     $\mathcal{N}(15, 8)$ ms for /t/, $\mathcal{N}(30, 12)$ ms for /k/.
+   - Coda voicing's effect on vowel duration (path *a*) — this is the
+     classic, extensively replicated "voicing effect"
+     \citep{Chen1970,House1953,PetersonLehiste1960}. Centered at a
+     literature-typical magnitude for English (~55 ms) with a wide SD
+     reflecting real cross-study heterogeneity: $\mathcal{N}(55, 30)$ ms.
+2. **Directionally established, magnitude uncertain**:
+   - Vowel duration's effect on onset VOT (path *b*) — a positive
+     relationship is well established directionally, but not tightly
+     quantified across studies, so this prior is directional but wide:
+     $\mathcal{N}(0.15, 0.15)$.
+3. **Focal, untested quantities — neutral, zero-centered**:
+   - The *direct* effect of coda voicing on onset VOT, controlling for
+     vowel duration (path *c*) — this is the whole point of the
+     mediation analysis, so it must not be prejudged:
+     $\mathcal{N}(0, 20)$ ms.
+   - All place x coda-voicing interaction terms, in both equations.
+   - Both intercepts: no informative absolute location (matching the
+     primary model's reasoning that absolute baseline durations vary
+     too much across speech styles to anchor confidently), constrained
+     only to be non-negative via `lb = 0`.
+
+Because the two equations are now fit as separate (single-response)
+models, priors no longer need `resp =` qualifiers.
+
+```{r mediation-priors}
+# Check before fitting, as always
+get_prior(bf_vdur, data = data_mod)
+get_prior(bf_vot,  data = data_mod)
+
+vdur_priors <- c(
+  prior(normal(0, 150), class = Intercept, lb = 0),
+  prior(normal(55, 30), class = b, coef = coda_vc1),
+  prior(normal(0, 25),  class = b, coef = "ons_poat:coda_vc1"),
+  prior(normal(0, 25),  class = b, coef = "ons_poak:coda_vc1"),
+  prior(normal(0, 30),  class = sd),
+  prior(normal(0, 30),  class = sigma),
+  prior(lkj(2), class = cor)
+)
+
+vot_priors <- c(
+  prior(normal(0, 100),    class = Intercept, lb = 0),
+  prior(normal(15, 8),     class = b, coef = ons_poat),
+  prior(normal(30, 12),    class = b, coef = ons_poak),
+  prior(normal(0.15, 0.15), class = b, coef = vdur),
+  prior(normal(0, 20),     class = b, coef = coda_vc1),
+  prior(normal(0, 15),     class = b, coef = "ons_poat:coda_vc1"),
+  prior(normal(0, 15),     class = b, coef = "ons_poak:coda_vc1"),
+  prior(normal(0, 20),     class = sd),
+  prior(normal(0, 25),     class = sigma),
+  prior(lkj(2), class = cor)
+)
+```
+
+## 4.3 Fit the models
+
+Each equation is fit twice, as with the primary VOT model: once with
+`brms`' default priors, once with the tiered informed priors above.
+These are now single-equation maximal models — the same structure that
+converged cleanly and reasonably quickly for the primary VOT model —
+so standard settings (`adapt_delta = 0.95`, default `max_treedepth`)
+should suffice; the earlier joint model's need for far more aggressive
+settings was itself a symptom of that model being impractically large.
+
+```{r mediation-fit, results='hide'}
+# Mediator equation (vdur ~ ons_poa * coda_vc)
+model_M_default <- brm(
+  bf_vdur, data = data_mod, family = gaussian(),
+  chains = 4, iter = 4000, warmup = 1500, cores = 4, seed = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+model_M_informed <- brm(
+  bf_vdur, data = data_mod, family = gaussian(),
+  prior = vdur_priors,
+  chains = 4, iter = 4000, warmup = 1500, cores = 4, seed = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+# Outcome equation (vot ~ vdur + ons_poa * coda_vc)
+model_Y_default <- brm(
+  bf_vot, data = data_mod, family = gaussian(),
+  chains = 4, iter = 4000, warmup = 1500, cores = 4, seed = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+model_Y_informed <- brm(
+  bf_vot, data = data_mod, family = gaussian(),
+  prior = vot_priors,
+  chains = 4, iter = 4000, warmup = 1500, cores = 4, seed = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+# Save immediately -- these take a while to fit and losing them to a
+# crashed/restarted session is costly
+saveRDS(model_M_default,  "model_M_default.rds")
+saveRDS(model_M_informed, "model_M_informed.rds")
+saveRDS(model_Y_default,  "model_Y_default.rds")
+saveRDS(model_Y_informed, "model_Y_informed.rds")
+```
+
+## 4.4 Convergence diagnostics
+
+```{r mediation-diagnostics}
+print(summary(model_M_informed), digits = 2)
+sum(rstan::get_divergent_iterations(model_M_informed$fit))
+
+print(summary(model_Y_informed), digits = 2)
+sum(rstan::get_divergent_iterations(model_Y_informed$fit))
+```
+
+## 4.5 Compute indirect, direct, and total effects
+
+Path *a* comes from the mediator model's `coda_vc1` coefficient; path
+*b* and path *c* both come from the outcome model (`vdur` and
+`coda_vc1` coefficients, respectively). Because *a* and *b* come from
+two separately-fit models, we approximate their joint distribution by
+pairing posterior draws index-by-index (both models are fit with the
+same number of post-warmup draws per chain and the same seed
+structure, so this pairing is arbitrary but consistent -- it does
+*not* reflect genuine posterior correlation between the two
+equations' parameters, only their marginal uncertainty).
+
+```{r mediation-effects}
+summarize_draws_custom <- function(x) {
+  c(estimate = mean(x),
+    lower    = as.numeric(quantile(x, 0.025)),
+    upper    = as.numeric(quantile(x, 0.975)))
+}
+
+compute_mediation_separate <- function(model_M, model_Y) {
+  a <- as_draws_df(model_M)$b_coda_vc1
+  b <- as_draws_df(model_Y)$b_vdur
+  c_direct <- as_draws_df(model_Y)$b_coda_vc1
+
+  indirect <- a * b               # approximate: a, b treated as independent
+  direct   <- c_direct
+  total    <- direct + indirect
+  prop_mediated <- indirect / total
+
+  list(
+    a             = summarize_draws_custom(a),
+    b             = summarize_draws_custom(b),
+    indirect      = summarize_draws_custom(indirect),
+    direct        = summarize_draws_custom(direct),
+    total         = summarize_draws_custom(total),
+    prop_mediated = summarize_draws_custom(prop_mediated),
+    draws = list(a = a, b = b, indirect = indirect,
+                 direct = direct, total = total)
+  )
+}
+
+med_informed <- compute_mediation_separate(model_M_informed, model_Y_informed)
+med_default  <- compute_mediation_separate(model_M_default,  model_Y_default)
+
+bind_rows(
+  a             = med_informed$a,
+  b             = med_informed$b,
+  indirect      = med_informed$indirect,
+  direct        = med_informed$direct,
+  total         = med_informed$total,
+  prop_mediated = med_informed$prop_mediated,
+  .id = "quantity"
+) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 3)))
+```
+
+## 4.6 Default vs. informed priors
+
+```{r mediation-compare}
+loo_M_default  <- loo(model_M_default)
+loo_M_informed <- loo(model_M_informed)
+loo_compare(loo_M_default, loo_M_informed)
+
+loo_Y_default  <- loo(model_Y_default)
+loo_Y_informed <- loo(model_Y_informed)
+loo_compare(loo_Y_default, loo_Y_informed)
+
+# Direct comparison of the indirect effect under both prior specs
+summarize_draws_custom(med_default$draws$indirect)
+summarize_draws_custom(med_informed$draws$indirect)
+```
+
+## 4.7 Visualize the posterior distributions
+
+```{r mediation-plot, fig.width=8, fig.height=5}
+plot_df <- tibble(
+  effect = rep(c("Indirect (a x b)", "Direct (c)", "Total"), each = length(med_informed$draws$indirect)),
+  value  = c(med_informed$draws$indirect, med_informed$draws$direct, med_informed$draws$total)
+) %>%
+  mutate(effect = factor(effect, levels = c("Total", "Direct (c)", "Indirect (a x b)")))
+
+ggplot(plot_df, aes(x = value, y = effect, fill = effect)) +
+  ggridges::geom_density_ridges(alpha = 0.7, scale = 0.9) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
+  labs(x = "Effect on onset VOT (ms)", y = "",
+       title = "Posterior distributions: indirect, direct, and total effects") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+---
+
+# 5. The fully joint multivariate model (attempted, not primary)
+
+For completeness and reproducibility, this is the fully joint model
+that was attempted before settling on the two-separate-equations
+approach above. It links both equations' random effects into a single
+correlation matrix via `brms`' `|q|` grouping syntax, which would in
+principle be the more complete analysis (it does not assume
+independence between a speaker's mediator- and outcome-equation random
+effects, unlike Section 4's approach). In practice, this model proved
+impractically slow to sample even with `adapt_delta = 0.99` and
+`max_treedepth = 15`, and was abandoned in favor of Section 4's
+approach. It may be worth revisiting with substantially more
+compute time, a longer allowed runtime, or a reduced random-slopes
+structure (e.g., dropping place-of-articulation random slopes while
+keeping the focal `coda_vc` and `vdur` slopes) if a fully joint
+estimate is needed for a future revision.
+
+```{r mediation-joint, eval=FALSE}
+bf_vdur_joint <- bf(vdur ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | q | sub))
+bf_vot_joint  <- bf(vot  ~ vdur + ons_poa * coda_vc + (1 + vdur + ons_poa * coda_vc | q | sub))
+
+mediation_informed_priors_joint <- c(
+  prior(normal(0, 150), class = Intercept, resp = vdur, lb = 0),
+  prior(normal(55, 30), class = b, coef = coda_vc1, resp = vdur),
+  prior(normal(0, 25),  class = b, coef = "ons_poat:coda_vc1", resp = vdur),
+  prior(normal(0, 25),  class = b, coef = "ons_poak:coda_vc1", resp = vdur),
+  prior(normal(0, 30),  class = sd,    resp = vdur),
+  prior(normal(0, 30),  class = sigma, resp = vdur),
+
+  prior(normal(0, 100),     class = Intercept, resp = vot, lb = 0),
+  prior(normal(15, 8),      class = b, coef = ons_poat, resp = vot),
+  prior(normal(30, 12),     class = b, coef = ons_poak, resp = vot),
+  prior(normal(0.15, 0.15), class = b, coef = vdur, resp = vot),
+  prior(normal(0, 20),      class = b, coef = coda_vc1, resp = vot),
+  prior(normal(0, 15),      class = b, coef = "ons_poat:coda_vc1", resp = vot),
+  prior(normal(0, 15),      class = b, coef = "ons_poak:coda_vc1", resp = vot),
+  prior(normal(0, 20),      class = sd,    resp = vot),
+  prior(normal(0, 25),      class = sigma, resp = vot),
+
+  prior(lkj(2), class = cor)
+)
+
+bayes_med_joint <- brm(
+  bf_vdur_joint + bf_vot_joint + set_rescor(FALSE),
+  data    = data_mod,
+  family  = gaussian(),
+  prior   = mediation_informed_priors_joint,
+  chains  = 4,
+  iter    = 4000,
+  warmup  = 1500,
+  cores   = 4,
+  seed    = 123,
+  control = list(adapt_delta = 0.99, max_treedepth = 15)
+)
+```
+
+---
+
+# 6. Summary
+
+The two-equation Bayesian mediation analysis in Section 4 provides
+estimates of the indirect effect of coda voicing on onset VOT,
+operating through vowel duration (path $a \times b$), and the direct,
+residual effect of coda voicing on onset VOT after controlling for
+vowel duration (path $c$), each with full posterior uncertainty from
+a maximal random-effects structure — without relying on the
+frequentist bootstrap or random-intercept-only assumptions of the
+original SEM/`mediation` approach. The one respect in which this
+falls short of a fully consistent maximal-structure analysis is that
+the two equations' random effects are treated as independent, since
+the fully joint model (Section 5) was not tractable in practice.
+
+---
+
+# 7. Appendix: Frequentist comparison (optional robustness check)
+
+The code below reproduces the original `lavaan`/`mediation` approach
+for comparison purposes only. It is **not** the primary analysis: it
+uses random-intercept-only mixed models and bootstrap/quasi-Bayesian
+inference rather than the maximal-structure models above, and (once
+corrected to ms, as below) its coefficients are on a different fitted
+scale than the primary model's. Treat any correspondence between the
+two as a rough sanity check, not confirmatory evidence.
+
+```{r frequentist-appendix, eval=FALSE}
+library(lavaan)
+library(lme4)
+library(mediation)
+
+# Dummy-coded POA for lavaan (does not handle factors the way lme4 does)
+data_mod$alveolar <- ifelse(data_mod$ons_poa == "t", 1, 0)
+data_mod$velar    <- ifelse(data_mod$ons_poa == "k", 1, 0)
+data_mod$coda_vc_num <- as.numeric(as.character(data_mod$coda_vc))
+
+sem_model <- '
+  vdur ~ a*coda_vc_num + alveolar + velar
+  vot  ~ b*vdur + c*coda_vc_num + alveolar + velar
+  indirect := a * b
+  direct   := c
+  total    := c + (a * b)
+'
+
+fit_sem <- sem(sem_model, data = data_mod, se = "bootstrap",
+                bootstrap = 5000, cluster = "sub")
+summary(fit_sem, fit.measures = TRUE)
+
+model_M <- lmer(vdur ~ coda_vc + ons_poa + (1 | sub), data = data_mod, REML = FALSE)
+model_Y <- lmer(vot  ~ vdur + coda_vc + ons_poa + (1 | sub), data = data_mod, REML = FALSE)
+
+med_out <- mediate(model_M, model_Y, treat = "coda_vc", mediator = "vdur",
+                    boot = FALSE, sims = 1000)
+summary(med_out)
+```

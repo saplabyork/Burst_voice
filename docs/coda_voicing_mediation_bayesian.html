@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Your Name" />
+
+<meta name="date" content="2026-07-18" />
+
+<title>Direct and Indirect Effects of Coda Voicing on Onset VOT: A Bayesian Mediation Analysis</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">BurstVoice</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Background</a>
+</li>
+<li>
+  <a href="measurements.html">Acoustics methods</a>
+</li>
+<li>
+  <a href="Practice.html">Practice</a>
+</li>
+<li>
+  <a href="complete_vot_analysis.html">Data Production</a>
+</li>
+<li>
+  <a href="single_stim_perception.html">Data Perception</a>
+</li>
+<li>
+  <a href="notes.html">Notes</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Direct and Indirect Effects of Coda Voicing
+on Onset VOT: A Bayesian Mediation Analysis</h1>
+<h4 class="author">Your Name</h4>
+<h4 class="date">2026-07-18</h4>
+
+</div>
+
+
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>This analysis tests whether coda voicing exerts an <em>indirect</em>
+effect on onset voice onset time (VOT), mediated by vowel duration:</p>
+<p><span class="math display">\[\text{Coda Voicing} \xrightarrow{a}
+\text{Vowel Duration}
+\xrightarrow{b} \text{VOT}\]</span></p>
+<p>This document supersedes an earlier draft that used frequentist SEM
+(<code>lavaan</code>) and a random-intercept-only mediation approach
+(<code>mediation</code> + <code>lme4</code>). It is rewritten here to be
+consistent with the primary VOT analysis in every respect that matters
+for comparability:</p>
+<ul>
+<li><strong>Units</strong>: <code>vot</code> and <code>vdur</code> are
+in milliseconds throughout (the earlier draft used seconds).</li>
+<li><strong>Random-effects structure</strong>: mediation is estimated
+from two separate <strong>Bayesian maximal-structure models</strong>
+(mediator equation and outcome equation), each fit with
+<code>brms</code> using by-subject random slopes for place of
+articulation, coda voicing, and their interaction — the same maximal
+logic used for the primary VOT model, applied consistently to both
+mediation equations. A fully joint multivariate version, which links the
+two equations’ random effects into one shared correlation matrix, was
+attempted first but proved computationally impractical (78 correlation
+terms from 20 subjects); that attempt and the reasoning for stepping
+back from it are documented in Section 5.</li>
+<li><strong>Priors</strong>: informed priors are used only where
+independent literature genuinely supports a specific magnitude,
+following the same tiered logic used for the primary VOT model’s priors
+(strong literature support vs. directional-but-uncertain support vs. no
+informative prior at all for the focal, untested quantity).</li>
+<li><strong>Inference</strong>: indirect, direct, and total effects are
+computed by multiplying posterior draws from the two separately-fit
+models. This is an approximation — it treats the two equations’ random
+effects as independent across equations, when in reality a given
+speaker’s mediator-equation and outcome-equation random effects are
+likely correlated. This is a smaller and more defensible simplification
+than the random-intercept-only assumption of the original
+<code>mediation</code>/<code>lme4</code> approach, and is standard
+practice when a fully joint model is not tractable.</li>
+</ul>
+<p>A frequentist comparison (the original
+<code>lavaan</code>/<code>mediation</code> approach) is retained at the
+end as an optional robustness check, not as the primary analysis.</p>
+<hr />
+</div>
+<div id="load-packages" class="section level1">
+<h1>1. Load Packages</h1>
+<pre class="r"><code>library(brms)
+library(tidyverse)
+library(posterior)</code></pre>
+<hr />
+</div>
+<div id="prepare-the-data" class="section level1">
+<h1>2. Prepare the Data</h1>
+<p>Data preparation matches the primary VOT analysis exactly:
+<code>ons_poa</code> coded once as a
+<code>p</code>/<code>t</code>/<code>k</code> factor (reference level
+<code>/p/</code>), <code>coda_vc</code> as a 0/1 factor, and
+<code>vot</code>/<code>vdur</code> converted from seconds to
+milliseconds.</p>
+<pre class="r"><code>data &lt;- read.csv(&quot;/Users/chandan/Desktop/GitHub/Burst_voice/Data/data_12-11-24.csv&quot;,
+                  header = TRUE)
+
+data &lt;- data %&gt;%
+  mutate(
+    ons_poa = factor(ons_poa, levels = c(1, 2, 3), labels = c(&quot;p&quot;, &quot;t&quot;, &quot;k&quot;)),
+    coda_vc = factor(coda_vc, levels = c(0, 1)),
+    vot  = vot  * 1000,
+    vdur = vdur * 1000
+  )
+
+data_mod &lt;- data %&gt;% filter(!is.na(vot), !is.na(vdur))
+
+number_of_subs &lt;- length(unique(data_mod$sub))
+number_of_subs</code></pre>
+<pre><code>## [1] 20</code></pre>
+<hr />
+</div>
+<div id="descriptive-statistics" class="section level1">
+<h1>3. Descriptive Statistics</h1>
+<pre class="r"><code>data_mod %&gt;%
+  group_by(ons_poa, coda_vc) %&gt;%
+  summarise(
+    n         = n(),
+    mean_vot  = round(mean(vot),  1),
+    mean_vdur = round(mean(vdur), 1),
+    .groups   = &quot;drop&quot;
+  )</code></pre>
+<pre><code>## # A tibble: 6 × 5
+##   ons_poa coda_vc     n mean_vot mean_vdur
+##   &lt;fct&gt;   &lt;fct&gt;   &lt;int&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 p       0         542     78.7      104.
+## 2 p       1         312     90.8      149 
+## 3 t       0         424     89.4      111.
+## 4 t       1         351     97.1      164.
+## 5 k       0         388     92.4      106.
+## 6 k       1         349    100.       162.</code></pre>
+<pre class="r"><code>p1 &lt;- ggplot(data_mod, aes(x = coda_vc, y = vdur, fill = coda_vc)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  facet_wrap(~ons_poa) +
+  labs(title = &quot;Vowel Duration by Coda Voicing and Onset Place&quot;,
+       x = &quot;Coda Voicing&quot;, y = &quot;Vowel Duration (ms)&quot;) +
+  scale_x_discrete(labels = c(&quot;Voiceless&quot;, &quot;Voiced&quot;)) +
+  theme_minimal() + theme(legend.position = &quot;none&quot;)
+
+p2 &lt;- ggplot(data_mod, aes(x = coda_vc, y = vot, fill = coda_vc)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  facet_wrap(~ons_poa) +
+  labs(title = &quot;VOT by Coda Voicing and Onset Place&quot;,
+       x = &quot;Coda Voicing&quot;, y = &quot;VOT (ms)&quot;) +
+  scale_x_discrete(labels = c(&quot;Voiceless&quot;, &quot;Voiced&quot;)) +
+  theme_minimal() + theme(legend.position = &quot;none&quot;)
+
+gridExtra::grid.arrange(p1, p2, ncol = 2)</code></pre>
+<p><img src="coda_voicing_mediation_bayesian_files/figure-html/plot-descriptives-1.png" alt="" width="960" /></p>
+<hr />
+</div>
+<div id="bayesian-mediation-model-primary-analysis"
+class="section level1">
+<h1>4. Bayesian Mediation Model (primary analysis)</h1>
+<div id="model-structure" class="section level2">
+<h2>4.1 Model structure</h2>
+<p>The mediator equation (<code>vdur ~ ons_poa * coda_vc</code>) and
+outcome equation (<code>vot ~ vdur + ons_poa * coda_vc</code>) are fit
+as two <strong>separate</strong> maximal-structure <code>brms</code>
+models, each with by-subject random slopes for place of articulation,
+coda voicing, and their interaction (plus, in the outcome equation, a
+random slope for vowel duration itself). This mirrors exactly the
+random-effects structure of the primary VOT model, applied to each
+mediation path individually.</p>
+<pre class="r"><code>bf_vdur &lt;- bf(vdur ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub))
+bf_vot  &lt;- bf(vot  ~ vdur + ons_poa * coda_vc + (1 + vdur + ons_poa * coda_vc | sub))</code></pre>
+<p><strong>Why not fit these jointly?</strong> A fully joint
+multivariate model (linking both equations’ random effects into one
+shared correlation matrix via <code>brms</code>’ <code>|q|</code>
+syntax) would be the more complete approach, since it would capture any
+correlation between a speaker’s mediator-equation and outcome-equation
+random effects. We attempted this first; combining both equations’
+random effects yields 13 correlated by-subject terms (78 unique
+correlations) from only 20 subjects, and in practice this model did not
+sample in a practical amount of time even with an increased
+<code>adapt_delta</code> and <code>max_treedepth</code>. Fitting the two
+equations separately is a well-established, more tractable
+approximation, at the cost of treating the two equations’ random effects
+as independent across equations. See Section 5 for the joint model
+specification and a discussion of when it might be worth revisiting.</p>
+</div>
+<div id="priors" class="section level2">
+<h2>4.2 Priors</h2>
+<p>Priors are tiered by epistemic status, extending the same logic used
+for the primary VOT model’s priors:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Strong literature support, specific expected
+magnitude</strong>:
+<ul>
+<li>Place-of-articulation contrasts on VOT (as in the primary model):
+<span class="math inline">\(\mathcal{N}(15, 8)\)</span> ms for /t/,
+<span class="math inline">\(\mathcal{N}(30, 12)\)</span> ms for
+/k/.</li>
+<li>Coda voicing’s effect on vowel duration (path <em>a</em>) — this is
+the classic, extensively replicated “voicing effect” . Centered at a
+literature-typical magnitude for English (~55 ms) with a wide SD
+reflecting real cross-study heterogeneity: <span
+class="math inline">\(\mathcal{N}(55, 30)\)</span> ms.</li>
+</ul></li>
+<li><strong>Directionally established, magnitude uncertain</strong>:
+<ul>
+<li>Vowel duration’s effect on onset VOT (path <em>b</em>) — a positive
+relationship is well established directionally, but not tightly
+quantified across studies, so this prior is directional but wide: <span
+class="math inline">\(\mathcal{N}(0.15, 0.15)\)</span>.</li>
+</ul></li>
+<li><strong>Focal, untested quantities — neutral,
+zero-centered</strong>:
+<ul>
+<li>The <em>direct</em> effect of coda voicing on onset VOT, controlling
+for vowel duration (path <em>c</em>) — this is the whole point of the
+mediation analysis, so it must not be prejudged: <span
+class="math inline">\(\mathcal{N}(0, 20)\)</span> ms.</li>
+<li>All place x coda-voicing interaction terms, in both equations.</li>
+<li>Both intercepts: no informative absolute location (matching the
+primary model’s reasoning that absolute baseline durations vary too much
+across speech styles to anchor confidently), constrained only to be
+non-negative via <code>lb = 0</code>.</li>
+</ul></li>
+</ol>
+<p>Because the two equations are now fit as separate (single-response)
+models, priors no longer need <code>resp =</code> qualifiers.</p>
+<pre class="r"><code># Check before fitting, as always
+get_prior(bf_vdur, data = data_mod)</code></pre>
+<pre><code>##                  prior     class              coef group resp dpar nlpar lb ub
+##                 (flat)         b                                              
+##                 (flat)         b          coda_vc1                            
+##                 (flat)         b          ons_poak                            
+##                 (flat)         b ons_poak:coda_vc1                            
+##                 (flat)         b          ons_poat                            
+##                 (flat)         b ons_poat:coda_vc1                            
+##                 lkj(1)       cor                                              
+##                 lkj(1)       cor                     sub                      
+##  student_t(3, 122, 46) Intercept                                              
+##    student_t(3, 0, 46)        sd                                          0   
+##    student_t(3, 0, 46)        sd                     sub                  0   
+##    student_t(3, 0, 46)        sd          coda_vc1   sub                  0   
+##    student_t(3, 0, 46)        sd         Intercept   sub                  0   
+##    student_t(3, 0, 46)        sd          ons_poak   sub                  0   
+##    student_t(3, 0, 46)        sd ons_poak:coda_vc1   sub                  0   
+##    student_t(3, 0, 46)        sd          ons_poat   sub                  0   
+##    student_t(3, 0, 46)        sd ons_poat:coda_vc1   sub                  0   
+##    student_t(3, 0, 46)     sigma                                          0   
+##  tag       source
+##           default
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##           default
+##      (vectorized)
+##           default
+##           default
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##           default</code></pre>
+<pre class="r"><code>get_prior(bf_vot,  data = data_mod)</code></pre>
+<pre><code>##                   prior     class              coef group resp dpar nlpar lb ub
+##                  (flat)         b                                              
+##                  (flat)         b          coda_vc1                            
+##                  (flat)         b          ons_poak                            
+##                  (flat)         b ons_poak:coda_vc1                            
+##                  (flat)         b          ons_poat                            
+##                  (flat)         b ons_poat:coda_vc1                            
+##                  (flat)         b              vdur                            
+##                  lkj(1)       cor                                              
+##                  lkj(1)       cor                     sub                      
+##  student_t(3, 86, 25.2) Intercept                                              
+##   student_t(3, 0, 25.2)        sd                                          0   
+##   student_t(3, 0, 25.2)        sd                     sub                  0   
+##   student_t(3, 0, 25.2)        sd          coda_vc1   sub                  0   
+##   student_t(3, 0, 25.2)        sd         Intercept   sub                  0   
+##   student_t(3, 0, 25.2)        sd          ons_poak   sub                  0   
+##   student_t(3, 0, 25.2)        sd ons_poak:coda_vc1   sub                  0   
+##   student_t(3, 0, 25.2)        sd          ons_poat   sub                  0   
+##   student_t(3, 0, 25.2)        sd ons_poat:coda_vc1   sub                  0   
+##   student_t(3, 0, 25.2)        sd              vdur   sub                  0   
+##   student_t(3, 0, 25.2)     sigma                                          0   
+##  tag       source
+##           default
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##           default
+##      (vectorized)
+##           default
+##           default
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##      (vectorized)
+##           default</code></pre>
+<pre class="r"><code>vdur_priors &lt;- c(
+  prior(normal(0, 150), class = Intercept, lb = 0),
+  prior(normal(55, 30), class = b, coef = coda_vc1),
+  prior(normal(0, 25),  class = b, coef = &quot;ons_poat:coda_vc1&quot;),
+  prior(normal(0, 25),  class = b, coef = &quot;ons_poak:coda_vc1&quot;),
+  prior(normal(0, 30),  class = sd),
+  prior(normal(0, 30),  class = sigma),
+  prior(lkj(2), class = cor)
+)
+
+vot_priors &lt;- c(
+  prior(normal(0, 100),    class = Intercept, lb = 0),
+  prior(normal(15, 8),     class = b, coef = ons_poat),
+  prior(normal(30, 12),    class = b, coef = ons_poak),
+  prior(normal(0.15, 0.15), class = b, coef = vdur),
+  prior(normal(0, 20),     class = b, coef = coda_vc1),
+  prior(normal(0, 15),     class = b, coef = &quot;ons_poat:coda_vc1&quot;),
+  prior(normal(0, 15),     class = b, coef = &quot;ons_poak:coda_vc1&quot;),
+  prior(normal(0, 20),     class = sd),
+  prior(normal(0, 25),     class = sigma),
+  prior(lkj(2), class = cor)
+)</code></pre>
+</div>
+<div id="fit-the-models" class="section level2">
+<h2>4.3 Fit the models</h2>
+<p>Each equation is fit twice, as with the primary VOT model: once with
+<code>brms</code>’ default priors, once with the tiered informed priors
+above. These are now single-equation maximal models — the same structure
+that converged cleanly and reasonably quickly for the primary VOT model
+— so standard settings (<code>adapt_delta = 0.95</code>, default
+<code>max_treedepth</code>) should suffice; the earlier joint model’s
+need for far more aggressive settings was itself a symptom of that model
+being impractically large.</p>
+<pre class="r"><code># Mediator equation (vdur ~ ons_poa * coda_vc)
+model_M_default &lt;- brm(
+  bf_vdur, data = data_mod, family = gaussian(),
+  chains = 4, iter = 4000, warmup = 1500, cores = 4, seed = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+model_M_informed &lt;- brm(
+  bf_vdur, data = data_mod, family = gaussian(),
+  prior = vdur_priors,
+  chains = 4, iter = 4000, warmup = 1500, cores = 4, seed = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+# Outcome equation (vot ~ vdur + ons_poa * coda_vc)
+model_Y_default &lt;- brm(
+  bf_vot, data = data_mod, family = gaussian(),
+  chains = 4, iter = 4000, warmup = 1500, cores = 4, seed = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+model_Y_informed &lt;- brm(
+  bf_vot, data = data_mod, family = gaussian(),
+  prior = vot_priors,
+  chains = 4, iter = 4000, warmup = 1500, cores = 4, seed = 123,
+  control = list(adapt_delta = 0.95)
+)
+
+# Save immediately -- these take a while to fit and losing them to a
+# crashed/restarted session is costly
+saveRDS(model_M_default,  &quot;model_M_default.rds&quot;)
+saveRDS(model_M_informed, &quot;model_M_informed.rds&quot;)
+saveRDS(model_Y_default,  &quot;model_Y_default.rds&quot;)
+saveRDS(model_Y_informed, &quot;model_Y_informed.rds&quot;)</code></pre>
+</div>
+<div id="convergence-diagnostics" class="section level2">
+<h2>4.4 Convergence diagnostics</h2>
+<pre class="r"><code>print(summary(model_M_informed), digits = 2)</code></pre>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity 
+## Formula: vdur ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | sub) 
+##    Data: data_mod (Number of observations: 2366) 
+##   Draws: 4 chains, each with iter = 4000; warmup = 1500; thin = 1;
+##          total post-warmup draws = 10000
+## 
+## Multilevel Hyperparameters:
+## ~sub (Number of levels: 20) 
+##                                          Estimate Est.Error l-95% CI u-95% CI
+## sd(Intercept)                               17.05      3.20    11.91    24.61
+## sd(ons_poat)                                 2.27      1.70     0.10     6.38
+## sd(ons_poak)                                 2.14      1.62     0.09     6.07
+## sd(coda_vc1)                                21.02      4.07    14.42    30.12
+## sd(ons_poat:coda_vc1)                        3.06      2.31     0.12     8.51
+## sd(ons_poak:coda_vc1)                        3.54      2.61     0.16     9.84
+## cor(Intercept,ons_poat)                      0.14      0.33    -0.53     0.72
+## cor(Intercept,ons_poak)                      0.12      0.33    -0.56     0.71
+## cor(ons_poat,ons_poak)                       0.07      0.34    -0.59     0.68
+## cor(Intercept,coda_vc1)                      0.03      0.21    -0.38     0.43
+## cor(ons_poat,coda_vc1)                      -0.08      0.33    -0.67     0.57
+## cor(ons_poak,coda_vc1)                       0.09      0.32    -0.56     0.68
+## cor(Intercept,ons_poat:coda_vc1)             0.11      0.33    -0.55     0.69
+## cor(ons_poat,ons_poat:coda_vc1)             -0.03      0.34    -0.66     0.61
+## cor(ons_poak,ons_poat:coda_vc1)              0.03      0.33    -0.61     0.66
+## cor(coda_vc1,ons_poat:coda_vc1)             -0.12      0.33    -0.70     0.54
+## cor(Intercept,ons_poak:coda_vc1)             0.11      0.32    -0.56     0.69
+## cor(ons_poat,ons_poak:coda_vc1)              0.03      0.34    -0.62     0.66
+## cor(ons_poak,ons_poak:coda_vc1)             -0.03      0.34    -0.65     0.61
+## cor(coda_vc1,ons_poak:coda_vc1)              0.15      0.33    -0.53     0.73
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1)     0.05      0.34    -0.61     0.66
+##                                          Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)                            1.00     3121     5468
+## sd(ons_poat)                             1.00     4853     5258
+## sd(ons_poak)                             1.00     5674     5580
+## sd(coda_vc1)                             1.00     5087     6939
+## sd(ons_poat:coda_vc1)                    1.00     7002     6128
+## sd(ons_poak:coda_vc1)                    1.00     5837     5403
+## cor(Intercept,ons_poat)                  1.00    14507     6917
+## cor(Intercept,ons_poak)                  1.00    13310     7107
+## cor(ons_poat,ons_poak)                   1.00    10286     7632
+## cor(Intercept,coda_vc1)                  1.00     5671     6283
+## cor(ons_poat,coda_vc1)                   1.00     1488     2762
+## cor(ons_poak,coda_vc1)                   1.00     1848     3395
+## cor(Intercept,ons_poat:coda_vc1)         1.00    15653     7064
+## cor(ons_poat,ons_poat:coda_vc1)          1.00    11502     7793
+## cor(ons_poak,ons_poat:coda_vc1)          1.00    10077     7156
+## cor(coda_vc1,ons_poat:coda_vc1)          1.00    11520     8005
+## cor(Intercept,ons_poak:coda_vc1)         1.00    15571     7731
+## cor(ons_poat,ons_poak:coda_vc1)          1.00    10094     7137
+## cor(ons_poak,ons_poak:coda_vc1)          1.00     7341     7408
+## cor(coda_vc1,ons_poak:coda_vc1)          1.00    10267     6990
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1) 1.00     7570     8154
+## 
+## Regression Coefficients:
+##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept           103.33      4.26    94.92   111.81 1.00     1580     2959
+## ons_poat              6.81      2.36     2.11    11.33 1.00     9363     7735
+## ons_poak              2.68      2.37    -1.95     7.34 1.00     7873     8039
+## coda_vc1             46.07      5.22    35.80    56.35 1.00     4920     5845
+## ons_poat:coda_vc1     7.51      3.56     0.58    14.53 1.00     8630     7523
+## ons_poak:coda_vc1     9.63      3.65     2.40    16.75 1.00     8405     7311
+## 
+## Further Distributional Parameters:
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma    34.87      0.51    33.88    35.87 1.00    20469     7174
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<pre class="r"><code>sum(rstan::get_divergent_iterations(model_M_informed$fit))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>print(summary(model_Y_informed), digits = 2)</code></pre>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity 
+## Formula: vot ~ vdur + ons_poa * coda_vc + (1 + vdur + ons_poa * coda_vc | sub) 
+##    Data: data_mod (Number of observations: 2366) 
+##   Draws: 4 chains, each with iter = 4000; warmup = 1500; thin = 1;
+##          total post-warmup draws = 10000
+## 
+## Multilevel Hyperparameters:
+## ~sub (Number of levels: 20) 
+##                                          Estimate Est.Error l-95% CI u-95% CI
+## sd(Intercept)                               26.83      4.30    19.70    36.44
+## sd(vdur)                                     0.11      0.02     0.07     0.16
+## sd(ons_poat)                                 5.69      1.46     3.18     8.82
+## sd(ons_poak)                                 1.68      1.22     0.07     4.58
+## sd(coda_vc1)                                 8.21      1.86     5.12    12.39
+## sd(ons_poat:coda_vc1)                        1.99      1.49     0.07     5.50
+## sd(ons_poak:coda_vc1)                        4.76      2.30     0.45     9.36
+## cor(Intercept,vdur)                         -0.24      0.19    -0.58     0.15
+## cor(Intercept,ons_poat)                     -0.09      0.21    -0.49     0.33
+## cor(vdur,ons_poat)                           0.01      0.23    -0.43     0.44
+## cor(Intercept,ons_poak)                     -0.09      0.30    -0.64     0.51
+## cor(vdur,ons_poak)                          -0.09      0.31    -0.64     0.52
+## cor(ons_poat,ons_poak)                       0.10      0.30    -0.52     0.64
+## cor(Intercept,coda_vc1)                     -0.04      0.20    -0.43     0.36
+## cor(vdur,coda_vc1)                          -0.20      0.21    -0.59     0.23
+## cor(ons_poat,coda_vc1)                      -0.25      0.22    -0.66     0.20
+## cor(ons_poak,coda_vc1)                       0.02      0.30    -0.55     0.59
+## cor(Intercept,ons_poat:coda_vc1)            -0.02      0.30    -0.60     0.55
+## cor(vdur,ons_poat:coda_vc1)                  0.07      0.31    -0.52     0.64
+## cor(ons_poat,ons_poat:coda_vc1)             -0.05      0.31    -0.62     0.57
+## cor(ons_poak,ons_poat:coda_vc1)             -0.06      0.32    -0.65     0.57
+## cor(coda_vc1,ons_poat:coda_vc1)             -0.11      0.31    -0.67     0.51
+## cor(Intercept,ons_poak:coda_vc1)            -0.08      0.25    -0.55     0.43
+## cor(vdur,ons_poak:coda_vc1)                 -0.06      0.26    -0.56     0.47
+## cor(ons_poat,ons_poak:coda_vc1)              0.21      0.27    -0.37     0.69
+## cor(ons_poak,ons_poak:coda_vc1)              0.02      0.31    -0.58     0.60
+## cor(coda_vc1,ons_poak:coda_vc1)             -0.17      0.27    -0.64     0.41
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1)    -0.03      0.32    -0.62     0.58
+##                                          Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)                            1.00     3513     5930
+## sd(vdur)                                 1.00     4524     5790
+## sd(ons_poat)                             1.00     5507     6687
+## sd(ons_poak)                             1.00     3371     4705
+## sd(coda_vc1)                             1.00     5502     7045
+## sd(ons_poat:coda_vc1)                    1.00     4489     4926
+## sd(ons_poak:coda_vc1)                    1.00     2512     2393
+## cor(Intercept,vdur)                      1.00     5429     6990
+## cor(Intercept,ons_poat)                  1.00     8008     7770
+## cor(vdur,ons_poat)                       1.00     6743     7609
+## cor(Intercept,ons_poak)                  1.00    16288     7847
+## cor(vdur,ons_poak)                       1.00    14711     7079
+## cor(ons_poat,ons_poak)                   1.00    11125     7843
+## cor(Intercept,coda_vc1)                  1.00     8655     7682
+## cor(vdur,coda_vc1)                       1.00     6605     7481
+## cor(ons_poat,coda_vc1)                   1.00     4925     6581
+## cor(ons_poak,coda_vc1)                   1.00     2446     4194
+## cor(Intercept,ons_poat:coda_vc1)         1.00    19224     7077
+## cor(vdur,ons_poat:coda_vc1)              1.00    15733     7972
+## cor(ons_poat,ons_poat:coda_vc1)          1.00    13147     6876
+## cor(ons_poak,ons_poat:coda_vc1)          1.00     8066     7873
+## cor(coda_vc1,ons_poat:coda_vc1)          1.00    10937     8107
+## cor(Intercept,ons_poak:coda_vc1)         1.00    13498     7270
+## cor(vdur,ons_poak:coda_vc1)              1.00    12157     7789
+## cor(ons_poat,ons_poak:coda_vc1)          1.00     9118     7923
+## cor(ons_poak,ons_poak:coda_vc1)          1.00     5210     7190
+## cor(coda_vc1,ons_poak:coda_vc1)          1.00     9317     7048
+## cor(ons_poat:coda_vc1,ons_poak:coda_vc1) 1.00     5530     7816
+## 
+## Regression Coefficients:
+##                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept            65.24      5.96    53.36    76.71 1.00     1455     3067
+## vdur                  0.13      0.03     0.08     0.18 1.00     2999     5112
+## ons_poat             10.00      1.69     6.63    13.32 1.00     5722     7135
+## ons_poak             13.47      1.20    11.14    15.88 1.00    11124     8220
+## coda_vc1              6.35      2.25     1.87    10.75 1.00     5491     6142
+## ons_poat:coda_vc1    -5.43      1.80    -8.97    -1.90 1.00    10924     7831
+## ons_poak:coda_vc1    -5.42      2.08    -9.43    -1.26 1.00     8545     7192
+## 
+## Further Distributional Parameters:
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma    16.84      0.25    16.36    17.34 1.00    18716     7523
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<pre class="r"><code>sum(rstan::get_divergent_iterations(model_Y_informed$fit))</code></pre>
+<pre><code>## [1] 0</code></pre>
+</div>
+<div id="compute-indirect-direct-and-total-effects"
+class="section level2">
+<h2>4.5 Compute indirect, direct, and total effects</h2>
+<p>Path <em>a</em> comes from the mediator model’s <code>coda_vc1</code>
+coefficient; path <em>b</em> and path <em>c</em> both come from the
+outcome model (<code>vdur</code> and <code>coda_vc1</code> coefficients,
+respectively). Because <em>a</em> and <em>b</em> come from two
+separately-fit models, we approximate their joint distribution by
+pairing posterior draws index-by-index (both models are fit with the
+same number of post-warmup draws per chain and the same seed structure,
+so this pairing is arbitrary but consistent – it does <em>not</em>
+reflect genuine posterior correlation between the two equations’
+parameters, only their marginal uncertainty).</p>
+<pre class="r"><code>summarize_draws_custom &lt;- function(x) {
+  c(estimate = mean(x),
+    lower    = as.numeric(quantile(x, 0.025)),
+    upper    = as.numeric(quantile(x, 0.975)))
+}
+
+compute_mediation_separate &lt;- function(model_M, model_Y) {
+  a &lt;- as_draws_df(model_M)$b_coda_vc1
+  b &lt;- as_draws_df(model_Y)$b_vdur
+  c_direct &lt;- as_draws_df(model_Y)$b_coda_vc1
+
+  indirect &lt;- a * b               # approximate: a, b treated as independent
+  direct   &lt;- c_direct
+  total    &lt;- direct + indirect
+  prop_mediated &lt;- indirect / total
+
+  list(
+    a             = summarize_draws_custom(a),
+    b             = summarize_draws_custom(b),
+    indirect      = summarize_draws_custom(indirect),
+    direct        = summarize_draws_custom(direct),
+    total         = summarize_draws_custom(total),
+    prop_mediated = summarize_draws_custom(prop_mediated),
+    draws = list(a = a, b = b, indirect = indirect,
+                 direct = direct, total = total)
+  )
+}
+
+med_informed &lt;- compute_mediation_separate(model_M_informed, model_Y_informed)
+med_default  &lt;- compute_mediation_separate(model_M_default,  model_Y_default)
+
+bind_rows(
+  a             = med_informed$a,
+  b             = med_informed$b,
+  indirect      = med_informed$indirect,
+  direct        = med_informed$direct,
+  total         = med_informed$total,
+  prop_mediated = med_informed$prop_mediated,
+  .id = &quot;quantity&quot;
+) %&gt;%
+  mutate(across(where(is.numeric), ~ round(.x, 3)))</code></pre>
+<pre><code>## # A tibble: 6 × 4
+##   quantity      estimate  lower  upper
+##   &lt;chr&gt;            &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1 a               46.1   35.8   56.3  
+## 2 b                0.128  0.076  0.181
+## 3 indirect         5.92   3.26   8.78 
+## 4 direct           6.35   1.87  10.7  
+## 5 total           12.3    7.48  17.0  
+## 6 prop_mediated    0.494  0.279  0.785</code></pre>
+</div>
+<div id="default-vs.-informed-priors" class="section level2">
+<h2>4.6 Default vs. informed priors</h2>
+<pre class="r"><code>loo_M_default  &lt;- loo(model_M_default)
+loo_M_informed &lt;- loo(model_M_informed)
+loo_compare(loo_M_default, loo_M_informed)</code></pre>
+<pre><code>##             model elpd_diff se_diff p_worse       diag_diff diag_elpd
+##   model_M_default       0.0     0.0      NA                          
+##  model_M_informed      -0.1     0.3    0.63 |elpd_diff| &lt; 4</code></pre>
+<pre class="r"><code>loo_Y_default  &lt;- loo(model_Y_default)
+loo_Y_informed &lt;- loo(model_Y_informed)
+loo_compare(loo_Y_default, loo_Y_informed)</code></pre>
+<pre><code>##             model elpd_diff se_diff p_worse       diag_diff diag_elpd
+##  model_Y_informed       0.0     0.0      NA                          
+##   model_Y_default      -0.8     0.3    1.00 |elpd_diff| &lt; 4</code></pre>
+<pre class="r"><code># Direct comparison of the indirect effect under both prior specs
+summarize_draws_custom(med_default$draws$indirect)</code></pre>
+<pre><code>## estimate    lower    upper 
+## 5.883604 3.193482 8.876113</code></pre>
+<pre class="r"><code>summarize_draws_custom(med_informed$draws$indirect)</code></pre>
+<pre><code>## estimate    lower    upper 
+## 5.914918 3.254725 8.779243</code></pre>
+</div>
+<div id="visualize-the-posterior-distributions" class="section level2">
+<h2>4.7 Visualize the posterior distributions</h2>
+<pre class="r"><code>plot_df &lt;- tibble(
+  effect = rep(c(&quot;Indirect (a x b)&quot;, &quot;Direct (c)&quot;, &quot;Total&quot;), each = length(med_informed$draws$indirect)),
+  value  = c(med_informed$draws$indirect, med_informed$draws$direct, med_informed$draws$total)
+) %&gt;%
+  mutate(effect = factor(effect, levels = c(&quot;Total&quot;, &quot;Direct (c)&quot;, &quot;Indirect (a x b)&quot;)))
+
+ggplot(plot_df, aes(x = value, y = effect, fill = effect)) +
+  ggridges::geom_density_ridges(alpha = 0.7, scale = 0.9) +
+  geom_vline(xintercept = 0, linetype = &quot;dashed&quot;, color = &quot;grey40&quot;) +
+  labs(x = &quot;Effect on onset VOT (ms)&quot;, y = &quot;&quot;,
+       title = &quot;Posterior distributions: indirect, direct, and total effects&quot;) +
+  theme_minimal() +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="coda_voicing_mediation_bayesian_files/figure-html/mediation-plot-1.png" alt="" width="768" /></p>
+<hr />
+</div>
+</div>
+<div id="the-fully-joint-multivariate-model-attempted-not-primary"
+class="section level1">
+<h1>5. The fully joint multivariate model (attempted, not primary)</h1>
+<p>For completeness and reproducibility, this is the fully joint model
+that was attempted before settling on the two-separate-equations
+approach above. It links both equations’ random effects into a single
+correlation matrix via <code>brms</code>’ <code>|q|</code> grouping
+syntax, which would in principle be the more complete analysis (it does
+not assume independence between a speaker’s mediator- and
+outcome-equation random effects, unlike Section 4’s approach). In
+practice, this model proved impractically slow to sample even with
+<code>adapt_delta = 0.99</code> and <code>max_treedepth = 15</code>, and
+was abandoned in favor of Section 4’s approach. It may be worth
+revisiting with substantially more compute time, a longer allowed
+runtime, or a reduced random-slopes structure (e.g., dropping
+place-of-articulation random slopes while keeping the focal
+<code>coda_vc</code> and <code>vdur</code> slopes) if a fully joint
+estimate is needed for a future revision.</p>
+<pre class="r"><code>bf_vdur_joint &lt;- bf(vdur ~ ons_poa * coda_vc + (1 + ons_poa * coda_vc | q | sub))
+bf_vot_joint  &lt;- bf(vot  ~ vdur + ons_poa * coda_vc + (1 + vdur + ons_poa * coda_vc | q | sub))
+
+mediation_informed_priors_joint &lt;- c(
+  prior(normal(0, 150), class = Intercept, resp = vdur, lb = 0),
+  prior(normal(55, 30), class = b, coef = coda_vc1, resp = vdur),
+  prior(normal(0, 25),  class = b, coef = &quot;ons_poat:coda_vc1&quot;, resp = vdur),
+  prior(normal(0, 25),  class = b, coef = &quot;ons_poak:coda_vc1&quot;, resp = vdur),
+  prior(normal(0, 30),  class = sd,    resp = vdur),
+  prior(normal(0, 30),  class = sigma, resp = vdur),
+
+  prior(normal(0, 100),     class = Intercept, resp = vot, lb = 0),
+  prior(normal(15, 8),      class = b, coef = ons_poat, resp = vot),
+  prior(normal(30, 12),     class = b, coef = ons_poak, resp = vot),
+  prior(normal(0.15, 0.15), class = b, coef = vdur, resp = vot),
+  prior(normal(0, 20),      class = b, coef = coda_vc1, resp = vot),
+  prior(normal(0, 15),      class = b, coef = &quot;ons_poat:coda_vc1&quot;, resp = vot),
+  prior(normal(0, 15),      class = b, coef = &quot;ons_poak:coda_vc1&quot;, resp = vot),
+  prior(normal(0, 20),      class = sd,    resp = vot),
+  prior(normal(0, 25),      class = sigma, resp = vot),
+
+  prior(lkj(2), class = cor)
+)
+
+bayes_med_joint &lt;- brm(
+  bf_vdur_joint + bf_vot_joint + set_rescor(FALSE),
+  data    = data_mod,
+  family  = gaussian(),
+  prior   = mediation_informed_priors_joint,
+  chains  = 4,
+  iter    = 4000,
+  warmup  = 1500,
+  cores   = 4,
+  seed    = 123,
+  control = list(adapt_delta = 0.99, max_treedepth = 15)
+)</code></pre>
+<hr />
+</div>
+<div id="summary" class="section level1">
+<h1>6. Summary</h1>
+<p>The two-equation Bayesian mediation analysis in Section 4 provides
+estimates of the indirect effect of coda voicing on onset VOT, operating
+through vowel duration (path <span class="math inline">\(a \times
+b\)</span>), and the direct, residual effect of coda voicing on onset
+VOT after controlling for vowel duration (path <span
+class="math inline">\(c\)</span>), each with full posterior uncertainty
+from a maximal random-effects structure — without relying on the
+frequentist bootstrap or random-intercept-only assumptions of the
+original SEM/<code>mediation</code> approach. The one respect in which
+this falls short of a fully consistent maximal-structure analysis is
+that the two equations’ random effects are treated as independent, since
+the fully joint model (Section 5) was not tractable in practice.</p>
+<hr />
+</div>
+<div id="appendix-frequentist-comparison-optional-robustness-check"
+class="section level1">
+<h1>7. Appendix: Frequentist comparison (optional robustness check)</h1>
+<p>The code below reproduces the original
+<code>lavaan</code>/<code>mediation</code> approach for comparison
+purposes only. It is <strong>not</strong> the primary analysis: it uses
+random-intercept-only mixed models and bootstrap/quasi-Bayesian
+inference rather than the maximal-structure models above, and (once
+corrected to ms, as below) its coefficients are on a different fitted
+scale than the primary model’s. Treat any correspondence between the two
+as a rough sanity check, not confirmatory evidence.</p>
+<pre class="r"><code>library(lavaan)
+library(lme4)
+library(mediation)
+
+# Dummy-coded POA for lavaan (does not handle factors the way lme4 does)
+data_mod$alveolar &lt;- ifelse(data_mod$ons_poa == &quot;t&quot;, 1, 0)
+data_mod$velar    &lt;- ifelse(data_mod$ons_poa == &quot;k&quot;, 1, 0)
+data_mod$coda_vc_num &lt;- as.numeric(as.character(data_mod$coda_vc))
+
+sem_model &lt;- &#39;
+  vdur ~ a*coda_vc_num + alveolar + velar
+  vot  ~ b*vdur + c*coda_vc_num + alveolar + velar
+  indirect := a * b
+  direct   := c
+  total    := c + (a * b)
+&#39;
+
+fit_sem &lt;- sem(sem_model, data = data_mod, se = &quot;bootstrap&quot;,
+                bootstrap = 5000, cluster = &quot;sub&quot;)
+summary(fit_sem, fit.measures = TRUE)
+
+model_M &lt;- lmer(vdur ~ coda_vc + ons_poa + (1 | sub), data = data_mod, REML = FALSE)
+model_Y &lt;- lmer(vot  ~ vdur + coda_vc + ons_poa + (1 | sub), data = data_mod, REML = FALSE)
+
+med_out &lt;- mediate(model_M, model_Y, treat = &quot;coda_vc&quot;, mediator = &quot;vdur&quot;,
+                    boot = FALSE, sims = 1000)
+summary(med_out)</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
